@@ -1,0 +1,146 @@
+.dashboard-container {
+    padding: 20px;
+    background-color: #f0f2f5; /* Un gris claro para el fondo */
+    border-radius: 10px;
+}
+
+.dashboard-title {
+    font-family: 'Montserrat', sans-serif;
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 25px;
+}
+
+/* Cuadrícula para las tarjetas KPI */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kpi-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e9ecef;
+}
+
+.kpi-label {
+    display: block;
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+.kpi-value {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    color: #212529;
+}
+
+.kpi-value.income {
+    color: #10B981; /* Verde para ingresos */
+}
+
+.kpi-value.expense {
+    color: #EF4444; /* Rojo para egresos */
+}
+
+/* Cuadrícula principal para gráficos y accesos rápidos */
+.main-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* El gráfico principal ocupa 2/3, el resto 1/3 */
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.chart-card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+}
+
+.chart-wrapper {
+    position: relative;
+    height: 100%;
+}
+
+.chart-card h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.large-card {
+    grid-row: span 2; /* Ocupa dos filas de alto */
+    min-height: 400px;
+}
+
+.small-card {
+    min-height: 200px;
+}
+
+/* Cuadrícula para los accesos rápidos */
+.quick-access-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.access-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e9ecef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.access-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+}
+
+.access-label {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.access-value {
+    color: #3B82F6; /* Azul para valores pendientes */
+    font-weight: 700;
+    margin: 5px 0 0;
+}
+
+.access-icon {
+    font-size: 2rem;
+    color: #adb5bd;
+}
+
+.access-icon.money {
+    color: #10B981;
+    font-weight: bold;
+}
+
+/* Ajustes para pantallas más pequeñas */
+@media (max-width: 992px) {
+    .main-grid {
+        grid-template-columns: 1fr; /* Una sola columna en pantallas medianas */
+    }
+    .large-card {
+        grid-row: auto;
+    }
+}

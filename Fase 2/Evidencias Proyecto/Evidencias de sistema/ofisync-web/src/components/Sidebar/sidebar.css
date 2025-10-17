@@ -1,0 +1,89 @@
+/* Asegura que la fuente Oswald se aplique */
+
+
+.sidebar {
+    position: fixed;
+    top: 120px;
+    left: 0;
+    width: 200px;
+    height: calc(100% - 120px);
+    background: linear-gradient(180deg, #001aff, #005fcc); /* Gradiente más sutil */
+    padding: 20px 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Empuja el logout hacia abajo */
+    font-family: 'Oswald', sans-serif;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+}
+
+.sidebar li {
+    margin-bottom: 10px;
+}
+
+.sidebar li a {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Espacio entre icono y texto */
+    padding: 12px 15px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    font-weight: 400;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Efecto al pasar el mouse */
+.sidebar li a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Estilo para el enlace de la página activa */
+.sidebar li a.active {
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #001aff;
+    font-weight: 500;
+}
+
+.sidebar .nav-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* El icono del enlace activo también cambia de color */
+.sidebar li a.active .nav-icon {
+    filter: invert(10%) sepia(100%) saturate(7401%) hue-rotate(235deg) brightness(96%) contrast(108%);
+}
+
+
+/* Sección de Cerrar Sesión */
+.logout-section {
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.logout-section a {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    border-radius: 8px;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.logout-section a:hover {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+.logout-section .nav-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 0; /* Quita el borde redondeado del icono de logout */
+}

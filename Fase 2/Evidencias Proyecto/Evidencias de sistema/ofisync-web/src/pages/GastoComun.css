@@ -1,0 +1,91 @@
+/* Contenedor principal, estilo consistente con el resto de la app */
+.gasto-comun-container {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 30px;
+    margin-top: 40px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    color: #333;
+}
+
+.gasto-comun-container h2 {
+    color: #184866;
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.8rem;
+}
+
+/* Usamos un grid para organizar el formulario en 2 columnas */
+.gasto-comun-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 30px; /* Espacio vertical y horizontal */
+}
+
+/* Grupo de etiqueta + campo */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Clase para que un elemento ocupe las 2 columnas */
+.form-group.span-2, .total-display.span-2 {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-size: 1rem;
+}
+
+.form-group textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+/* Estilo para mostrar el total calculado */
+.total-display {
+    background-color: #f3f7fa;
+    border-left: 5px solid #184866;
+    padding: 15px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.total-display h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #184866;
+}
+
+/* Estilo del botón, consistente con el resto de la app */
+.gasto-comun-form button {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #001aff, #00b7ff);
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.gasto-comun-form button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}

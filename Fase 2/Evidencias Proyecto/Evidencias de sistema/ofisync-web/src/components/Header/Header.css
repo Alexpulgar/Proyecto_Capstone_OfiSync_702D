@@ -1,0 +1,57 @@
+/* Reset global */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box; /* importante para que padding no afecte el ancho */
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  background-color: #d6d6d6ff;
+}
+
+
+.header {
+    position: fixed;  /* fijo arriba */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 120px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 1000; /* siempre encima */
+}
+
+
+.header .logo {
+    display: flex;
+    align-items: center;
+    padding-right: 10px;
+}
+.header img {
+    mix-blend-mode: multiply;
+    width: 100px;
+}
+.perfil {
+    display: flex;
+    position: fixed;
+    align-items: center;
+    justify-content: space-between;
+    right: 0;
+}
+
+.perfil h2 {
+    color: black;
+    margin: 10px;
+    font-size: medium;
+}
+
+.perfil img {
+    width: 50px;
+    margin-right: 10px;
+}
+
