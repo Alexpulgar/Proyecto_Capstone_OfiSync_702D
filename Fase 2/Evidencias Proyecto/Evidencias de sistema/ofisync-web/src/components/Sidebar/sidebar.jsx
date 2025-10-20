@@ -47,6 +47,12 @@ function Sidebar() {
               <span>Información</span>
             </NavLink>
           </li>
+          <li>
+            <NavLink to="/inventario/insumos"className={({ isActive}) => (isActive ? "active" : "")}>
+              <Icon src="/img/icons/inventario.svg" />
+              <span>Inventario de insumos</span>
+            </NavLink>
+          </li>
         </ul>
       </nav>
 
