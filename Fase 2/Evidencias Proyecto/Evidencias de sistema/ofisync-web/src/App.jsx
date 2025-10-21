@@ -7,6 +7,7 @@ import Inicio from "./pages/Inicio";
 import Administracion from "./components/Administracion/Administracion"
 import GastoComun from "./pages/GastoComun";
 import Agregar from "./components/Agregar/Agregar"
+import Actualizar from "./components/Actualizar/Actualizar"
 
 
 
@@ -23,6 +24,7 @@ function App() {
           <Route path="/inicio" element={<Inicio />} />
           <Route path="/administracion" element={<Administracion />} />
           <Route path="/agregar" element={<Agregar />} />
+          <Route path="/actualizar" element={<Actualizar />} />
           <Route path="/gastoComun" element={<GastoComun />} />
         </Routes>
       </main>
