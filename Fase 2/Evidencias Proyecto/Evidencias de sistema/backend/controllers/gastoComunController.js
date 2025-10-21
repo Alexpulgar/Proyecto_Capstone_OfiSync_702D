@@ -8,7 +8,24 @@ const calcularGastoComun = async (req, res) => {
     if (!edificio_id || !mes || !total) {
       return res.status(400).json({ error: "Faltan datos obligatorios." });
     }
+    if (typeof total !== 'number' || total <= 0) {
+      return res.status(400).json({
+        error: "El monto total debe ser un número positivo mayor a cero.",
+      });
+    }
+   
+    // Verificar si ya existe un gasto común para ese edificio y mes
+    const checkExist = await pool.query(
+      `SELECT id FROM gastoComun WHERE edificio_id = $1 AND mes = $2`,
+      [edificio_id, mes]
+    );
 
+    if (checkExist.rows.length > 0) {
+      // 409 Conflict (Conflicto) es un código de estado apropiado aquí
+      return res.status(409).json({ 
+        error: "Ya se ha registrado un gasto común para este edificio y mes." 
+      });
+    }
     // Crear el registro del gasto común
     const result = await pool.query(
       `INSERT INTO gastoComun (edificio_id, mes, total, descripcion)

@@ -23,15 +23,25 @@ function CalcularGastoComun() {
       .catch((err) => console.error("Error al cargar edificios:", err));
   }, []);
 
-  const handleChange = (e) => {
+ const handleChange = (e) => {
     const { name, value } = e.target;
+    
     // Si el campo pertenece a los gastos, actualizamos el estado anidado
     if (['luz', 'agua', 'mantencion', 'otros'].includes(name)) {
+      
+      // --- INICIO DE VALIDACIÓN (NUEVO) ---
+      // Convertimos el valor a número para la validación
+      const numValue = Number(value);
+
+      // Si el valor es negativo, simplemente no actualizamos el estado
+      if (numValue < 0) {
+        return; 
+      }
       setForm({
         ...form,
         gastos: {
           ...form.gastos,
-          [name]: value
+          [name]: value // Guardamos el valor original (string)
         }
       });
     } else {
@@ -73,7 +83,7 @@ function CalcularGastoComun() {
       if (data.error) throw new Error(data.error);
 
       alert(
-        `${data.mensaje}\n💵 Gasto por m²: $${data.gasto_por_m2}`
+        `${data.mensaje}\n Gasto por m²: $${data.gasto_por_m2}`
       );
 
       // Limpiamos el formulario después de enviarlo
