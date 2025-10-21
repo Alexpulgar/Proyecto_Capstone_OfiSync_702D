@@ -14,3 +14,28 @@ export async function agregarPersonaApi(persona) {
     });
     return res.json();
 }
+
+export async function getPersonaByRutApi(rut) {
+  const res = await fetch(`${API_URL}/rut/${rut}`); // Llama a la nueva ruta GET
+  
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || 'Persona no encontrada');
+  }
+  return res.json();
+}
+
+export async function actualizarPersonaApi(id, data) {
+  // 'data' será un objeto: { correo_electronico, telefono }
+  const res = await fetch(`${API_URL}/${id}`, { // Llama a la nueva ruta PUT
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    throw new Error(errorData.error || 'Error al actualizar');
+  }
+  return res.json();
+}

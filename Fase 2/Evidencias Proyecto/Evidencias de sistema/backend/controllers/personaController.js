@@ -74,4 +74,72 @@ const agregarPersona = async (req, res) => {
   }
 };
 
-module.exports = { obtenerPersonas, agregarPersona };
+const obtenerPersonaPorRut = async (req, res) => {
+  try {
+    const { rut } = req.params;
+
+    // Validar que el RUT venga en la URL
+    if (!rut) {
+      return res.status(400).json({ error: "Falta el parámetro RUT" });
+    }
+
+    const query = "SELECT * FROM persona WHERE rut = $1";
+    const result = await pool.query(query, [rut]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Persona no encontrada con ese RUT" });
+    }
+
+    res.status(200).json(result.rows[0]);
+
+  } catch (err) {
+    console.error("Error al obtener persona por RUT: ", err);
+    res.status(500).json({ error: "Error al obtener persona" });
+  }
+};
+
+// --- AGREGA ESTA FUNCIÓN PARA ACTUALIZAR (PARCIAL) ---
+const actualizarPersonaParcial = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // --- CAMBIO CLAVE AQUÍ ---
+    // Asegúrate de que dice 'correo' y no 'correo_electronico'
+    const { correo, telefono } = req.body;
+
+    const personaId = parseInt(id, 10);
+    if (isNaN(personaId)) {
+      return res.status(400).json({ error: "ID de persona no válido" });
+    }
+
+    // --- CAMBIO CLAVE AQUÍ ---
+    // Validamos 'correo'
+    if (!correo || !telefono) {
+      return res.status(400).json({ error: "Faltan correo o teléfono" });
+    }
+
+    const query = `
+      UPDATE persona
+      SET correo = $1,   -- <-- CAMBIO CLAVE AQUÍ
+          telefono = $2
+      WHERE id = $3
+      RETURNING *
+    `;
+    
+    // --- CAMBIO CLAVE AQUÍ ---
+    const params = [correo, telefono, personaId];
+    const result = await pool.query(query, params);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Persona no encontrada para actualizar" });
+    }
+
+    res.status(200).json(result.rows[0]);
+
+  } catch (err) {
+    console.error("Error al actualizar persona: ", err);
+    res.status(500).json({ error: "Error al actualizar persona" });
+  }
+}
+
+module.exports = { obtenerPersonas, agregarPersona, obtenerPersonaPorRut,actualizarPersonaParcial};

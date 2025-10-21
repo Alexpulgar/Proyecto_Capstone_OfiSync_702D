@@ -105,3 +105,48 @@
     margin-bottom: 0;
     font-weight: 500;
 }
+
+/* src/components/Actualizar/ActualizarPersona.css */
+
+/* Botón de "Buscar" (para que ocupe el alto completo) */
+.btn-full-height {
+  height: 100%;
+}
+
+/* Contenedor para el mensaje de feedback (Buscando..., Error...) */
+.mensaje-feedback {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 0.9rem;
+  font-weight: 500; /* Lo añadí para que se vea mejor */
+}
+
+/* Color para el mensaje de error */
+.mensaje-feedback.error {
+  color: #e53e3e;
+}
+
+/* Color para el mensaje informativo */
+.mensaje-feedback.info {
+  color: #184866;
+}
+
+/* Separador para el formulario de actualización (la línea gris) */
+.form-seccion-actualizar {
+  margin-top: 30px;
+  border-top: 1px solid #eee;
+  padding-top: 30px;
+}
+
+/* Subtítulo "Datos de la Persona" */
+.form-subtitulo {
+  color: #184866;
+  margin: 0;
+}
+
+/* Descripción debajo del subtítulo */
+.form-subtitulo-desc {
+  margin: 0;
+  color: #555;
+  font-size: 0.9rem; /* Lo añadí para que combine */
+}
