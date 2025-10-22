@@ -1,5 +1,6 @@
 import ActualizarEdificio from "./ActualizarEdificio"
 import ActualizarPersona from "./ActualizarPersona";
+import ActualizarOficina from "./ActualizarOficina";
 import "./actualizar.css";
 
 
@@ -17,6 +18,7 @@ function Actualizar() {
       </div>
       
       <div className="seccion">
+        <ActualizarOficina/>
         
       </div>
 

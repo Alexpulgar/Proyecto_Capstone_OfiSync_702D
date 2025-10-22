@@ -144,12 +144,100 @@ const agregarOficina = async (req, res) => {
   }
 };
 
-module.exports = { buscarOficinas, obtenerOficinas, agregarOficina };
+// Obtener oficinas por ID de piso (para el dropdown)
+const getOficinasByPiso = async (req, res) => {
+  try {
+    const { pisoId } = req.params;
+    
+    // Traemos solo id y código para el select
+    const query = "SELECT id, codigo FROM oficina WHERE piso_id = $1 ORDER BY codigo";
+    const result = await pool.query(query, [pisoId]);
+    
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error al obtener oficinas por piso:", err);
+    res.status(500).json({ error: "Error al obtener oficinas por piso" });
+  }
+};
+
+// Obtener detalles de UNA oficina por su ID
+const getOficinaById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Traemos todos los datos de esa oficina para rellenar el formulario
+    const query = "SELECT id, codigo, area, estado, persona_id FROM oficina WHERE id = $1";
+    const result = await pool.query(query, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Oficina no encontrada" });
+    }
+    
+    res.json(result.rows[0]); // Devuelve solo el objeto de la oficina
+  } catch (err) {
+    console.error("Error al obtener detalles de la oficina:", err);
+    res.status(500).json({ error: "Error al obtener detalles de la oficina" });
+  }
+};
+
+// Actualizar una oficina
+const actualizarOficina = async (req, res) => {
+  try {
+    const { id } = req.params; // ID de la oficina a actualizar
+    const { area, estado, persona_id } = req.body; // Datos nuevos
+
+    // Validar que el área sea positiva
+    if (isNaN(area) || Number(area) <= 0) {
+      return res.status(400).json({ error: "El área(m²) debe ser un número positivo" });
+    }
+
+    // Validación: si está ocupada debe tener arrendatario
+    // (Tu misma validación de 'agregarOficina')
+    if (estado.toLowerCase() === "ocupada" && (!persona_id || persona_id === null)) {
+      return res.status(400).json({
+        error: "Debe asignar un arrendatario cuando la oficina está ocupada.",
+      });
+    }
+
+    // Si el estado es "libre" o "mantenimiento", forzamos persona_id a null
+    let arrendatarioId = persona_id;
+    if (estado.toLowerCase() === "libre" || estado.toLowerCase() === "mantenimiento") {
+        arrendatarioId = null;
+    }
+
+    const query = `
+      UPDATE oficina 
+      SET area = $1, estado = $2, persona_id = $3
+      WHERE id = $4
+      RETURNING *
+    `;
+    const params = [area, estado, arrendatarioId, id];
+    const result = await pool.query(query, params);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Oficina no encontrada para actualizar" });
+    }
+
+    res.status(200).json(result.rows[0]); // Devuelve la oficina actualizada
+  } catch (err) {
+    console.error("Error al actualizar oficina:", err);
+    res.status(500).json({ error: "Error al actualizar oficina" });
+  }
+};
+
+module.exports = { 
+  buscarOficinas, 
+  obtenerOficinas, 
+  agregarOficina,
+  getOficinasByPiso,  // <--- AÑADIR
+  getOficinaById,     // <--- AÑADIR
+  actualizarOficina   // <--- AÑADIR
+};
 
 
 
 
-module.exports = { buscarOficinas, obtenerOficinas, agregarOficina  };
+
 
 
 
