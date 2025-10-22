@@ -41,7 +41,8 @@ function ListaOficinas({ oficinas }) {
       <div className="acciones-laterales">
         <Link to="/agregar" className="accion-btn">Agregar</Link>
         <Link to="/actualizar" className="accion-btn">Actualizar</Link>
-        <a href="#" className="accion-btn">Eliminar</a>
+        <Link to="/borrar" className="accion-btn">Eliminar</Link>
+        
       </div>
     </div>
   );

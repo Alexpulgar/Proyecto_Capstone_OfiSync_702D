@@ -142,4 +142,44 @@ const actualizarPersonaParcial = async (req, res) => {
   }
 }
 
-module.exports = { obtenerPersonas, agregarPersona, obtenerPersonaPorRut,actualizarPersonaParcial};
+const eliminarPersona = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // 1. Validar el ID
+    const personaId = parseInt(id, 10);
+    if (isNaN(personaId)) {
+      return res.status(400).json({ error: "Rut de persona no válido" });
+    }
+
+    // 2. IMPORTANTE: Verificar si la persona es arrendatario en una oficina
+    // (Esta es la misma lógica que te di para el 'delete' anterior)
+    const checkOficinaQuery = "SELECT COUNT(*) FROM oficina WHERE persona_id = $1";
+    const checkOficinaResult = await pool.query(checkOficinaQuery, [personaId]);
+    
+    if (parseInt(checkOficinaResult.rows[0].count, 10) > 0) {
+      // Si está asociada, no se puede eliminar
+      return res.status(400).json({ 
+        error: "No se puede eliminar la persona porque está asignada como arrendatario a una oficina." 
+      });
+    }
+
+    // 3. Si no está asociada, proceder a eliminar
+    const query = "DELETE FROM persona WHERE id = $1 RETURNING *";
+    const result = await pool.query(query, [personaId]);
+
+    // 4. Verificar si se eliminó algo
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Arrendatario no encontrado para eliminar" });
+    }
+
+    // 5. Devolver éxito
+    res.status(200).json({ message: "Arrendatario eliminad correctamente" });
+
+  } catch (err) {
+    console.error("Error al eliminar Arrendatario: ", err);
+    res.status(500).json({ error: "Error al eliminar Arrendatario" });
+  }
+};
+
+module.exports = { obtenerPersonas, agregarPersona, obtenerPersonaPorRut,actualizarPersonaParcial,eliminarPersona};

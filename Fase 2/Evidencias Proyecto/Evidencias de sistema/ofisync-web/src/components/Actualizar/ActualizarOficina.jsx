@@ -195,16 +195,10 @@ const ActualizarOficina = () => {
       {showForm && (
         <form onSubmit={handleSubmit} className="agregar-form">
 
-          {/* --- INICIO DE LA CORRECCIÓN --- */}
-          {/* Este div envuelve el título y la línea. 
-            Le decimos que ocupe todo el ancho del grid ('grid-column: 1 / -1')
-            para que no rompa el diseño de los campos que vienen después.
-          */}
           <div style={{ gridColumn: '1 / -1' }}>
             <hr style={{ border: 'none', borderTop: '1px solid #eee', margin: '10px 0' }} />
             <h4 style={{ color: '#184866', margin: '0 0 15px 0' }}>Datos de la Oficina</h4>
           </div>
-          {/* --- FIN DE LA CORRECCIÓN --- */}
 
           <div className="form-group">
             <label htmlFor="area">Área (m²):</label>

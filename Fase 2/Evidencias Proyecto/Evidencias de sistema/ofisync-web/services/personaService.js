@@ -39,3 +39,18 @@ export async function actualizarPersonaApi(id, data) {
   }
   return res.json();
 }
+
+export async function eliminarPersonaApi(id) {
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE"
+  });
+  
+  const data = await res.json(); // Lee la respuesta (sea error o éxito)
+  
+  if (!res.ok) {
+    // Captura el error (ej: "No se puede eliminar...")
+    throw new Error(data.error || "Error al eliminar la arrendatario");
+  }
+  
+  return data; // Devuelve el mensaje de éxito
+}
