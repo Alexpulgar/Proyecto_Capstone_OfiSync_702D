@@ -1,5 +1,7 @@
 import BorrarPersona from "./BorrarPersona";
 import BorrarOficina from "./BorrarOficina";
+import BorrarPiso from "./BorrarPiso";
+
 
 function Borrar() {
   return (
@@ -15,6 +17,7 @@ function Borrar() {
         
       </div>
       <div className="seccion">
+        <BorrarPiso />
         
         
       </div>
