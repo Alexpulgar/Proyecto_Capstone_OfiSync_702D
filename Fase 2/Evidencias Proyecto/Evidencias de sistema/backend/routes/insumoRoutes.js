@@ -5,13 +5,13 @@ const {
     obtenerInsumos,
     obtenerInsumoPorId,
     actualizarInsumo,
-    eliminarInsumo
+    eliminarInsumo,
 } = require("../controllers/insumoController.js");
 
 router.post("/", agregarInsumo);
 router.get("/", obtenerInsumos);
 router.get("/:id", obtenerInsumoPorId);
-router.post("/:id", actualizarInsumo);
+router.put("/:id", actualizarInsumo);
 router.delete("/:id", eliminarInsumo);
 
 module.exports = router;

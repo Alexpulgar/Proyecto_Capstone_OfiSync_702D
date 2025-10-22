@@ -1,17 +1,23 @@
 const pool = require("../models/db");
 
-// 🔹 Agregar nuevo insumo
+// Agregar nuevo insumo
 const agregarInsumo = async (req, res) => {
   try {
-    const { nombre, categoria, stock, stock_minimo, estado } = req.body;
+    const { nombre, categoria, estado } = req.body;
+
+    const stock = parseInt(req.body.stock, 10);
+    const stock_minimo = parseInt(req.body.stock_minimo, 10);
 
     // Validación de campos obligatorios
-    if (!nombre || stock === undefined || stock_minimo === undefined) {
-      return res.status(400).json({ error: "Faltan datos obligatorios" });
+    if (!nombre || req.body.stock === "" || req.body.stock_minimo ==="") {
+      return res.status(400).json({error: "Todos los campos son obligatorios"});
+    }
+    if (isNaN(stock) || isNaN(stock_minimo)){
+      return res.status(400).json({error: "El stock debe ser numerico"});
     }
 
     // Reglas de negocio
-    if (stock < 0)
+    if (stock < 0) 
       return res.status(400).json({ error: "El stock no puede ser negativo" });
     if (stock_minimo < 0)
       return res.status(400).json({ error: "El stock mínimo no puede ser negativo" });
