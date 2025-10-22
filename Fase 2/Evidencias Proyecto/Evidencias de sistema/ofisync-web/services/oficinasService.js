@@ -67,4 +67,19 @@ export async function actualizarOficinaApi(id, oficinaData) {
   return data; // Devuelve la oficina actualizada (o mensaje de éxito)
 }
 
+export async function eliminarOficinaApi(id) {
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE"
+  });
+  
+  const data = await res.json(); // Lee la respuesta (sea error o éxito)
+  
+  if (!res.ok) {
+    // Captura el error (ej: "No se puede eliminar...")
+    throw new Error(data.error || "Error al eliminar la oficina");
+  }
+  
+  return data; // Devuelve el mensaje de éxito
+}
+
 

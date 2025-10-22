@@ -5,7 +5,8 @@ const {
   agregarOficina,
   getOficinasByPiso,  // <--- IMPORTAR
   getOficinaById,     // <--- IMPORTAR
-  actualizarOficina   // <--- IMPORTAR
+  actualizarOficina,
+  eliminarOficina  // <--- IMPORTAR
 } = require("../controllers/oficinaController");
 const router = express.Router();
 
@@ -21,6 +22,8 @@ router.get("/:id", getOficinaById);
 
 // Ruta para actualizar una oficina por su ID
 router.put("/:id", actualizarOficina);
+
+router.delete("/:id", eliminarOficina);
 
 
 

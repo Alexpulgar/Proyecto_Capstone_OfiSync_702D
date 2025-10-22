@@ -225,13 +225,56 @@ const actualizarOficina = async (req, res) => {
   }
 };
 
+const eliminarOficina = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // 1. Validar el ID
+    const oficinaId = parseInt(id, 10);
+    if (isNaN(oficinaId)) {
+      return res.status(400).json({ error: "ID de oficina no válido" });
+    }
+
+    // 2. IMPORTANTE: Verificar si la oficina está "ocupada"
+    const checkQuery = "SELECT estado FROM oficina WHERE id = $1";
+    const checkResult = await pool.query(checkQuery, [oficinaId]);
+
+    if (checkResult.rows.length === 0) {
+      return res.status(404).json({ error: "Oficina no encontrada para eliminar" });
+    }
+
+    if (checkResult.rows[0].estado.toLowerCase() === 'ocupada') {
+      // Si está ocupada, no se puede eliminar
+      return res.status(400).json({ 
+        error: "No se puede eliminar la oficina porque está 'Ocupada'. Primero debe cambiar su estado a 'Libre' o 'Mantenimiento'." 
+      });
+    }
+
+    // 3. Si no está ocupada, proceder a eliminar
+    const query = "DELETE FROM oficina WHERE id = $1 RETURNING *";
+    const result = await pool.query(query, [oficinaId]);
+
+    // 4. Devolver éxito
+    res.status(200).json({ message: "Oficina eliminada correctamente" });
+
+  } catch (err) {
+    console.error("Error al eliminar Oficina: ", err);
+    // Manejo de errores de llave foránea (si tuviera otras tablas dependientes)
+    if (err.code === '23503') { 
+        return res.status(400).json({ error: "Error de integridad: Esta oficina no se puede eliminar ya que está siendo referenciada por otros registros." });
+    }
+    res.status(500).json({ error: "Error al eliminar Oficina" });
+  }
+};
+
 module.exports = { 
   buscarOficinas, 
   obtenerOficinas, 
   agregarOficina,
   getOficinasByPiso,  // <--- AÑADIR
   getOficinaById,     // <--- AÑADIR
-  actualizarOficina   // <--- AÑADIR
+  actualizarOficina,
+  eliminarOficina   // <--- AÑADIR
 };
 
 
