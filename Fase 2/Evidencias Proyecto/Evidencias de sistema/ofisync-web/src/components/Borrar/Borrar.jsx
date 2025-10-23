@@ -1,6 +1,7 @@
 import BorrarPersona from "./BorrarPersona";
 import BorrarOficina from "./BorrarOficina";
 import BorrarPiso from "./BorrarPiso";
+import BorrarEdificio from "./BorrarEdificio";
 
 
 function Borrar() {
@@ -22,6 +23,7 @@ function Borrar() {
         
       </div>
       <div className="seccion">
+         <BorrarEdificio />
         
       </div>
     </div>

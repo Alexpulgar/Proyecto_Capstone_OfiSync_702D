@@ -35,3 +35,18 @@ export async function actualizarEdificioApi(id, edificioData) {
     return res.json();
 }
 
+export async function eliminarEdificioApi(id) {
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE"
+  });
+  
+  const data = await res.json(); // Lee la respuesta (sea error o éxito)
+  
+  if (!res.ok) {
+    // Captura el error (ej: "No se puede eliminar...")
+    throw new Error(data.error || "Error al eliminar el edificio");
+  }
+  
+  return data; // Devuelve el mensaje de éxito
+}
+

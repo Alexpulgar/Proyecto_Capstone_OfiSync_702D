@@ -136,4 +136,43 @@ const obtenerEdificioPorId = async (req, res) => {
   }
 };
 
-module.exports = { agregarEdificio, obtenerEdificios, actualizarEdificio, obtenerEdificioPorId}
+const eliminarEdificio = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // 1. Validar el ID
+    const edificioId = parseInt(id, 10);
+    if (isNaN(edificioId)) {
+      return res.status(400).json({ error: "ID de edificio no válido" });
+    }
+
+    // 2. IMPORTANTE: Verificar si tiene pisos asociados
+    const checkPisosQuery = "SELECT COUNT(*) FROM piso WHERE edificio_id = $1";
+    const checkPisosResult = await pool.query(checkPisosQuery, [edificioId]);
+    
+    if (parseInt(checkPisosResult.rows[0].count, 10) > 0) {
+      // Si hay pisos, no se puede eliminar
+      return res.status(400).json({ 
+        error: "No se puede eliminar el edificio porque tiene pisos asociados. Elimine los pisos primero." 
+      });
+    }
+
+    // 3. Si no hay pisos, proceder a eliminar
+    const query = "DELETE FROM edificio WHERE id = $1 RETURNING *";
+    const result = await pool.query(query, [edificioId]);
+
+    // 4. Verificar si se eliminó algo (si no, el ID no existía)
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Edificio no encontrado para eliminar" });
+    }
+
+    // 5. Devolver éxito
+    res.status(200).json({ message: "Edificio eliminado correctamente" });
+
+  } catch (err) {
+    console.error("Error al eliminar Edificio: ", err);
+    res.status(500).json({ error: "Error al eliminar Edificio" });
+  }
+};
+
+module.exports = { agregarEdificio, obtenerEdificios, actualizarEdificio, obtenerEdificioPorId, eliminarEdificio}
