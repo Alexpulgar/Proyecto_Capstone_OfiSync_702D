@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { calcularGastoComunApi } from "../../services/gastoComunService";
-import { getEdificios } from "../../services/edificioService";
+import { calcularGastoComunApi } from "../../../services/gastoComunService";
+import { getEdificios } from "../../../services/edificioService";
 import "./GastoComun.css"; // <-- Asegúrate de que este archivo CSS exista
 
 function CalcularGastoComun() {
