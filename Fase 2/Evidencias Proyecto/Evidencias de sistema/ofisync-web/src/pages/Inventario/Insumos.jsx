@@ -24,7 +24,6 @@ function InventarioInsumos(){
             setInsumos(data);
         }catch (err) {
             console.error("Error al cargar insumos:", err);
-            alert("No se pudieron cargar los insumos.");
         }
     };
 
@@ -38,7 +37,10 @@ function InventarioInsumos(){
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if(!form.nombre.trim()) return alert("El nombre es obligatorio");
+        if(!form.nombre.trim()) {
+          console.error("El nombre es obligatorio");
+          return;
+        }
 
         // Convertir a números para validar
         // Usamos parseInt para números enteros. Si necesitaras decimales, usa parseFloat.
@@ -47,16 +49,23 @@ function InventarioInsumos(){
 
         // Comprobar que no estén vacíos (form.stock === "") y que sean números (isNaN)
         if (form.stock === "" || isNaN(stockNum)) {
-          return alert("El stock actual es obligatorio y debe ser un número.");
+          console.error("El stock es obligatorio y tiene que ser un numero.");
+          return; 
         }
         if (form.stock_minimo === "" || isNaN(stockMinNum)) {
-          return alert("El stock mínimo es obligatorio y debe ser un número.");
+          console.error("El stock minimo es obligatorio y tiene que ser un numero.");
+          return; 
         }
 
         // Comprobar que no sean negativos
-        if (stockNum < 0) return alert("El stock actual no puede ser negativo");
-        if (stockMinNum < 0) return alert("El stock mínimo no puede ser negativo");
-        // --- FIN DE LA CORRECCIÓN 1 ---
+        if (stockNum < 0) {
+          console.error("El stock actual no puede ser negativo");
+          return;
+        } 
+        if (stockMinNum < 0) {
+          console.error("El stock minimo no puede ser negativo");
+          return;
+        }
 
         try {
             // Creamos un objeto de datos limpios para enviar al backend
@@ -67,11 +76,9 @@ function InventarioInsumos(){
             if(editando) {
                 // Enviamos los datos parseados
                 await updateInsumo(form.id, payload);
-                alert("Insumo actualizado correctamente");
             }else {
                 // Enviamos los datos parseados
                 await createInsumo(payload);
-                alert("Insumo creado correctamente");
             }
 
             setForm({id:null, nombre:"",categoria:"", stock:"", stock_minimo:"", estado:"activo"});
@@ -79,8 +86,6 @@ function InventarioInsumos(){
             cargarInsumos();
         }catch (err) {
             console.error("Error al guardar insumo:", err);
-            // Esta alerta ahora solo saltará si hay un error real de red o del servidor
-            alert("No se pudo guardar insumo.");
         }
     };
 
@@ -89,11 +94,9 @@ function InventarioInsumos(){
         if (!window.confirm("¿Seguro que deseas eliminar este insumo?")) return;
         try {
             await deleteInsumo(id);
-            alert("Insumo eliminado correctamente");
             cargarInsumos();
         } catch (err) {
             console.error("Error al eliminar insumo:" ,err);
-            alert("Error al eliminar insumo.");
         }
     };
 

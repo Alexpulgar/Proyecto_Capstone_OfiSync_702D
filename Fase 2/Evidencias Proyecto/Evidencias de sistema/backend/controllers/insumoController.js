@@ -182,28 +182,13 @@ const eliminarInsumo = async (req, res) => {
       return res.status(404).json({ error: "Insumo no encontrado" });
     }
 
-    const insumo = check.rows[0];
-
-    // Regla: no eliminar si tiene stock
-    if (insumo.stock > 0) {
-      return res.status(400).json({
-        error: "No puedes eliminar un insumo con stock mayor a cero",
-      });
-    }
-
-    // Soft delete → marcar como inactivo
-    const query = `
-      UPDATE insumo
-      SET estado = 'inactivo'
-      WHERE id = $1
-      RETURNING *
-    `;
-    const result = await pool.query(query, [id]);
+    const query = `DELETE FROM insumo WHERE id = $1`;
+    await pool.query(query, [id]);
 
     res.json({
-      mensaje: "Insumo marcado como inactivo correctamente",
-      data: result.rows[0],
+      mensaje: "Insumo eliminado correctamente",
     });
+    
   } catch (err) {
     console.error("Error al eliminar Insumo:", err);
     res.status(500).json({ error: "Error al eliminar Insumo" });
