@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { useFocusEffect } from '@react-navigation/native';
 import { BarChart } from "react-native-chart-kit";
+import * as DocumentPicker from 'expo-document-picker';
 import API from "../api/api";
 import colors from "../theme/colors";
 import { Ionicons } from "@expo/vector-icons";
@@ -91,77 +92,134 @@ const GastosComunesScreen = () => {
   const [gastosPendientes, setGastosPendientes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [{ data: [], colors: [] }],
   });
 
+  const fetchExpenses = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await API.get(`/gasto-comun/oficina/${SIMULATED_OFFICE_ID}`);
+      const allExpenses = response.data;
+
+      if (allExpenses && Array.isArray(allExpenses) && allExpenses.length > 0) {
+        let totalDeuda = 0;
+        const pendientes = [];
+
+        allExpenses.forEach(gasto => {
+          const monto = parseFloat(gasto.monto);
+          if (isNaN(monto)) return;
+          if (gasto.estado_pago.toLowerCase() !== 'pagado') { 
+            totalDeuda += monto;
+            pendientes.push(gasto);
+          }
+        });
+
+        setTotalAPagar(totalDeuda);
+        setGastosPendientes(pendientes);
+
+        const history = allExpenses.slice(0, 6).reverse();
+        const labels = history.map(g => getShortMonth(g.mes_numero));
+        const data = history.map(g => parseFloat(g.monto) || 0);
+        const colors = history.map(g => {
+            const estado = g.estado_pago.toLowerCase();
+            if (estado === 'pagado') {
+                 return (opacity = 1) => `rgba(52, 168, 83, ${opacity})`; // Verde
+            } else if (estado === 'en revision') {
+                 return (opacity = 1) => `rgba(251, 188, 5, ${opacity})`; // Amarillo
+            } else {
+                 return (opacity = 1) => `rgba(234, 67, 53, ${opacity})`; // Rojo
+            }
+        });
+
+        setChartData({
+          labels: labels,
+          datasets: [{ data: data, colors: colors }],
+        });
+
+      } else if (allExpenses.length === 0) {
+        setError("No se encontraron gastos para tu oficina.");
+        setChartData({ labels: [], datasets: [{ data: [], colors: [] }] });
+      }
+    } catch (e) {
+      setError("Error al cargar los gastos.");
+      setChartData({ labels: [], datasets: [{ data: [], colors: [] }] });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      const fetchExpenses = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-          const response = await API.get(`/gasto-comun/oficina/${SIMULATED_OFFICE_ID}`);
-          const allExpenses = response.data;
-
-          if (allExpenses && Array.isArray(allExpenses) && allExpenses.length > 0) {
-
-            let totalDeuda = 0;
-            const pendientes = [];
-
-            allExpenses.forEach(gasto => {
-              const monto = parseFloat(gasto.monto);
-              if (isNaN(monto)) return;
-              if (gasto.estado_pago.toLowerCase() !== 'pagado') {
-                totalDeuda += monto;
-                pendientes.push(gasto);
-              }
-            });
-
-            setTotalAPagar(totalDeuda);
-            setGastosPendientes(pendientes);
-
-            const history = allExpenses.slice(0, 6).reverse();
-            const labels = history.map(g => getShortMonth(g.mes_numero));
-            const data = history.map(g => parseFloat(g.monto) || 0);
-            const colors = history.map(g =>
-              g.estado_pago.toLowerCase() === 'pagado'
-                ? (opacity = 1) => `rgba(52, 168, 83, ${opacity})` // Verde
-                : (opacity = 1) => `rgba(251, 188, 5, ${opacity})` // Amarillo
-            );
-
-            setChartData({
-              labels: labels,
-              datasets: [{
-                data: data,
-                colors: colors
-              }],
-            });
-
-          } else if (allExpenses.length === 0) {
-              setError("No se encontraron gastos para tu oficina.");
-              setChartData({ labels: [], datasets: [{ data: [], colors: [] }] });
-          }
-        } catch (e) {
-          setError("Error al cargar los gastos.");
-          setChartData({ labels: [], datasets: [{ data: [], colors: [] }] });
-        } finally {
-          setLoading(false);
-        }
-      };
-
       fetchExpenses();
       return () => {};
     }, [])
   );
 
-  const handleUploadProof = () => {
-    Alert.alert(
-      "Subir Comprobante",
-      "Esta funcionalidad aún no está implementada."
+  const handleUploadProof = async () => {
+    if (isUploading) return;
+    
+    const gastosParaPagar = gastosPendientes.filter(
+      g => g.estado_pago.toLowerCase() !== 'en revision'
     );
+
+    if (gastosParaPagar.length === 0) {
+        Alert.alert("Revisión Pendiente", "No tienes gastos pendientes de pago. Tus comprobantes están en revisión.");
+        return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const pickerResult = await DocumentPicker.getDocumentAsync({
+        type: ["image/*", "application/pdf"], 
+        copyToCacheDirectory: true,
+      });
+
+      if (pickerResult.canceled) {
+        setIsUploading(false);
+        return;
+      }
+
+      const file = pickerResult.assets && pickerResult.assets[0];
+
+      if (!file) {
+           Alert.alert("Error", "No se pudo obtener el archivo seleccionado.");
+           setIsUploading(false);
+           return;
+      }
+
+      const formData = new FormData();
+      
+      formData.append("comprobante", {
+        uri: file.uri,
+        name: file.name,
+        type: file.mimeType,
+      });
+
+      const pendingIds = gastosParaPagar.map(g => g.detalle_id);
+      formData.append('gastos_ids', JSON.stringify(pendingIds));
+
+      const response = await API.post("/gasto-comun/subir-comprobante", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      Alert.alert("Éxito", response.data.msg || "Comprobante subido correctamente.");
+      
+      fetchExpenses();
+
+    } catch (e) {
+      console.error(e);
+      Alert.alert("Error", "No se pudo subir el comprobante. Inténtalo de nuevo.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   // Renderizado del gráfico
@@ -186,12 +244,10 @@ const GastosComunesScreen = () => {
           flatColor={true}
           withInnerLines={true}
           segments={4}
-
           yAxisLabel="$"
           yAxisSuffix=""
           formatYLabel={(yValue) => formatYAxisCLP(yValue)}
           showValuesOnTopOfBars={false}
-
           style={styles.chartStyle}
         />
       </View>
@@ -217,6 +273,10 @@ const GastosComunesScreen = () => {
     );
   }
 
+  const hayGastosParaPagar = gastosPendientes.some(
+      g => g.estado_pago.toLowerCase() !== 'en revision'
+  );
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
 
@@ -230,7 +290,6 @@ const GastosComunesScreen = () => {
             totalAPagar > 0 ? styles.totalAmountWarning : styles.totalAmountSuccess
           ]}
         >
-          {/* Usa la función CLP con puntos */}
           {formatCLPWithDots(totalAPagar)}
         </Text>
 
@@ -240,10 +299,20 @@ const GastosComunesScreen = () => {
           </View>
         )}
 
-        {totalAPagar > 0 && (
-          <TouchableOpacity style={styles.uploadButton} onPress={handleUploadProof}>
-            <Ionicons name="cloud-upload-outline" size={20} color={colors.white} />
-            <Text style={styles.uploadButtonText}>Subir Comprobante</Text>
+        {totalAPagar > 0 && hayGastosParaPagar && (
+          <TouchableOpacity
+            style={[styles.uploadButton, isUploading && styles.uploadButtonDisabled]}
+            onPress={handleUploadProof}
+            disabled={isUploading}
+          >
+            {isUploading ? (
+              <ActivityIndicator color={colors.white} />
+            ) : (
+              <>
+                <Ionicons name="cloud-upload-outline" size={20} color={colors.white} />
+                <Text style={styles.uploadButtonText}>Subir Comprobante</Text>
+              </>
+            )}
           </TouchableOpacity>
         )}
       </View>
@@ -255,13 +324,19 @@ const GastosComunesScreen = () => {
           {gastosPendientes.map(gasto => (
             <View key={gasto.detalle_id} style={styles.pendingItem}>
               <View style={styles.pendingItemInfo}>
-                <Ionicons name="alert-circle-outline" size={20} color={colors.warning} />
+                <Ionicons
+                  name={gasto.estado_pago.toLowerCase() === 'en revision' ? "hourglass-outline" : "alert-circle-outline"}
+                  size={20}
+                  color={gasto.estado_pago.toLowerCase() === 'en revision' ? colors.primary : colors.warning}
+                />
                 <Text style={styles.pendingItemMonth}>
                   {formatMonthYear(gasto.anio, gasto.mes_numero)}
                 </Text>
               </View>
-              {/* Usa la función CLP CON PUNTOS */}
               <Text style={styles.pendingItemAmount}>{formatCLPWithDots(gasto.monto)}</Text>
+              {gasto.estado_pago.toLowerCase() === 'en revision' && (
+                  <Text style={styles.statusEnRevision}>En Revisión</Text>
+              )}
             </View>
           ))}
         </View>
@@ -276,7 +351,7 @@ const GastosComunesScreen = () => {
   );
 };
 
-// --- ESTILOS ---
+// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -365,6 +440,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     width: '100%',
   },
+  uploadButtonDisabled: {
+    backgroundColor: colors.gray,
+  },
   uploadButtonText: {
     color: colors.white,
     fontSize: 16,
@@ -379,6 +457,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.lightGray,
     width: '100%',
+    flexWrap: 'wrap',
   },
   pendingItemInfo: {
     flexDirection: 'row',
@@ -394,7 +473,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.danger,
   },
-  // --- Estilos del Gráfico ---
+  statusEnRevision: {
+      fontSize: 12,
+      color: colors.primary,
+      fontWeight: 'bold',
+      width: '100%',
+      textAlign: 'right',
+      marginTop: 4,
+  },
+  // Estilos del Gráfico
   chartContainer: {
     alignItems: 'center',
     width: '100%',

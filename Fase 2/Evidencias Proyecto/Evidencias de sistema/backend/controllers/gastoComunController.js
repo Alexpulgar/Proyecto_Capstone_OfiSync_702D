@@ -98,15 +98,12 @@ const calcularGastoComun = async (req, res) => {
 
 const getGastosPorOficina = async (req, res) => {
   try {
-    const { id } = req.params; // Este es el oficina_id
+    const { id } = req.params;
 
     if (!id) {
       return res.status(400).json({ error: "Falta el ID de la oficina." });
     }
-
-    // --- QUERY CORREGIDA CON TU LÓGICA ---
-    // Usamos un CTE (WITH) para calcular los valores y luego ordenarlos.
-    // Esto es mucho más seguro y robusto.
+    
     const query = `
       WITH GastoConFecha AS (
         SELECT
@@ -128,7 +125,7 @@ const getGastosPorOficina = async (req, res) => {
             WHEN 'octubre' THEN 10
             WHEN 'noviembre' THEN 11
             WHEN 'diciembre' THEN 12
-            ELSE NULL -- Si el formato es incorrecto, envía NULL
+            ELSE NULL
           END AS mes_numero
           
         FROM 
@@ -138,7 +135,6 @@ const getGastosPorOficina = async (req, res) => {
         WHERE 
           dg.oficina_id = $1
       )
-      -- Seleccionamos los datos ya procesados y los ordenamos
       SELECT 
         detalle_id,
         monto,
@@ -149,26 +145,75 @@ const getGastosPorOficina = async (req, res) => {
       FROM 
         GastoConFecha
       ORDER BY
-        anio DESC NULLS LAST, -- Ordena por año (más nuevo primero)
-        mes_numero DESC NULLS LAST -- Luego por mes (más nuevo primero)
+        anio DESC NULLS LAST,
+        mes_numero DESC NULLS LAST
       LIMIT 12;
     `;
-    // --- FIN DE LA QUERY CORREGIDA ---
     
     const result = await pool.query(query, [id]);
 
-    // Devolvemos los datos (o un array vacío si no hay)
     res.status(200).json(result.rows);
 
   } catch (err) {
-    // Si la query falla (ej. si la 3ra palabra no es un número)
     console.error("Error al obtener gastos por oficina:", err);
     res.status(500).json({ error: "Error interno al obtener gastos." });
   }
 };
 
-// Asegúrate de que 'module.exports' incluya la función
+// Funcion para subir comprobante y actualizar estados
+const subirComprobante = async (req, res) => {
+  try {
+    // Obtener el archivo (de multer) y los IDs (del body)
+    const { file } = req;
+    const { gastos_ids } = req.body;
+
+    if (!file) {
+      return res.status(400).json({ msg: "No se subió ningún archivo." });
+    }
+
+    if (!gastos_ids) {
+      return res.status(400).json({ msg: "No se especificaron los gastos." });
+    }
+
+    // Parsear los IDs
+    let arrayDeIds;
+    try {
+        arrayDeIds = JSON.parse(gastos_ids);
+    } catch (e) {
+        return res.status(400).json({ msg: "Formato de IDs inválido (debe ser un array JSON)." });
+    }
+
+    if (!Array.isArray(arrayDeIds) || arrayDeIds.length === 0) {
+      return res.status(400).json({ msg: "La lista de IDs está vacía o no es un array." });
+    }
+
+    const nombreArchivo = file.filename; 
+
+    const query = `
+      UPDATE public.detallegastocomun
+      SET 
+        estado_pago = 'en revision', 
+        comprobante_url = $1
+      WHERE 
+        id = ANY($2::int[]) 
+    `; 
+
+    await pool.query(query, [nombreArchivo, arrayDeIds]);
+
+    // Enviar respuesta exitosa
+    res.status(200).json({
+      msg: "Comprobante subido exitosamente. Será revisado por la administración.",
+      fileName: nombreArchivo,
+    });
+
+  } catch (error) {
+    console.error("Error al subir comprobante:", error);
+    res.status(500).json({ msg: "Error en el servidor al procesar el archivo." });
+  }
+};
+
 module.exports = {
   calcularGastoComun,
   getGastosPorOficina,
+  subirComprobante,
 };
