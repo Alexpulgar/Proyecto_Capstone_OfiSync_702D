@@ -1,4 +1,4 @@
-const app = require('./index'); // Importamos la app
+const app = require('./index');
 
 const port = process.env.PORT || 4000;
 

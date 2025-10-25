@@ -15,11 +15,11 @@ import API from "../api/api";
 import colors from "../theme/colors";
 import { Ionicons } from "@expo/vector-icons";
 
-// --- ID DE OFICINA SIMULADA ---
+// ID DE OFICINA SIMULADA
 const SIMULATED_OFFICE_ID = 1;
 const screenWidth = Dimensions.get("window").width;
 
-// --- ARRAYS MANUALES ---
+// Arrays manuales
 const MESES_LARGOS = [
   "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
   "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
@@ -29,34 +29,27 @@ const MESES_CORTOS = [
   "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"
 ];
 
-// --- 1. DOS FUNCIONES DE FORMATO ---
 
-// a) Función base para número con puntos (Manual con Regex)
-// Ej: 74074 -> "74.074"
+// Función base para número con puntos
 const formatNumberWithDots = (value) => {
   const num = Math.round(Number(value));
   if (isNaN(num)) return "0";
   // Inserta un punto cada 3 dígitos
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
-
-// b) Para Total a Pagar y Meses Pendientes (CON signo $ y PUNTOS)
-// Ej: 74074 -> "$74.074"
+// Función para formatear CLP con puntos
 const formatCLPWithDots = (value) => {
   const num = Math.round(Number(value));
   if (isNaN(num)) return "$0";
-  // Usa la función con puntos y agrega el signo $
   return `$${formatNumberWithDots(num)}`;
 };
 
-// c) Para el Eje Y del gráfico (CON signo $, SIN puntos)
-// Ej: 74074.5 -> "$74075"
+// Función para formatear eje Y del gráfico en CLP
 const formatYAxisCLP = (value) => {
     const num = Math.round(Number(value));
     if (isNaN(num)) return "$0";
     return `$${num}`;
 }
-// --- FIN FUNCIONES ---
 
 // Función para formatear mes/año
 const formatMonthYear = (anio, mes_numero) => {
@@ -78,14 +71,13 @@ const getShortMonth = (mes_numero) => {
   return "???";
 };
 
-// --- Configuración visual del gráfico ---
+// Configuración visual del gráfico
 const chartConfig = {
   backgroundColor: colors.white,
   backgroundGradientFrom: colors.white,
   backgroundGradientTo: colors.white,
-  decimalPlaces: 0, // Sin decimales en el eje Y
-  // Líneas más oscuras (40% opacidad)
-  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity * 0.40})`,
+  decimalPlaces: 0,
+  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity * 0.75})`,
   labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity * 0.7})`, // Etiquetas
   style: {
     borderRadius: 16,
@@ -104,8 +96,6 @@ const GastosComunesScreen = () => {
     labels: [],
     datasets: [{ data: [], colors: [] }],
   });
-
-  // Ya no usamos chartCeiling, la librería lo calculará
 
   useFocusEffect(
     useCallback(() => {
@@ -142,9 +132,6 @@ const GastosComunesScreen = () => {
                 : (opacity = 1) => `rgba(251, 188, 5, ${opacity})` // Amarillo
             );
 
-            // --- 2. ELIMINAMOS LÓGICA DE REDONDEO ---
-            // Ya no se calcula 'chartCeiling'
-
             setChartData({
               labels: labels,
               datasets: [{
@@ -177,7 +164,7 @@ const GastosComunesScreen = () => {
     );
   };
 
-  // --- Renderizado del gráfico ---
+  // Renderizado del gráfico
   const renderPaymentHistoryChart = () => {
     if (loading) {
       return <View style={styles.chartLoadingContainer}><ActivityIndicator /></View>;
@@ -191,23 +178,18 @@ const GastosComunesScreen = () => {
       <View style={styles.chartContainer}>
         <BarChart
           data={chartData}
-          width={screenWidth - 40} // Ancho total
+          width={screenWidth - 40}
           height={220}
           chartConfig={chartConfig}
           fromZero={true}
           withCustomBarColorFromData={true}
-          flatColor={true} // Sin degradado
-          withInnerLines={true} // Mostrar líneas internas
-          segments={4} // 4 segmentos
+          flatColor={true}
+          withInnerLines={true}
+          segments={4}
 
-          // --- 3. FORMATO DEL EJE Y SIMPLE ---
-          yAxisLabel="$" // Signo $
+          yAxisLabel="$"
           yAxisSuffix=""
-          // Usa la función SIN PUNTOS
           formatYLabel={(yValue) => formatYAxisCLP(yValue)}
-          // yMax ya no se pasa, la librería lo calcula
-
-          // --- 4. VALORES SOBRE BARRA ELIMINADOS ---
           showValuesOnTopOfBars={false}
 
           style={styles.chartStyle}
@@ -248,7 +230,7 @@ const GastosComunesScreen = () => {
             totalAPagar > 0 ? styles.totalAmountWarning : styles.totalAmountSuccess
           ]}
         >
-          {/* Usa la función CLP CON PUNTOS */}
+          {/* Usa la función CLP con puntos */}
           {formatCLPWithDots(totalAPagar)}
         </Text>
 

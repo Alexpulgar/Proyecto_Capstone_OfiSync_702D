@@ -15,7 +15,6 @@ lerna-debug.log*
 # Uploads folder
 # Ignora todo el contenido de la carpeta 'uploads'
 uploads/*
-# Pero no ignores el archivo .gitkeep para que la carpeta vacía se pueda subir
 !uploads/.gitkeep
 
 node_modules
