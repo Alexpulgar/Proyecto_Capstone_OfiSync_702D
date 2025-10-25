@@ -9,6 +9,7 @@ import GastoComun from "./components/GastoComun/GastoComun";
 import Agregar from "./components/Agregar/Agregar"
 import Actualizar from "./components/Actualizar/Actualizar"
 import Borrar from "./components/Borrar/Borrar";
+import Reservas from "./components/Reservas/Reservas"
 
 
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/actualizar" element={<Actualizar />} />
           <Route path="/borrar" element={<Borrar />} />
           <Route path="/gastoComun" element={<GastoComun />} />
+          <Route path="/reservas" element={<Reservas />} />
         </Routes>
       </main>
     </Router>

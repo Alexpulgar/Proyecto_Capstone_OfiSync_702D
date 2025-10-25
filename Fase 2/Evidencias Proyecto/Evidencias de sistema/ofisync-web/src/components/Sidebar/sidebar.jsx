@@ -18,9 +18,9 @@ function Sidebar() {
             </NavLink>
           </li>
           <li>
-            <NavLink to="/dashboard" className={({ isActive }) => (isActive ? "active" : "")}>
-              <Icon src="/img/icons/dashboard.svg" />
-              <span>Dashboard</span>
+            <NavLink to="/reservas" className={({ isActive }) => (isActive ? "active" : "")}>
+              <Icon src="/img/icons/reservas.svg" />
+              <span>Reservas</span>
             </NavLink>
           </li>
           <li>
