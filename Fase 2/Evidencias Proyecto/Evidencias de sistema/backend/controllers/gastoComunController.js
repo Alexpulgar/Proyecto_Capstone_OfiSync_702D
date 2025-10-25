@@ -96,4 +96,79 @@ const calcularGastoComun = async (req, res) => {
   }
 };
 
-module.exports = { calcularGastoComun };
+const getGastosPorOficina = async (req, res) => {
+  try {
+    const { id } = req.params; // Este es el oficina_id
+
+    if (!id) {
+      return res.status(400).json({ error: "Falta el ID de la oficina." });
+    }
+
+    // --- QUERY CORREGIDA CON TU LÓGICA ---
+    // Usamos un CTE (WITH) para calcular los valores y luego ordenarlos.
+    // Esto es mucho más seguro y robusto.
+    const query = `
+      WITH GastoConFecha AS (
+        SELECT
+          dg.id AS detalle_id,
+          dg.monto,
+          dg.estado_pago,
+          dg.comprobante_url,
+          NULLIF(split_part(g.mes, ' ', 3), '')::INTEGER AS anio,
+          CASE LOWER(split_part(g.mes, ' ', 1))
+            WHEN 'enero' THEN 1
+            WHEN 'febrero' THEN 2
+            WHEN 'marzo' THEN 3
+            WHEN 'abril' THEN 4
+            WHEN 'mayo' THEN 5
+            WHEN 'junio' THEN 6
+            WHEN 'julio' THEN 7
+            WHEN 'agosto' THEN 8
+            WHEN 'septiembre' THEN 9
+            WHEN 'octubre' THEN 10
+            WHEN 'noviembre' THEN 11
+            WHEN 'diciembre' THEN 12
+            ELSE NULL -- Si el formato es incorrecto, envía NULL
+          END AS mes_numero
+          
+        FROM 
+          public.detallegastocomun dg
+        JOIN 
+          public.gastocomun g ON dg.gastocomunid = g.id
+        WHERE 
+          dg.oficina_id = $1
+      )
+      -- Seleccionamos los datos ya procesados y los ordenamos
+      SELECT 
+        detalle_id,
+        monto,
+        estado_pago,
+        comprobante_url,
+        anio,
+        mes_numero
+      FROM 
+        GastoConFecha
+      ORDER BY
+        anio DESC NULLS LAST, -- Ordena por año (más nuevo primero)
+        mes_numero DESC NULLS LAST -- Luego por mes (más nuevo primero)
+      LIMIT 12;
+    `;
+    // --- FIN DE LA QUERY CORREGIDA ---
+    
+    const result = await pool.query(query, [id]);
+
+    // Devolvemos los datos (o un array vacío si no hay)
+    res.status(200).json(result.rows);
+
+  } catch (err) {
+    // Si la query falla (ej. si la 3ra palabra no es un número)
+    console.error("Error al obtener gastos por oficina:", err);
+    res.status(500).json({ error: "Error interno al obtener gastos." });
+  }
+};
+
+// Asegúrate de que 'module.exports' incluya la función
+module.exports = {
+  calcularGastoComun,
+  getGastosPorOficina,
+};
