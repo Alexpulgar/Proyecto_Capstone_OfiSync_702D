@@ -10,9 +10,11 @@ import {
   BarElement,
   Title,
 } from "chart.js";
+import { getUsuario, logout } from '../../../services/usuarioService'; 
 import "./Inicio.css"; // Asegúrate de importar el CSS
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
+
 
 const Inicio = () => {
   // Datos para los gráficos (puedes actualizarlos con datos reales)
@@ -26,6 +28,12 @@ const Inicio = () => {
       },
     ],
   };
+
+  const currentUser = getUsuario(); 
+  if (!currentUser) {
+      return null; 
+    }
+
 
   const barData = {
     labels: ['Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre'],
@@ -47,7 +55,7 @@ const Inicio = () => {
 
   return (
     <div className="dashboard-container">
-      <h1 className="dashboard-title">Hola Administrador</h1>
+      <h1 className="dashboard-title">Hola {currentUser.nombre_usuario} ({currentUser.rol})</h1>
       
       {/* Sección superior de tarjetas de datos (KPIs) */}
       <div className="kpi-grid">

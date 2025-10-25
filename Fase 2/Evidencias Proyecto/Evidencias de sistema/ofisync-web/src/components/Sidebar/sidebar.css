@@ -26,7 +26,8 @@
     margin-bottom: 10px;
 }
 
-.sidebar li a {
+.sidebar li a,
+ .logout-button{
     display: flex;
     align-items: center;
     gap: 15px; /* Espacio entre icono y texto */
@@ -36,10 +37,19 @@
     text-decoration: none;
     font-weight: 400;
     transition: background-color 0.3s ease, color 0.3s ease;
+
+    background: none; /* Quita el fondo por defecto del botón */
+    border: none;     /* Quita el borde por defecto del botón */
+    width: 100%;      /* Asegura que ocupe todo el ancho */
+    text-align: left; /* Alinea el texto a la izquierda */
+    cursor: pointer;  /* Mantiene el cursor de puntero */
+    font-family: 'Oswald', sans-serif; /* Asegura la misma fuente */
+    font-size: inherit; /* Usa el tamaño de fuente del sidebar */
 }
 
 /* Efecto al pasar el mouse */
-.sidebar li a:hover {
+.sidebar li a:hover,
+.logout-button:hover {
     background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -61,29 +71,5 @@
 }
 
 
-/* Sección de Cerrar Sesión */
-.logout-section {
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-}
 
-.logout-section a {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 12px 15px;
-    border-radius: 8px;
-    color: white;
-    text-decoration: none;
-    transition: background-color 0.3s ease;
-}
 
-.logout-section a:hover {
-    background-color: rgba(255, 0, 0, 0.2);
-}
-
-.logout-section .nav-icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 0; /* Quita el borde redondeado del icono de logout */
-}

@@ -1,11 +1,13 @@
-function Reservas() {
+
+function Bitacora() {
   return (
     <div className="contenedorPrincipal">
       <div className="seccion">
-        <h2>Reservas
-          
+        <h2>
+            Bitacora
         </h2>
         
+
       </div>
 
       <div className="seccion">
@@ -25,4 +27,4 @@ function Reservas() {
   );
 }
 
-export default Reservas;
+export default Bitacora;

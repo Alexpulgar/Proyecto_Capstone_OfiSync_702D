@@ -1,11 +1,11 @@
-function Reservas() {
+import CrearUsuario from "./CuentasCrear";
+import "./cuentas.css";
+function Cuentas() {
   return (
     <div className="contenedorPrincipal">
       <div className="seccion">
-        <h2>Reservas
-          
-        </h2>
-        
+        <CrearUsuario />
+
       </div>
 
       <div className="seccion">
@@ -25,4 +25,4 @@ function Reservas() {
   );
 }
 
-export default Reservas;
+export default Cuentas;
