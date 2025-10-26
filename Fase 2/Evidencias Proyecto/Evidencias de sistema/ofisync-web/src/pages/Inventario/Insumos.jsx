@@ -11,7 +11,6 @@ function InventarioInsumos(){
         categoria:"",
         stock:"", // Se mantiene como string para el input
         stock_minimo:"", // Se mantiene como string para el input
-        estado:"activo",
     });
 
     useEffect(() => {
@@ -37,8 +36,8 @@ function InventarioInsumos(){
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if(!form.nombre.trim()) {
-          console.error("El nombre es obligatorio");
+        if(!form.nombre.trim() || !form.categoria) {
+          console.error("El nombre y la categoria son obligatorios");
           return;
         }
 
@@ -81,7 +80,7 @@ function InventarioInsumos(){
                 await createInsumo(payload);
             }
 
-            setForm({id:null, nombre:"",categoria:"", stock:"", stock_minimo:"", estado:"activo"});
+            setForm({id:null, nombre:"",categoria:"", stock:"", stock_minimo:""});
             setEditando(false);
             cargarInsumos();
         }catch (err) {
@@ -102,10 +101,10 @@ function InventarioInsumos(){
 
     //Editar
      const handleEdit = (insumo) => {
-    // Los valores de stock vienen como números de la DB, se convierten a string
-    // para que el <input type="number"> los maneje correctamente.
     setForm({
-        ...insumo,
+        id: insumo.id,
+        nombre: insumo.nombre,
+        categoria: insumo.categoria,
         stock: String(insumo.stock),
         stock_minimo: String(insumo.stock_minimo)
     });
@@ -114,7 +113,7 @@ function InventarioInsumos(){
 
     //Cancelar edicion 
      const handleCancel = () => {
-    setForm({ id: null, nombre: "", categoria: "", stock: "", stock_minimo: "", estado: "activo" });
+    setForm({ id: null, nombre: "", categoria: "", stock: "", stock_minimo: ""});
     setEditando(false);
   };
 
@@ -130,28 +129,25 @@ function InventarioInsumos(){
 
         <div className="form-group">
           <label htmlFor="categoria">Categoría:</label>
-          <input id="categoria" name="categoria" type="text" placeholder="Ej: Limpieza" value={form.categoria} onChange={handleChange}/>
+          <select id ="categoria" name="categoria" value={form.categoria} onChange={handleChange}>
+            <option value = ""disabled>Selecciona una categoria</option>
+            <option value = "Limpieza">Limpieza</option>
+            <option value = "Oficina">Oficina</option>
+            <option value = "Otro">Otro</option>
+          </select>
         </div>
 
         <div className="form-group">
           <label htmlFor="stock">Stock actual:</label>
           {/* El input type="number" sigue aceptando strings vacíos, por eso validamos en el submit */}
-          <input id="stock" name="stock" type="number" placeholder="0" value={form.stock} onChange={handleChange}/>
+          <input id="stock" name="stock" type="number" min="0" placeholder="0" value={form.stock} onChange={handleChange}/>
         </div>
 
         <div className="form-group">
           <label htmlFor="stock_minimo">Stock mínimo:</label>
-          <input id="stock_minimo" name="stock_minimo" type="number" placeholder="0" value={form.stock_minimo} onChange={handleChange}/>
+          <input id="stock_minimo" name="stock_minimo" type="number" min ="0" placeholder="0" value={form.stock_minimo} onChange={handleChange}/>
         </div>
-
-        <div className="form-group">
-          <label htmlFor="estado">Estado:</label>
-          <select id="estado" name="estado" value={form.estado} onChange={handleChange}>
-            <option value="activo">Activo</option>
-            <option value="inactivo">Inactivo</option>
-          </select>
-        </div>
-
+        
         <div className="form-group span-2">
           <button type="submit">{editando ? "Actualizar Insumo" : "Agregar Insumo"}</button>
           {editando && (

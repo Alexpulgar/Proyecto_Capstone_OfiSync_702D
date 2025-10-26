@@ -9,15 +9,15 @@ const agregarInsumo = async (req, res) => {
     const stock_minimo = parseInt(req.body.stock_minimo, 10);
 
     // Validación de campos obligatorios
-    if (!nombre || req.body.stock === "" || req.body.stock_minimo ==="") {
-      return res.status(400).json({error: "Todos los campos son obligatorios"});
+    if (!nombre || req.body.stock === "" || req.body.stock_minimo === "") {
+      return res.status(400).json({ error: "Todos los campos son obligatorios" });
     }
-    if (isNaN(stock) || isNaN(stock_minimo)){
-      return res.status(400).json({error: "El stock debe ser numerico"});
+    if (isNaN(stock) || isNaN(stock_minimo)) {
+      return res.status(400).json({ error: "El stock debe ser numerico" });
     }
 
     // Reglas de negocio
-    if (stock < 0) 
+    if (stock < 0)
       return res.status(400).json({ error: "El stock no puede ser negativo" });
     if (stock_minimo < 0)
       return res.status(400).json({ error: "El stock mínimo no puede ser negativo" });
@@ -36,6 +36,11 @@ const agregarInsumo = async (req, res) => {
         .json({ error: "Ya existe un insumo con ese nombre en la misma categoría" });
     }
 
+    // --- NUEVA LÓGICA DE ESTADO AUTOMÁTICO ---
+    // Si el stock es 0, forzar "inactivo". Si no, usar el estado enviado o "activo" por defecto.
+    const estadoFinal = stock === 0 ? "inactivo" : (estado || "activo");
+    // --- FIN NUEVA LÓGICA ---
+
     const query = `
       INSERT INTO insumo (nombre, categoria, stock, stock_minimo, estado)
       VALUES ($1, $2, $3, $4, $5)
@@ -46,7 +51,7 @@ const agregarInsumo = async (req, res) => {
       categoria || null,
       stock,
       stock_minimo,
-      estado || "activo",
+      estadoFinal, // Usar el estado final determinado
     ];
     const result = await pool.query(query, params);
 
@@ -111,7 +116,29 @@ const actualizarInsumo = async (req, res) => {
     const newStock = stock !== undefined ? stock : actual.stock;
     const newStockMinimo =
       stock_minimo !== undefined ? stock_minimo : actual.stock_minimo;
-    const newEstado = estado !== undefined ? estado : actual.estado;
+
+    // --- NUEVA LÓGICA DE ESTADO AUTOMÁTICO ---
+    let newEstado;
+
+    if (newStock === 0) {
+      // Caso 1: Si el stock nuevo es 0, forzar "inactivo".
+      newEstado = "inactivo";
+    } else {
+      // Caso 2: El stock nuevo es > 0.
+      if (estado !== undefined) {
+        // Si el usuario manda un estado (ej: "activo", "pausado"), usar ese.
+        newEstado = estado;
+      } else {
+        // Si el usuario no mandó estado, verificar el estado actual.
+        if (actual.estado === "inactivo") {
+          // Si estaba "inactivo" (por stock 0), reactivarlo automáticamente.
+          newEstado = "activo";
+        } else {
+          // Si estaba "activo" o "pausado", mantener ese estado.
+          newEstado = actual.estado;
+        }
+      }
+    }
 
     // Validaciones de negocio
     if (newStock < 0)
@@ -120,6 +147,7 @@ const actualizarInsumo = async (req, res) => {
       return res.status(400).json({ error: "El stock mínimo no puede ser negativo" });
 
     // No permitir inactivar con stock > 0
+    // (Esta regla previene que el usuario ponga "inactivo" manualmente si hay stock)
     if (newEstado === "inactivo" && newStock > 0) {
       return res.status(400).json({
         error: "No puedes inactivar un insumo con stock mayor a cero",
@@ -172,7 +200,7 @@ const actualizarInsumo = async (req, res) => {
   }
 };
 
-// Eliminar un insumo (soft delete si tiene stock = 0)
+// Eliminar un insumo
 const eliminarInsumo = async (req, res) => {
   try {
     const { id } = req.params;
@@ -188,7 +216,6 @@ const eliminarInsumo = async (req, res) => {
     res.json({
       mensaje: "Insumo eliminado correctamente",
     });
-    
   } catch (err) {
     console.error("Error al eliminar Insumo:", err);
     res.status(500).json({ error: "Error al eliminar Insumo" });
