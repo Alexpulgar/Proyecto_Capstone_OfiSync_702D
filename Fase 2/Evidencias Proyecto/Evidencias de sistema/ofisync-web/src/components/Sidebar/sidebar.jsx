@@ -9,7 +9,8 @@ const allLinks = [
   { path: "/gastoComun", label: "Gasto Común", icon: "/img/icons/expenses.svg", allowedRoles: ['admin'] }, 
   { path: "/reservas", label: "Reservas", icon: "/img/icons/reservas.svg", allowedRoles: ['admin', 'conserje'] }, 
   { path: "/cuentas", label: "Cuentas", icon: "/img/icons/accounts.svg", allowedRoles: ['admin'] },   
-  { path: "/bitacora", label: "Bitácora", icon: "/img/icons/info.svg", allowedRoles: ['admin','conserje'] }, 
+  { path: "/bitacora", label: "Bitácora", icon: "/img/icons/info.svg", allowedRoles: ['admin','conserje'] },
+  { path: "/inventario/insumos", label: "Inventario", icon: "/img/icons/inventario.svg", allowedRoles: ['admin','Personal de aseo'] },
 ];
 
 function Sidebar() {

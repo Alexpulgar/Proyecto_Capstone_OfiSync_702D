@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Componentes Reutilizables
@@ -18,7 +19,7 @@ import Reservas from "./components/Reservas/Reservas";
 import Cuentas from "./components/Cuentas/Cuentas";
 import Login from './components/Login/Login';
 import Bitacora from './components/Bitacora/Bitacora'; 
-
+import InventarioInsumos from "./pages/Inventario/Insumos";
 
 
 import { getUsuario } from '../services/usuarioService'; // Importa getUsuario
@@ -120,8 +121,13 @@ function Layout() {
              <ProtectedRoute allowedRoles={[ 'conserje']}>
                <Navigate to="/bitacora" replace />
              </ProtectedRoute>
+          } />
+
+          <Route path="/inventario/insumos" element={
+            <ProtectedRoute allowedRoles={['admin', 'Personal de aseo']}>
+               <InventarioInsumos/>  
+            </ProtectedRoute>
           } /> 
-          
         </Routes>
       </main>
     </>

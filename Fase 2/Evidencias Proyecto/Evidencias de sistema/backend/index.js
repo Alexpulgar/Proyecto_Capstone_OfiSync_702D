@@ -11,6 +11,7 @@ const edificioRoutes = require("./routes/edificioRoutes.js");
 const gastoComunRoutes = require("./routes/gastoComunRoutes");
 const reservationsRoutes = require("./routes/reservationsRoutes"); // Rutas integradas
 const usuarioRoutes = require('./routes/usuarioRoutes');
+const insumoRoutes = require("./routes/insumoRoutes.js")
 const app = express();
 
 // Middlewares principales
@@ -29,6 +30,8 @@ app.use("/api/edificios", edificioRoutes);
 app.use("/api/gasto-comun", gastoComunRoutes);
 app.use("/api/reservations", reservationsRoutes); // Rutas de reservaciones integradas
 app.use('/api/usuarios', usuarioRoutes);
+app.use("/api/insumos", insumoRoutes);
+
 // Manejador de errores para rutas no encontradas (404)
 // Se ejecuta si ninguna de las rutas anteriores coincide.
 app.use((req, res, next) => {
