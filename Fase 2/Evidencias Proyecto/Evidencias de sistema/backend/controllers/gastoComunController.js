@@ -3,7 +3,7 @@ const pool = require("../models/db.js"); // conexión a la BD
 // Calcular y registrar el gasto común
 const calcularGastoComun = async (req, res) => {
   try {
-    const { edificio_id, mes, total, descripcion } = req.body;
+    const { edificio_id, mes, total, descripcion, luz, agua, mantencion, otros } = req.body;
 
     if (!edificio_id || !mes || !total) {
       return res.status(400).json({ error: "Faltan datos obligatorios." });
