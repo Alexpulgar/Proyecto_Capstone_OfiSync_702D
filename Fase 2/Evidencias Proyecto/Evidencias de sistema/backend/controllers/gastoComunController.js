@@ -28,8 +28,8 @@ const calcularGastoComun = async (req, res) => {
     }
     // Crear el registro del gasto común
     const result = await pool.query(
-      `INSERT INTO gastoComun (edificio_id, mes, total, descripcion)
-       VALUES ($1, $2, $3, $4) RETURNING id`,
+      `INSERT INTO gastoComun (edificio_id, mes, total, descripcion, luz, agua, mantencion, otros)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
       [edificio_id, mes, total, descripcion || ""]
     );
 
