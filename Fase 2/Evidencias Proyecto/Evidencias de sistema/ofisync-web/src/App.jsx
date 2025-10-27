@@ -124,7 +124,7 @@ function Layout() {
           } />
 
           <Route path="/inventario/insumos" element={
-            <ProtectedRoute allowedRoles={['admin', 'Personal de aseo']}>
+            <ProtectedRoute allowedRoles={['admin', 'personalAseo']}>
                <InventarioInsumos/>  
             </ProtectedRoute>
           } /> 
