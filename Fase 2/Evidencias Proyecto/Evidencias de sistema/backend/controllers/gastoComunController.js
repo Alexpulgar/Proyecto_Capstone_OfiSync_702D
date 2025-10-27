@@ -96,4 +96,124 @@ const calcularGastoComun = async (req, res) => {
   }
 };
 
-module.exports = { calcularGastoComun };
+const getGastosPorOficina = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ error: "Falta el ID de la oficina." });
+    }
+    
+    const query = `
+      WITH GastoConFecha AS (
+        SELECT
+          dg.id AS detalle_id,
+          dg.monto,
+          dg.estado_pago,
+          dg.comprobante_url,
+          NULLIF(split_part(g.mes, ' ', 3), '')::INTEGER AS anio,
+          CASE LOWER(split_part(g.mes, ' ', 1))
+            WHEN 'enero' THEN 1
+            WHEN 'febrero' THEN 2
+            WHEN 'marzo' THEN 3
+            WHEN 'abril' THEN 4
+            WHEN 'mayo' THEN 5
+            WHEN 'junio' THEN 6
+            WHEN 'julio' THEN 7
+            WHEN 'agosto' THEN 8
+            WHEN 'septiembre' THEN 9
+            WHEN 'octubre' THEN 10
+            WHEN 'noviembre' THEN 11
+            WHEN 'diciembre' THEN 12
+            ELSE NULL
+          END AS mes_numero
+          
+        FROM 
+          public.detallegastocomun dg
+        JOIN 
+          public.gastocomun g ON dg.gastocomunid = g.id
+        WHERE 
+          dg.oficina_id = $1
+      )
+      SELECT 
+        detalle_id,
+        monto,
+        estado_pago,
+        comprobante_url,
+        anio,
+        mes_numero
+      FROM 
+        GastoConFecha
+      ORDER BY
+        anio DESC NULLS LAST,
+        mes_numero DESC NULLS LAST
+      LIMIT 12;
+    `;
+    
+    const result = await pool.query(query, [id]);
+
+    res.status(200).json(result.rows);
+
+  } catch (err) {
+    console.error("Error al obtener gastos por oficina:", err);
+    res.status(500).json({ error: "Error interno al obtener gastos." });
+  }
+};
+
+// Funcion para subir comprobante y actualizar estados
+const subirComprobante = async (req, res) => {
+  try {
+    // Obtener el archivo (de multer) y los IDs (del body)
+    const { file } = req;
+    const { gastos_ids } = req.body;
+
+    if (!file) {
+      return res.status(400).json({ msg: "No se subió ningún archivo." });
+    }
+
+    if (!gastos_ids) {
+      return res.status(400).json({ msg: "No se especificaron los gastos." });
+    }
+
+    // Parsear los IDs
+    let arrayDeIds;
+    try {
+        arrayDeIds = JSON.parse(gastos_ids);
+    } catch (e) {
+        return res.status(400).json({ msg: "Formato de IDs inválido (debe ser un array JSON)." });
+    }
+
+    if (!Array.isArray(arrayDeIds) || arrayDeIds.length === 0) {
+      return res.status(400).json({ msg: "La lista de IDs está vacía o no es un array." });
+    }
+
+    const nombreArchivo = file.filename; 
+
+    const query = `
+      UPDATE public.detallegastocomun
+      SET 
+        estado_pago = 'en revision', 
+        comprobante_url = $1
+      WHERE 
+        id = ANY($2::int[]) 
+    `; 
+
+    await pool.query(query, [nombreArchivo, arrayDeIds]);
+
+    // Enviar respuesta exitosa
+    res.status(200).json({
+      msg: "Comprobante subido exitosamente. Será revisado por la administración.",
+      fileName: nombreArchivo,
+    });
+
+  } catch (error) {
+    console.error("Error al subir comprobante:", error);
+    res.status(500).json({ msg: "Error en el servidor al procesar el archivo." });
+  }
+};
+
+module.exports = {
+  calcularGastoComun,
+  getGastosPorOficina,
+  subirComprobante,
+};

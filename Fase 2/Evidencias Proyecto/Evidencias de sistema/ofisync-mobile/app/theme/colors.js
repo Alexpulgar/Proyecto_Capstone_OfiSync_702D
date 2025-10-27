@@ -4,4 +4,5 @@ export default {
   text: "#333",
   white: "#fff",
   danger: "#ff4d4d",
+  success: "#28a745",
 };

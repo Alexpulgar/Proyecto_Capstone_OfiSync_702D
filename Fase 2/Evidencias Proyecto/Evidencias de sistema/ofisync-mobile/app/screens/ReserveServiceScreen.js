@@ -180,11 +180,11 @@ const handleReserve = async () => {
         return;
       }
     }
-
-    // Construir FormData
+    
     const formData = new FormData();
     formData.append("user_id", userId);
     formData.append("service_id", service.id);
+    formData.append("date", date.toISOString().split("T")[0]);
 
     if (service.type !== "room") {
       formData.append("quantity", quantity);
@@ -198,8 +198,7 @@ const handleReserve = async () => {
         });
       }
     } else {
-      const pad = (num) => num.toString().padStart(2, "0");
-      formData.append("date", date.toISOString().split("T")[0]);
+      const pad = (num) => num.toString().padStart(2, "0"); 
       formData.append(
         "start_time",
         `${pad(startTime.getHours())}:${pad(startTime.getMinutes())}:00`
