@@ -1,5 +1,3 @@
-// backend/logic/edificioValidator.js
-
 function validarEdificio(edificio) {
   const { nombre, pisos_totales, area_bruta_por_piso, area_comun_pct } = edificio;
 
@@ -16,7 +14,7 @@ function validarEdificio(edificio) {
     return "El porcentaje de área común debe estar entre 0 y 100";
   }
   
-  return null; // Todo correcto
+  return null;
 }
 
 module.exports = { validarEdificio };

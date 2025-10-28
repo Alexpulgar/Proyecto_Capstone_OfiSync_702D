@@ -8,9 +8,8 @@ import {
   Image,
   Alert,
 } from "react-native";
-import colors from "../theme/colors"; // Importamos tus colores
+import colors from "../theme/colors";
 
-// Asumimos que tu logo está en la carpeta assets
 const logo = require("../../assets/icon.png");
 
 export default function LoginScreen({ navigation }) {
@@ -18,14 +17,9 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState("");
 
   const handleLogin = () => {
-    // ---
-    // Aquí iría tu lógica de autenticación (llamar a tu API, etc.)
-    // ---
 
     // Simulación de login exitoso:
     if (username.trim() !== "" && password.trim() !== "") {
-      // Si el login es correcto, navegas a la pantalla principal
-      // Usamos "replace" para que el usuario no pueda "volver" al login
       navigation.replace("MainTabs"); 
     } else {
       Alert.alert("Error", "Por favor ingresa usuario y contraseña");
@@ -85,7 +79,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: colors.primary, // Usamos tu color primario
+    color: colors.primary,
   },
   input: {
     width: "100%",

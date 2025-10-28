@@ -1,5 +1,3 @@
-// backend/logic/oficinaValidator.js
-
 function validarOficina(oficina) {
   const { codigo, piso_id, area, estado, persona_id, edificio_id } = oficina;
 

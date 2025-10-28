@@ -149,7 +149,7 @@ const getOficinasByPiso = async (req, res) => {
   try {
     const { pisoId } = req.params;
     
-    // Traemos solo id y código para el select
+    // Traer solo id y código para el select
     const query = "SELECT id, codigo FROM oficina WHERE piso_id = $1 ORDER BY codigo";
     const result = await pool.query(query, [pisoId]);
     
@@ -160,12 +160,12 @@ const getOficinasByPiso = async (req, res) => {
   }
 };
 
-// Obtener detalles de UNA oficina por su ID
+// Obtener detalles de una oficina por su ID
 const getOficinaById = async (req, res) => {
   try {
     const { id } = req.params;
     
-    // Traemos todos los datos de esa oficina para rellenar el formulario
+    // Traer todos los datos de esa oficina para rellenar el formulario
     const query = "SELECT id, codigo, area, estado, persona_id FROM oficina WHERE id = $1";
     const result = await pool.query(query, [id]);
 
@@ -192,7 +192,6 @@ const actualizarOficina = async (req, res) => {
     }
 
     // Validación: si está ocupada debe tener arrendatario
-    // (Tu misma validación de 'agregarOficina')
     if (estado.toLowerCase() === "ocupada" && (!persona_id || persona_id === null)) {
       return res.status(400).json({
         error: "Debe asignar un arrendatario cuando la oficina está ocupada.",
@@ -271,10 +270,10 @@ module.exports = {
   buscarOficinas, 
   obtenerOficinas, 
   agregarOficina,
-  getOficinasByPiso,  // <--- AÑADIR
-  getOficinaById,     // <--- AÑADIR
+  getOficinasByPiso, 
+  getOficinaById,
   actualizarOficina,
-  eliminarOficina   // <--- AÑADIR
+  eliminarOficina
 };
 
 

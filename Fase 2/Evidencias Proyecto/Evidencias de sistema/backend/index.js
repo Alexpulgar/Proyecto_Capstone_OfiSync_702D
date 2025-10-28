@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-require("dotenv").config(); // Para gestionar variables de entorno
+require("dotenv").config();
 
 // Importación de todas las rutas de la aplicación
 const oficinaRoutes = require("./routes/oficinaRoutes");
@@ -9,14 +9,14 @@ const pisoRoutes = require("./routes/pisoRoutes");
 const personaRoutes = require("./routes/personaRoutes");
 const edificioRoutes = require("./routes/edificioRoutes.js");
 const gastoComunRoutes = require("./routes/gastoComunRoutes");
-const reservationsRoutes = require("./routes/reservationsRoutes"); // Rutas integradas
+const reservationsRoutes = require("./routes/reservationsRoutes");
 const usuarioRoutes = require('./routes/usuarioRoutes');
 const insumoRoutes = require("./routes/insumoRoutes.js")
 const app = express();
 
 // Middlewares principales
-app.use(cors()); // Habilita CORS para todas las rutas
-app.use(express.json()); // Permite al servidor entender JSON en los cuerpos de las peticiones
+app.use(cors());
+app.use(express.json());
 
 // Middleware para servir archivos estáticos (imágenes, PDFs, etc.)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -27,7 +27,7 @@ app.use("/api/pisos", pisoRoutes);
 app.use("/api/personas", personaRoutes);
 app.use("/api/edificios", edificioRoutes);
 app.use("/api/gasto-comun", gastoComunRoutes);
-app.use("/api/reservations", reservationsRoutes); // Rutas de reservaciones integradas
+app.use("/api/reservations", reservationsRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use("/api/insumos", insumoRoutes);
 

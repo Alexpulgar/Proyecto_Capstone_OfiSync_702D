@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../../index'); // Importamos la app de Express, que ya no inicia el servidor
+const app = require('../../index');
 const pool = require('../../models/db');
 
 // Mockeamos la base de datos para aislar las pruebas de la base de datos real
@@ -12,12 +12,11 @@ let server;
 
 // Antes de que comiencen todas las pruebas en este archivo, levantamos un servidor
 beforeAll((done) => {
-    // Usamos un puerto diferente (ej. 4001) para evitar conflictos con el servidor de desarrollo
+    // Usamos un puerto diferente
     server = app.listen(4001, done);
 });
 
 // Después de que terminen todas las pruebas en este archivo, cerramos el servidor
-// Esto es crucial para que Jest pueda terminar el proceso sin advertencias
 afterAll((done) => {
     server.close(done);
 });
@@ -25,7 +24,7 @@ afterAll((done) => {
 
 describe('Pruebas de Integración para Endpoints de Persona', () => {
 
-  // Limpiamos los mocks después de cada prueba para asegurar que una prueba no afecte a la siguiente
+  // Limpiamos los mocks
   afterEach(() => {
     jest.clearAllMocks();
   });

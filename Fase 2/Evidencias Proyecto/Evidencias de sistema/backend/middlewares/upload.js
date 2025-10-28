@@ -1,10 +1,10 @@
 const multer = require("multer");
 const path = require("path");
 
-// Carpeta donde se guardarán los archivos (relativa a la raíz del backend)
+// Carpeta donde se guardarán los archivos
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/"); // Asegúrate de que esta carpeta exista en la raíz de 'backend'
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);

@@ -3,10 +3,10 @@ const {
   buscarOficinas, 
   obtenerOficinas, 
   agregarOficina,
-  getOficinasByPiso,  // <--- IMPORTAR
-  getOficinaById,     // <--- IMPORTAR
+  getOficinasByPiso,
+  getOficinaById,
   actualizarOficina,
-  eliminarOficina  // <--- IMPORTAR
+  eliminarOficina
 } = require("../controllers/oficinaController");
 const router = express.Router();
 

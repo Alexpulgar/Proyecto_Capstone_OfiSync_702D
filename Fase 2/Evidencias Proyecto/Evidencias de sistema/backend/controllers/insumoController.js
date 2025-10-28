@@ -36,10 +36,8 @@ const agregarInsumo = async (req, res) => {
         .json({ error: "Ya existe un insumo con ese nombre en la misma categoría" });
     }
 
-    // --- NUEVA LÓGICA DE ESTADO AUTOMÁTICO ---
     // Si el stock es 0, forzar "inactivo". Si no, usar el estado enviado o "activo" por defecto.
     const estadoFinal = stock === 0 ? "inactivo" : (estado || "activo");
-    // --- FIN NUEVA LÓGICA ---
 
     const query = `
       INSERT INTO insumo (nombre, categoria, stock, stock_minimo, estado)
@@ -117,7 +115,6 @@ const actualizarInsumo = async (req, res) => {
     const newStockMinimo =
       stock_minimo !== undefined ? stock_minimo : actual.stock_minimo;
 
-    // --- NUEVA LÓGICA DE ESTADO AUTOMÁTICO ---
     let newEstado;
 
     if (newStock === 0) {

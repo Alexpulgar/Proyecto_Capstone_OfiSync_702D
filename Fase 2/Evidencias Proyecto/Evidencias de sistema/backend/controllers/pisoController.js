@@ -138,7 +138,7 @@ const eliminarPisosPorCantidad = async (req, res) => {
     const pisosABorrarResult = await pool.query(pisosABorrarQuery, [edificioId, cantidad]);
     const idsPisosABorrar = pisosABorrarResult.rows.map(p => p.id);
 
-    // 5. Verificar que NINGUNO de esos pisos tenga oficinas
+    // 5. Verificar que ninguno de esos pisos tenga oficinas
     const checkOficinasQuery = `
       SELECT COUNT(*) 
       FROM oficina 
@@ -152,8 +152,7 @@ const eliminarPisosPorCantidad = async (req, res) => {
       });
     }
 
-    // --- INICIO DE TRANSACCIÓN ---
-    // (Usamos una transacción para que si falla un paso, se reviertan todos)
+    // (Usar una transacción para que si falla un paso, se reviertan todos)
     await pool.query('BEGIN');
 
     // 6. Si no hay oficinas, proceder a eliminar los pisos
@@ -170,7 +169,6 @@ const eliminarPisosPorCantidad = async (req, res) => {
 
     // 8. Confirmar la transacción
     await pool.query('COMMIT');
-    // --- FIN DE TRANSACCIÓN ---
 
     res.status(200).json({ 
       message: `${cantidad} pisos han sido eliminados correctamente del edificio.` 

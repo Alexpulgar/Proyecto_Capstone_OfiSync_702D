@@ -19,7 +19,6 @@ const agregarPersona = async (req, res) => {
   try {
     const { rut, nombre, correo, telefono } = req.body;
 
-    // --- VALIDACIONES INTEGRADAS DIRECTAMENTE EN EL CONTROLADOR ---
 
     // 1. Validar que todos los campos obligatorios existan
     if (!rut || !nombre || !correo || !telefono) {
@@ -45,9 +44,6 @@ const agregarPersona = async (req, res) => {
     if (telefono.length < 8 || telefono.length > 12) {
       return res.status(400).json({ error: "El teléfono debe tener entre 8 y 12 dígitos" });
     }
-
-    // --- FIN DE LAS VALIDACIONES ---
-
 
     // Validar si ya existe una persona con el mismo Rut en la BD
     const checkQuery = "SELECT * FROM persona WHERE rut = $1";
@@ -98,13 +94,10 @@ const obtenerPersonaPorRut = async (req, res) => {
   }
 };
 
-// --- AGREGA ESTA FUNCIÓN PARA ACTUALIZAR (PARCIAL) ---
 const actualizarPersonaParcial = async (req, res) => {
   try {
     const { id } = req.params;
     
-    // --- CAMBIO CLAVE AQUÍ ---
-    // Asegúrate de que dice 'correo' y no 'correo_electronico'
     const { correo, telefono } = req.body;
 
     const personaId = parseInt(id, 10);
@@ -112,7 +105,6 @@ const actualizarPersonaParcial = async (req, res) => {
       return res.status(400).json({ error: "ID de persona no válido" });
     }
 
-    // --- CAMBIO CLAVE AQUÍ ---
     // Validamos 'correo'
     if (!correo || !telefono) {
       return res.status(400).json({ error: "Faltan correo o teléfono" });
@@ -126,7 +118,6 @@ const actualizarPersonaParcial = async (req, res) => {
       RETURNING *
     `;
     
-    // --- CAMBIO CLAVE AQUÍ ---
     const params = [correo, telefono, personaId];
     const result = await pool.query(query, params);
 
@@ -152,8 +143,7 @@ const eliminarPersona = async (req, res) => {
       return res.status(400).json({ error: "Rut de persona no válido" });
     }
 
-    // 2. IMPORTANTE: Verificar si la persona es arrendatario en una oficina
-    // (Esta es la misma lógica que te di para el 'delete' anterior)
+    // 2. Verificar si la persona es arrendatario en una oficina
     const checkOficinaQuery = "SELECT COUNT(*) FROM oficina WHERE persona_id = $1";
     const checkOficinaResult = await pool.query(checkOficinaQuery, [personaId]);
     

@@ -7,7 +7,7 @@ const agregarEdificio = async(req, res) =>{
         if( !nombre || !pisos_totales || !area_bruta_por_piso || !area_comun_pct )
             return res.status(400).json({ error: "Faltan datos obligatorios" });
 
-        // 🔹 Verificar si ya existe un edificio con el mismo nombre
+        // Verificar si ya existe un edificio con el mismo nombre
         const checkQuery = "SELECT * FROM edificio WHERE LOWER(nombre) = LOWER($1)";
         const checkResult = await pool.query(checkQuery, [nombre]);
 
@@ -65,8 +65,7 @@ const actualizarEdificio = async (req, res) => {
       return res.status(400).json({ error: "Faltan datos obligatorios" });
     }
 
-    // 5. Verificar si el nuevo nombre ya existe EN OTRO edificio
-    //    (Igual que tu verificación de 'agregar', pero excluyendo el ID actual)
+    // 5. Verificar si el nuevo nombre ya existe en otro edificio
     const checkQuery = "SELECT * FROM edificio WHERE LOWER(nombre) = LOWER($1) AND id != $2";
     const checkResult = await pool.query(checkQuery, [nombre, edificioId]);
 
@@ -146,7 +145,7 @@ const eliminarEdificio = async (req, res) => {
       return res.status(400).json({ error: "ID de edificio no válido" });
     }
 
-    // 2. IMPORTANTE: Verificar si tiene pisos asociados
+    // 2. Verificar si tiene pisos asociados
     const checkPisosQuery = "SELECT COUNT(*) FROM piso WHERE edificio_id = $1";
     const checkPisosResult = await pool.query(checkPisosQuery, [edificioId]);
     

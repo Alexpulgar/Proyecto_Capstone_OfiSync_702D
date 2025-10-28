@@ -2,7 +2,6 @@ const { validarPersona } = require('../personaValidator');
 
 describe('Pruebas exhaustivas de validarPersona', () => {
 
-  // Caso feliz: el "camino ideal" donde todo funciona
   test('debería devolver null si todos los datos son válidos', () => {
     const personaValida = {
       rut: '12345678-9',

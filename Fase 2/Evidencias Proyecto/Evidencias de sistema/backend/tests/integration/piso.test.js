@@ -44,7 +44,7 @@ describe('Pruebas de Integración para Endpoints de Piso', () => {
       pool.query
         // 1. Obtener datos del edificio
         .mockResolvedValueOnce({ rows: [edificioMock] }) 
-        // 2. Contar pisos actuales (supongamos que hay 5)
+        // 2. Contar pisos actuales (suponemos que hay 5)
         .mockResolvedValueOnce({ rows: [{ count: '5' }] })
         // 3. Inserción del primer piso nuevo
         .mockResolvedValueOnce({ rows: [{ id: 6, numero_piso: 6 }] })

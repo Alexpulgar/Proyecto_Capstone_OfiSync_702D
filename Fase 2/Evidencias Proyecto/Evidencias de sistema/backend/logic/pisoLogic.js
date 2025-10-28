@@ -1,5 +1,3 @@
-// backend/logic/pisoLogic.js
-
 function procesarNuevosPisos(datos, edificio, pisosActuales) {
   const { cantidad } = datos;
 

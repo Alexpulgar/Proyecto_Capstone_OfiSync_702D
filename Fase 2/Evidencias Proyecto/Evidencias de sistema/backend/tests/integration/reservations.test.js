@@ -28,7 +28,7 @@ describe('Pruebas Lógicas para reservationsController', () => {
   let postReservation; 
   beforeAll(() => {
     jest.unmock('../../controllers/reservationsController.js');
-    const realController = jest.requireActual('../../controllers/reservationsController.js'); // <-- CORRECCIÓN AQUÍ
+    const realController = jest.requireActual('../../controllers/reservationsController.js');
     postReservation = realController.postReservation;
   });
 
@@ -224,7 +224,7 @@ describe('Pruebas para reservationsModel', () => {
   let getServices, createReservation, getUserReservations, cancelReservation;
   beforeAll(() => {
     jest.unmock('../../models/reservationsModel.js');
-    const realModel = jest.requireActual('../../models/reservationsModel.js'); // <-- CORRECCIÓN AQUÍ
+    const realModel = jest.requireActual('../../models/reservationsModel.js');
     getServices = realModel.getServices;
     createReservation = realModel.createReservation;
     getUserReservations = realModel.getUserReservations;
@@ -243,7 +243,6 @@ describe('Pruebas para reservationsModel', () => {
   describe('getServices', () => {
     it('debería retornar una lista de servicios', async () => {
       const mockServices = [{ id: 1, name: 'Sala de Reuniones' }];
-      // 'pool' (la dependencia) SÍ está mockeado
       pool.query.mockResolvedValue({ rows: mockServices }); 
 
       // Esto ahora usa la variable 'getServices' real

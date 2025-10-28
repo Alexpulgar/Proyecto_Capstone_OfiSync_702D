@@ -1,5 +1,5 @@
 const request = require('supertest');
-const app = require('../../index'); // Importamos la app de Express
+const app = require('../../index');
 const pool = require('../../models/db');
 
 // Mockeamos la base de datos para no usar la real

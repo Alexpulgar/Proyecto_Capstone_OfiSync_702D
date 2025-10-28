@@ -35,7 +35,6 @@ const MESES_CORTOS = [
 const formatNumberWithDots = (value) => {
   const num = Math.round(Number(value));
   if (isNaN(num)) return "0";
-  // Inserta un punto cada 3 dígitos
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 };
 // Función para formatear CLP con puntos
@@ -79,7 +78,7 @@ const chartConfig = {
   backgroundGradientTo: colors.white,
   decimalPlaces: 0,
   color: (opacity = 1) => `rgba(0, 0, 0, ${opacity * 0.75})`,
-  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity * 0.7})`, // Etiquetas
+  labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity * 0.7})`,
   style: {
     borderRadius: 16,
   },

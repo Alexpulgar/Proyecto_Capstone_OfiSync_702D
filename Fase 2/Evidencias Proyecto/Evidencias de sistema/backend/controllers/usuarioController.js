@@ -56,7 +56,7 @@ const loginUsuario = async (req, res) => {
         const userResult = await pool.query(userQuery, [nombre_usuario]);
 
         if (userResult.rows.length === 0) {
-            return res.status(401).json({ error: "Credenciales inválidas." }); // Error genérico
+            return res.status(401).json({ error: "Credenciales inválidas." });
         }
 
         const usuario = userResult.rows[0];
@@ -65,7 +65,7 @@ const loginUsuario = async (req, res) => {
         const contrasenaValida = await bcrypt.compare(contrasena, usuario.contrasena_hash);
 
         if (!contrasenaValida) {
-            return res.status(401).json({ error: "Credenciales inválidas." }); // Mismo error genérico
+            return res.status(401).json({ error: "Credenciales inválidas." });
         }
 
         // 3. Si las credenciales son válidas, generar un token JWT
@@ -75,7 +75,7 @@ const loginUsuario = async (req, res) => {
             rol: usuario.rol
         };
 
-        // El token expira en 1 hora (puedes cambiarlo)
+        // El token expira en 1 hora
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' }); 
 
         // 4. Enviar el token al cliente
