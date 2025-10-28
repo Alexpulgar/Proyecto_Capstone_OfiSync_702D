@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: colors.primary,
+    color: colors.text,
   },
   errorText: {
     color: 'red',
