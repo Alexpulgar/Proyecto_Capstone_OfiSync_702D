@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+// ofisync-mobile/app/screens/MyReservationsScreen.js
+import React, { useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,30 +7,49 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Image,
+  Image, // <-- Este 'Image' ya no se usa, pero lo dejamos por si acaso
+  ActivityIndicator,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 import API from "../api/api";
 import colors from "../theme/colors";
+import { getUsuario } from "../../services/usuarioService";
 
 export default function MyReservationsScreen() {
   const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Función para cargar reservas y actualizar reuniones pasadas
   const fetchReservations = async () => {
+    setLoading(true);
+    setError(null);
+    setReservations([]);
     try {
-      await API.put("/reservations/complete-past"); // actualizar reuniones pasadas
-      const res = await API.get("/reservations/user/1"); // usuario simulado
+      const usuario = await getUsuario();
+
+      if (!usuario || !usuario.id) {
+        throw new Error("No se pudo obtener la información del usuario. Por favor, inicie sesión de nuevo.");
+      }
+
+      await API.put("/reservations/complete-past");
+      const res = await API.get(`/reservations/user/${usuario.id}`);
       setReservations(res.data);
+
     } catch (err) {
       console.error("Error fetching reservations:", err);
+      const errorMsg = err.response?.data?.error || err.message || "Error al cargar las reservas";
+      setError(errorMsg);
+      Alert.alert("Error", errorMsg);
+    } finally {
+      setLoading(false);
     }
   };
 
   // Recargar cada vez que se enfoque la pantalla
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       fetchReservations();
     }, [])
   );
@@ -38,11 +58,12 @@ export default function MyReservationsScreen() {
   const cancelReservation = async (id) => {
     try {
       await API.put(`/reservations/${id}/cancel`);
-      Alert.alert("Reserva cancelada");
+      Alert.alert("Éxito", "Reserva cancelada");
       fetchReservations();
     } catch (err) {
       console.error(err);
-      Alert.alert("Error al cancelar reserva");
+      const errorMsg = err.response?.data?.error || err.message || "Error al cancelar la reserva";
+      Alert.alert("Error", errorMsg);
     }
   };
 
@@ -75,34 +96,38 @@ export default function MyReservationsScreen() {
     });
   };
 
-  // Preview visual de archivos
+  // --- INICIO DEL CAMBIO ---
+  // Preview visual de archivos (Modificado)
   const renderFilePreview = (file_url) => {
     if (!file_url) return null;
 
     const extension = file_url.split(".").pop().toLowerCase();
     const fileName = file_url.split("/").pop();
-    const uri = `http://192.168.100.5:4000${file_url}`;
 
-    if (["jpg", "jpeg", "png", "gif"].includes(extension)) {
-      return <Image source={{ uri }} style={styles.imagePreview} resizeMode="contain" />;
+    let iconName;
+
+    // Determinar el ícono basado en la extensión
+    if (extension === "pdf") {
+      iconName = "picture-as-pdf";
+    } else if (["doc", "docx"].includes(extension)) {
+      iconName = "description";
+    } else if (["jpg", "jpeg", "png", "gif"].includes(extension)) {
+      iconName = "image"; // <-- Ícono para imágenes
+    } else {
+      iconName = "attach-file"; // Ícono por defecto
     }
 
-    if (["pdf", "doc", "docx"].includes(extension)) {
-      const iconName = extension === "pdf" ? "picture-as-pdf" : "description";
-      return (
-        <View style={styles.fileCard}>
-          <MaterialIcons name={iconName} size={32} color={colors.primary} />
-          <Text style={styles.fileName}>
-            {fileName}
-          </Text>
-        </View>
-      );
-    }
-
+    // Retornar siempre la "fileCard"
     return (
-      <Text style={{ color: colors.primary }}>{fileName}</Text>
+      <View style={styles.fileCard}>
+        <MaterialIcons name={iconName} size={32} color={colors.primary} />
+        <Text style={styles.fileName}>
+          {fileName}
+        </Text>
+      </View>
     );
   };
+  // --- FIN DEL CAMBIO ---
 
   // Render de cada item
   const renderItem = ({ item }) => (
@@ -135,12 +160,35 @@ export default function MyReservationsScreen() {
     </View>
   );
 
+  // --- Render principal (sin cambios) ---
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={styles.loadingText}>Cargando mis reservas...</Text>
+      </View>
+    );
+  }
+
+  if (error && reservations.length === 0) {
+    return (
+      <View style={styles.centered}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
   return (
     <FlatList
       data={reservations}
       keyExtractor={(item) => item.id.toString()}
       renderItem={renderItem}
       contentContainerStyle={{ padding: 15 }}
+      ListEmptyComponent={() => (
+        <View style={styles.centered}>
+          <Text style={styles.emptyText}>No tienes reservas activas.</Text>
+        </View>
+      )}
     />
   );
 }
@@ -164,11 +212,13 @@ const styles = StyleSheet.create({
   serviceName: {
     fontSize: 18,
     fontWeight: "bold",
+    flex: 1,
   },
   statusBadge: {
     paddingVertical: 2,
     paddingHorizontal: 8,
     borderRadius: 5,
+    marginLeft: 10,
   },
   statusText: {
     color: "#fff",
@@ -185,12 +235,16 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
   },
-  imagePreview: {
+  // --- INICIO CAMBIO ESTILOS ---
+  // El estilo 'imagePreview' ya no es necesario, puedes borrarlo
+  /* imagePreview: {
     width: 100,
     height: 100,
     borderRadius: 5,
     marginTop: 5,
   },
+  */
+  // --- FIN CAMBIO ESTILOS ---
   fileCard: {
     flexDirection: "row",
     alignItems: "center",
@@ -204,5 +258,27 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     fontWeight: "500",
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    marginTop: 50,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: colors.primary,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
   },
 });

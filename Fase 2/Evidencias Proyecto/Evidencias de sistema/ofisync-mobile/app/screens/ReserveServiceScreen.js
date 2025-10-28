@@ -6,16 +6,18 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
+  ActivityIndicator, // <-- 1. Importar ActivityIndicator
 } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as DocumentPicker from "expo-document-picker";
 import API from "../api/api";
 import colors from "../theme/colors";
 import { Picker } from "@react-native-picker/picker";
+import { getUsuario } from "../../services/usuarioService"; // <-- 2. Importar el servicio de usuario
 
 export default function ReserveServiceScreen({ route, navigation }) {
   const { service } = route.params;
-  const userId = 1; // Simulado
+  // const userId = 1; // <-- 3. Eliminamos el ID simulado
 
   // Campos comunes
   const [quantity, setQuantity] = useState("");
@@ -30,6 +32,9 @@ export default function ReserveServiceScreen({ route, navigation }) {
   const [endTime, setEndTime] = useState(new Date());
   const [showEndPicker, setShowEndPicker] = useState(false);
   const [bookedSlots, setBookedSlots] = useState([]);
+
+  // Estado de carga
+  const [loading, setLoading] = useState(false); // <-- 4. Añadimos estado de carga
 
   // Seleccionar archivo con validación de tipo
   const pickDocument = async () => {
@@ -115,23 +120,37 @@ export default function ReserveServiceScreen({ route, navigation }) {
   }, [date]);
 
 const handleReserve = async () => {
+  setLoading(true); // <-- 5. Iniciar carga
   try {
+    // --- 6. Obtener el ID del usuario real ---
+    const usuario = await getUsuario();
+    if (!usuario || !usuario.id) {
+      Alert.alert("Error de autenticación", "No se pudo obtener el usuario. Por favor, inicie sesión de nuevo.");
+      setLoading(false);
+      return;
+    }
+    const realUserId = usuario.id; // ¡Este es el ID real!
+    // -----------------------------------------
+
     // Validación cantidad para servicios distintos de sala
     if (service.type !== "room") {
       if (!quantity || quantity.trim() === "" || isNaN(quantity) || parseInt(quantity) <= 0) {
         Alert.alert("Por favor ingresa una cantidad válida (mayor a 0).");
+        setLoading(false); // Detener carga
         return;
       }
 
       // Validar tamaño seleccionado
       if (!size || size.trim() === "") {
         Alert.alert("Debes seleccionar un tamaño de hoja.");
+        setLoading(false); // Detener carga
         return;
       }
 
       // Validar archivo adjunto
       if (!file) {
         Alert.alert("Debes adjuntar un archivo antes de reservar.");
+        setLoading(false); // Detener carga
         return;
       }
 
@@ -139,6 +158,7 @@ const handleReserve = async () => {
       const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "image/jpeg", "image/png", "image/gif"];
       if (!allowedTypes.includes(file.mimeType)) {
         Alert.alert("Tipo de archivo no permitido. Solo PDF, DOC, DOCX o imágenes.");
+        setLoading(false); // Detener carga
         return;
       }
     }
@@ -166,23 +186,26 @@ const handleReserve = async () => {
 
       if (selectedStart <= now) {
         Alert.alert("No puedes reservar un horario que ya pasó.");
+        setLoading(false); // Detener carga
         return;
       }
 
       if (selectedEnd <= selectedStart) {
         Alert.alert("La hora de término debe ser posterior a la hora de inicio.");
+        setLoading(false); // Detener carga
         return;
       }
 
       // Validar disponibilidad
       if (!isSlotAvailable()) {
         Alert.alert("Horario ocupado", "El horario seleccionado ya está reservado.");
+        setLoading(false); // Detener carga
         return;
       }
     }
     
     const formData = new FormData();
-    formData.append("user_id", userId);
+    formData.append("user_id", realUserId); // <-- 7. Usar el ID real
     formData.append("service_id", service.id);
     formData.append("date", date.toISOString().split("T")[0]);
 
@@ -210,17 +233,27 @@ const handleReserve = async () => {
     }
 
     // Enviar reserva
-    await fetch(`${API.defaults.baseURL}/reservations`, {
+    const res = await fetch(`${API.defaults.baseURL}/reservations`, {
       method: "POST",
       body: formData,
       headers: { "Content-Type": "multipart/form-data" },
     });
 
-    alert("Reserva creada con éxito");
+    // --- Manejo de respuesta ---
+    const resData = await res.json();
+    if (!res.ok) {
+        throw new Error(resData.error || "Error desconocido del servidor");
+    }
+    // ---------------------------
+
+    Alert.alert("Éxito", "Reserva creada con éxito"); // Título añadido
     navigation.goBack();
+
   } catch (err) {
     console.error("Error creando reserva:", err);
-    alert("No se pudo crear la reserva");
+    Alert.alert("Error", err.message || "No se pudo crear la reserva"); // Mensaje de error mejorado
+  } finally {
+    setLoading(false); // <-- 8. Detener carga en cualquier caso
   }
 };
 
@@ -335,11 +368,17 @@ const handleReserve = async () => {
         </>
       )}
 
+      {/* --- 9. Botón actualizado --- */}
       <TouchableOpacity
-        style={[styles.button, { backgroundColor: colors.primary }]}
+        style={[styles.button, { backgroundColor: loading ? '#aaa' : colors.primary }]}
         onPress={handleReserve}
+        disabled={loading} // Deshabilitar mientras carga
       >
-        <Text style={styles.buttonText}>Reservar</Text>
+        {loading ? (
+          <ActivityIndicator color="#fff" /> // Mostrar spinner
+        ) : (
+          <Text style={styles.buttonText}>Reservar</Text> // Mostrar texto
+        )}
       </TouchableOpacity>
     </View>
   );

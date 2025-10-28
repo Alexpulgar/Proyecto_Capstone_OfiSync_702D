@@ -68,6 +68,19 @@ const loginUsuario = async (req, res) => {
             return res.status(401).json({ error: "Credenciales inválidas." });
         }
 
+        // Buscamos la oficina asociada a este usuario
+        let oficinaId = null;
+        
+        // verificamos que sea un rol de 'usuario' para buscar su oficina
+        if (usuario.rol === 'usuario') { 
+            const oficinaQuery = "SELECT id FROM oficina WHERE persona_id = $1";
+            const oficinaResult = await pool.query(oficinaQuery, [usuario.id]);
+            
+            if (oficinaResult.rows.length > 0) {
+                oficinaId = oficinaResult.rows[0].id;
+            }
+        }
+
         // 3. Si las credenciales son válidas, generar un token JWT
         const payload = {
             id: usuario.id,

@@ -1,3 +1,4 @@
+// ofisync-mobile/app/screens/LoginScreen.js
 import React, { useState } from "react";
 import {
   View,
@@ -7,22 +8,42 @@ import {
   StyleSheet,
   Image,
   Alert,
+  ActivityIndicator, // Importa el indicador de carga
 } from "react-native";
 import colors from "../theme/colors";
+import { loginApi } from "../../services/usuarioService"; // <- Importa tu nuevo servicio
 
 const logo = require("../../assets/icon.png");
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false); // <- Estado para la carga
 
-  const handleLogin = () => {
-
-    // Simulación de login exitoso:
-    if (username.trim() !== "" && password.trim() !== "") {
-      navigation.replace("MainTabs"); 
-    } else {
+  const handleLogin = async () => { // <- Convierte la función a async
+    if (username.trim() === "" || password.trim() === "") {
       Alert.alert("Error", "Por favor ingresa usuario y contraseña");
+      return;
+    }
+
+    setLoading(true); // Inicia la carga
+
+    try {
+      // Llama a la API
+      const credenciales = {
+        nombre_usuario: username,
+        contrasena: password,
+      };
+      const data = await loginApi(credenciales);
+
+      // Si todo sale bien, navega a la pantalla principal
+      navigation.replace("MainTabs");
+
+    } catch (error) {
+      // Si hay un error, muéstralo
+      Alert.alert("Error de Login", error.message);
+    } finally {
+      setLoading(false); // Detiene la carga
     }
   };
 
@@ -52,8 +73,13 @@ export default function LoginScreen({ navigation }) {
       <TouchableOpacity
         style={styles.button}
         onPress={handleLogin}
+        disabled={loading} // <- Deshabilita el botón mientras carga
       >
-        <Text style={styles.buttonText}>Iniciar sesión</Text>
+        {loading ? (
+          <ActivityIndicator color="#fff" /> // Muestra el spinner
+        ) : (
+          <Text style={styles.buttonText}>Iniciar sesión</Text>
+        )}
       </TouchableOpacity>
     </View>
   );
