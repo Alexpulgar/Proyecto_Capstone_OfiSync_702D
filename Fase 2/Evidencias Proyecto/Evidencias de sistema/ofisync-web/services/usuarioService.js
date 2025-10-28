@@ -1,5 +1,4 @@
-// services/usuarioService.js
-const API_URL = "http://localhost:4000/api/usuarios"; // Ajusta si cambiaste la ruta base en el backend
+const API_URL = "http://localhost:4000/api/usuarios";
 
 export async function registrarUsuarioApi(datosUsuario) {
   // datosUsuario debe ser un objeto: { nombre_usuario, contrasena, rol? }

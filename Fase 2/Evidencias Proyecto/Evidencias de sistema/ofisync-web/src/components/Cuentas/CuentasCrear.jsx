@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registrarUsuarioApi } from '../../../services/usuarioService'; // Verifica que la ruta sea correcta
-
+import { registrarUsuarioApi } from '../../../services/usuarioService';
+import { getPersonas } from '../../../services/personaService';
+import '../Agregar/agregar.css';
 
 function CrearUsuario() {
     const navigate = useNavigate();
@@ -9,18 +10,46 @@ function CrearUsuario() {
         nombre_usuario: '',
         contrasena: '',
         confirmarContrasena: '',
-        rol: 'usuario' // Rol por defecto
+        rol: 'usuario',
+        persona_id: ''
     });
     const [cargando, setCargando] = useState(false);
+    const [personas, setPersonas] = useState([]);
+
+    // Cargar las personas al montar 
+    useEffect(() => {
+        const cargarPersonas = async () => {
+            try {
+                // Obtenemos todas las personas
+                const todasLasPersonas = await getPersonas();
+                setPersonas(todasLasPersonas); // Guardamos todas las personas
+            } catch (err) {
+                console.error("Error al cargar personas:", err);
+                alert("No se pudo cargar la lista de personas.");
+            }
+        };
+
+        cargarPersonas();
+    }, []);
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        
+        setForm(prevForm => {
+            const newForm = { ...prevForm, [name]: value };
+            
+            if (name === 'rol' && value !== 'usuario') {
+                newForm.persona_id = '';
+            }
+            
+            return newForm;
+        });
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // --- Validaciones Frontend ---
+        // Validaciones
         if (!form.nombre_usuario || !form.contrasena || !form.confirmarContrasena) {
             alert("Todos los campos son obligatorios.");
             return;
@@ -29,101 +58,123 @@ function CrearUsuario() {
             alert("Las contraseñas no coinciden.");
             return;
         }
-         if (form.contrasena.length < 6) { 
+         if (form.contrasena.length < 6) {
             alert("La contraseña debe tener al menos 6 caracteres.");
             return;
         }
-        // --- Fin Validaciones ---
+        if (form.rol === 'usuario' && !form.persona_id) {
+             alert("Debe seleccionar una persona para asignar a esta cuenta de rol 'Usuario'."); // Mensaje ajustado
+            return;
+        }
 
         try {
             setCargando(true);
-            // Preparamos los datos a enviar (sin confirmarContrasena)
             const datosParaApi = {
                 nombre_usuario: form.nombre_usuario,
                 contrasena: form.contrasena,
-                rol: form.rol
+                rol: form.rol,
+                persona_id: form.rol === 'usuario' ? form.persona_id : null
             };
 
             const data = await registrarUsuarioApi(datosParaApi);
-            
-            alert(`Usuario "${data.nombre_usuario}" creado con éxito con rol "${data.rol}".`);
-            
-            // Limpiar formulario después del éxito
-            setForm({ nombre_usuario: '', contrasena: '', confirmarContrasena: '', rol: 'usuario' }); 
-            // navigate('/login'); // Opcional: Redirigir a login u otra página
+            alert(`Usuario "${data.nombre_usuario}" creado con éxito.`);
+            setForm({
+                nombre_usuario: '',
+                contrasena: '',
+                confirmarContrasena: '',
+                rol: 'usuario',
+                persona_id: ''
+            });
 
         } catch (err) {
-            // Muestra el error específico que viene del backend
-            alert("Error al crear usuario: " + err.message);
+            alert("Error al crear usuario: " + (err.message || "Error desconocido"));
         } finally {
             setCargando(false);
         }
     };
 
     return (
-        // Usamos las clases de 'agregar.css'
-        <div className="contenedorAgregar"> 
+        <div className="contenedorAgregar">
             <h2>Crear Nueva Cuenta de Usuario</h2>
             <form onSubmit={handleSubmit} className="agregar-form">
-                
+
                 {/* Nombre de Usuario */}
                 <div className="form-group">
                     <label htmlFor="nombre_usuario">Nombre de Usuario</label>
-                    <input 
-                        id="nombre_usuario" 
-                        type="text" 
-                        name="nombre_usuario" 
-                        value={form.nombre_usuario} 
+                    <input
+                        id="nombre_usuario"
+                        type="text"
+                        name="nombre_usuario"
+                        value={form.nombre_usuario}
                         onChange={handleChange}
-                        required 
+                        required
                     />
                 </div>
 
                 {/* Selector de Rol */}
-                <div className="form-group"> 
+                <div className="form-group">
                     <label htmlFor="rol">Rol</label>
-                    <select 
-                        id="rol" 
-                        name="rol" 
-                        value={form.rol} 
-                        onChange={handleChange}
-                    >
+                    <select id="rol" name="rol" value={form.rol} onChange={handleChange}>
                         <option value="usuario">Usuario</option>
                         <option value="admin">Administrador</option>
                         <option value="conserje">Conserje</option>
                         <option value="personalAseo">Personal de aseo</option>
-                        {/* Puedes añadir más roles si los definiste en tu BD */}
                     </select>
                 </div>
+
+                {/* Selector de Persona */}
+                {form.rol === 'usuario' && (
+                    <div className="form-group">
+                        <label htmlFor="persona_id">Asignar a Persona</label>
+                        <select
+                            id="persona_id"
+                            name="persona_id"
+                            value={form.persona_id}
+                            onChange={handleChange}
+                            required
+                        >
+                            <option value="">-- Seleccione una persona --</option>
+                            {personas.length > 0 ? (
+                                personas.map(persona => (
+                                    <option key={persona.id} value={persona.id}>
+                                        {persona.nombre}
+                                    </option>
+                                ))
+                            ) : (
+                                <option value="" disabled>Cargando personas...</option>
+                            )}
+                        </select>
+                    </div>
+                )}
 
                 {/* Contraseña */}
                 <div className="form-group">
                     <label htmlFor="contrasena">Contraseña (mín. 6 caracteres)</label>
-                    <input 
-                        id="contrasena" 
-                        type="password" 
-                        name="contrasena" 
-                        value={form.contrasena} 
+                    <input
+                        id="contrasena"
+                        type="password"
+                        name="contrasena"
+                        value={form.contrasena}
                         onChange={handleChange}
-                        required 
+                        required
                     />
                 </div>
-                
+
                 {/* Confirmar Contraseña */}
                 <div className="form-group">
                     <label htmlFor="confirmarContrasena">Confirmar Contraseña</label>
-                    <input 
-                        id="confirmarContrasena" 
-                        type="password" 
-                        name="confirmarContrasena" 
-                        value={form.confirmarContrasena} 
+                    <input
+                        id="confirmarContrasena"
+                        type="password"
+                        name="confirmarContrasena"
+                        value={form.confirmarContrasena}
                         onChange={handleChange}
-                        required 
+                        required
                     />
                 </div>
 
                 {/* Botón de envío */}
-                <div className="form-group span-full"> {/* span-full para ocupar todo el ancho */}
+                <div className="form-group span-full">
                     <button type="submit" disabled={cargando}>
                         {cargando ? 'Creando Usuario...' : 'Crear Usuario'}
                     </button>
