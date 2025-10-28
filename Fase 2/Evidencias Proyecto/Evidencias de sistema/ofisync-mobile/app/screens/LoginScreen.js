@@ -1,4 +1,3 @@
-// ofisync-mobile/app/screens/LoginScreen.js
 import React, { useState } from "react";
 import {
   View,
@@ -8,42 +7,39 @@ import {
   StyleSheet,
   Image,
   Alert,
-  ActivityIndicator, // Importa el indicador de carga
+  ActivityIndicator,
 } from "react-native";
 import colors from "../theme/colors";
-import { loginApi } from "../../services/usuarioService"; // <- Importa tu nuevo servicio
+import { loginApi } from "../../services/usuarioService";
 
 const logo = require("../../assets/icon.png");
 
 export default function LoginScreen({ navigation }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false); // <- Estado para la carga
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async () => { // <- Convierte la función a async
+  const handleLogin = async () => {
     if (username.trim() === "" || password.trim() === "") {
       Alert.alert("Error", "Por favor ingresa usuario y contraseña");
       return;
     }
 
-    setLoading(true); // Inicia la carga
+    setLoading(true);
 
     try {
-      // Llama a la API
       const credenciales = {
         nombre_usuario: username,
         contrasena: password,
       };
       const data = await loginApi(credenciales);
 
-      // Si todo sale bien, navega a la pantalla principal
       navigation.replace("MainTabs");
 
     } catch (error) {
-      // Si hay un error, muéstralo
       Alert.alert("Error de Login", error.message);
     } finally {
-      setLoading(false); // Detiene la carga
+      setLoading(false);
     }
   };
 
@@ -73,10 +69,10 @@ export default function LoginScreen({ navigation }) {
       <TouchableOpacity
         style={styles.button}
         onPress={handleLogin}
-        disabled={loading} // <- Deshabilita el botón mientras carga
+        disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#fff" /> // Muestra el spinner
+          <ActivityIndicator color="#fff" />
         ) : (
           <Text style={styles.buttonText}>Iniciar sesión</Text>
         )}

@@ -1,4 +1,3 @@
-// ofisync-mobile/app/screens/MyReservationsScreen.js
 import React, { useState, useCallback } from "react";
 import {
   View,
@@ -7,7 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
-  Image, // <-- Este 'Image' ya no se usa, pero lo dejamos por si acaso
+  Image,
   ActivityIndicator,
 } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -96,8 +95,7 @@ export default function MyReservationsScreen() {
     });
   };
 
-  // --- INICIO DEL CAMBIO ---
-  // Preview visual de archivos (Modificado)
+  // Preview visual de archivos
   const renderFilePreview = (file_url) => {
     if (!file_url) return null;
 
@@ -112,9 +110,9 @@ export default function MyReservationsScreen() {
     } else if (["doc", "docx"].includes(extension)) {
       iconName = "description";
     } else if (["jpg", "jpeg", "png", "gif"].includes(extension)) {
-      iconName = "image"; // <-- Ícono para imágenes
+      iconName = "image";
     } else {
-      iconName = "attach-file"; // Ícono por defecto
+      iconName = "attach-file";
     }
 
     // Retornar siempre la "fileCard"
@@ -127,7 +125,6 @@ export default function MyReservationsScreen() {
       </View>
     );
   };
-  // --- FIN DEL CAMBIO ---
 
   // Render de cada item
   const renderItem = ({ item }) => (
@@ -160,7 +157,6 @@ export default function MyReservationsScreen() {
     </View>
   );
 
-  // --- Render principal (sin cambios) ---
   if (loading) {
     return (
       <View style={styles.centered}>
@@ -235,16 +231,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "600",
   },
-  // --- INICIO CAMBIO ESTILOS ---
-  // El estilo 'imagePreview' ya no es necesario, puedes borrarlo
-  /* imagePreview: {
-    width: 100,
-    height: 100,
-    borderRadius: 5,
-    marginTop: 5,
-  },
-  */
-  // --- FIN CAMBIO ESTILOS ---
   fileCard: {
     flexDirection: "row",
     alignItems: "center",

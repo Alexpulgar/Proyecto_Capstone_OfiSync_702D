@@ -15,10 +15,8 @@ import * as DocumentPicker from 'expo-document-picker';
 import API from "../api/api";
 import colors from "../theme/colors";
 import { Ionicons } from "@expo/vector-icons";
-import { getUsuario } from "../../services/usuarioService"; // <-- 1. Importar el servicio
+import { getUsuario } from "../../services/usuarioService";
 
-// ID DE OFICINA SIMULADA
-// const SIMULATED_OFFICE_ID = 2; // <-- 2. Ya no se usa
 const screenWidth = Dimensions.get("window").width;
 
 // Arrays manuales
@@ -102,22 +100,17 @@ const GastosComunesScreen = () => {
   const fetchExpenses = async () => {
     setLoading(true);
     setError(null);
-    // Limpiar estados antes de la recarga
     setTotalAPagar(0);
     setGastosPendientes([]);
     setChartData({ labels: [], datasets: [{ data: [], colors: [] }] });
 
     try {
-      // --- 3. INICIO DE CAMBIOS ---
       const usuario = await getUsuario();
       if (!usuario || !usuario.oficina_id) {
-        // Recordatorio: El backend debe devolver oficina_id en el login
         throw new Error("Este usuario no está asociado a ninguna oficina.");
       }
       const realOfficeId = usuario.oficina_id;
-      // --- FIN DE CAMBIOS ---
 
-      // --- 4. Usar el ID real ---
       const response = await API.get(`/gasto-comun/oficina/${realOfficeId}`);
       const allExpenses = response.data;
 
@@ -158,13 +151,10 @@ const GastosComunesScreen = () => {
 
       } else if (allExpenses.length === 0) {
         setError("No se encontraron gastos para tu oficina.");
-        // setChartData({ labels: [], datasets: [{ data: [], colors: [] }] }); // No es necesario, ya se limpió
       }
     } catch (e) {
-      // --- 5. Mejorar mensaje de error ---
       const errorMsg = e.response?.data?.error || e.message || "Error al cargar los gastos.";
       setError(errorMsg);
-      // setChartData({ labels: [], datasets: [{ data: [], colors: [] }] }); // No es necesario, ya se limpió
     } finally {
       setLoading(false);
     }
