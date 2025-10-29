@@ -20,14 +20,12 @@ export default function StackNavigator() {
       try {
         const token = await getToken();
         if (token) {
-          console.log("Token found, navigating to MainTabs");
           setInitialRoute('MainTabs');
         } else {
-          console.log("No token found, navigating to Login");
           setInitialRoute('Login');
         }
       } catch (error) {
-        console.error("Error checking token:", error);
+        console.error("Error validando token:", error);
         setInitialRoute('Login');
       } finally {
         setIsLoading(false);
