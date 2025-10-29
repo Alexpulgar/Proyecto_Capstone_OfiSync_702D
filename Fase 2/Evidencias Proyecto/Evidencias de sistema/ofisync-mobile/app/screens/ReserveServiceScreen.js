@@ -268,7 +268,7 @@ const handleReserve = async () => {
             value={quantity}
             onChangeText={(text) => setQuantity(text.replace(/[^0-9]/g, ""))}
             style={styles.input}
-            maxLength={5}
+            maxLength={3}
           />
 
           <Text>Tamaño de hoja:</Text>
