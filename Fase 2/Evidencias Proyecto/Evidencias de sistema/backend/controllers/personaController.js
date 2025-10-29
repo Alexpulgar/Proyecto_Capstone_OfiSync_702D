@@ -97,7 +97,6 @@ const obtenerPersonaPorRut = async (req, res) => {
 const actualizarPersonaParcial = async (req, res) => {
   try {
     const { id } = req.params;
-    
     const { correo, telefono } = req.body;
 
     const personaId = parseInt(id, 10);
@@ -105,33 +104,46 @@ const actualizarPersonaParcial = async (req, res) => {
       return res.status(400).json({ error: "ID de persona no válido" });
     }
 
-    // Validamos 'correo'
-    if (!correo || !telefono) {
-      return res.status(400).json({ error: "Faltan correo o teléfono" });
+    // Validaciones
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (correo && correo.trim() !== '' && !emailRegex.test(correo)) {
+      return res.status(400).json({ error: "Formato de correo electrónico inválido." });
     }
+
+    if (telefono && telefono.trim() !== '') {
+      const phoneDigits = telefono.replace(/\D/g, '');
+      if (phoneDigits.length < 9 || phoneDigits.length > 12) {
+        return res.status(400).json({ error: "El teléfono debe tener entre 9 y 12 dígitos." });
+      }
+    }
+
+    const currentDataResult = await pool.query("SELECT nombre, rut, correo, telefono FROM persona WHERE id = $1", [personaId]);
+    if (currentDataResult.rows.length === 0) {
+       return res.status(404).json({ error: "Persona no encontrada" });
+    }
+    const currentData = currentDataResult.rows[0];
+
+    const correoToSave = (correo !== undefined) ? (correo && correo.trim() !== '' ? correo.trim() : null) : currentData.correo;
+    const telefonoToSave = (telefono !== undefined) ? (telefono && telefono.trim() !== '' ? telefono.trim() : null) : currentData.telefono;
 
     const query = `
       UPDATE persona
-      SET correo = $1,   -- <-- CAMBIO CLAVE AQUÍ
+      SET correo = $1,
           telefono = $2
       WHERE id = $3
-      RETURNING *
+      RETURNING id, nombre, rut, correo, telefono
     `;
-    
-    const params = [correo, telefono, personaId];
-    const result = await pool.query(query, params);
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Persona no encontrada para actualizar" });
-    }
+    const params = [correoToSave, telefonoToSave, personaId];
+    const result = await pool.query(query, params);
 
     res.status(200).json(result.rows[0]);
 
   } catch (err) {
-    console.error("Error al actualizar persona: ", err);
-    res.status(500).json({ error: "Error al actualizar persona" });
+    console.error("Error al actualizar persona parcialmente: ", err);
+    res.status(500).json({ error: "Error interno al actualizar parcialmente la persona" });
   }
-}
+};
 
 const eliminarPersona = async (req, res) => {
   try {
@@ -164,7 +176,7 @@ const eliminarPersona = async (req, res) => {
     }
 
     // 5. Devolver éxito
-    res.status(200).json({ message: "Arrendatario eliminad correctamente" });
+    res.status(200).json({ message: "Arrendatario eliminado correctamente" });
 
   } catch (err) {
     console.error("Error al eliminar Arrendatario: ", err);
@@ -172,4 +184,21 @@ const eliminarPersona = async (req, res) => {
   }
 };
 
-module.exports = { obtenerPersonas, agregarPersona, obtenerPersonaPorRut,actualizarPersonaParcial,eliminarPersona};
+const getPersonaById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const query = "SELECT id, nombre, rut, correo, telefono FROM persona WHERE id = $1";
+        const result = await pool.query(query, [id]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Persona no encontrada" });
+        }
+        res.status(200).json(result.rows[0]);
+
+    } catch (err) {
+        console.error("Error al obtener persona por ID:", err);
+        res.status(500).json({ error: "Error interno al obtener la persona" });
+    }
+};
+
+module.exports = { obtenerPersonas, agregarPersona, obtenerPersonaPorRut,actualizarPersonaParcial,eliminarPersona, getPersonaById };
