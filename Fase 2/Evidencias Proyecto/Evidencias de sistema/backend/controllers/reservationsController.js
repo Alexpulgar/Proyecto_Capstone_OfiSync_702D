@@ -54,9 +54,15 @@ const postReservation = async (req, res) => {
 
     // Validaciones para servicios que no son salas de reuniones
     if (serviceType !== "room") {
-      if (!quantity || isNaN(quantity) || parseInt(quantity) <= 0) {
+      const numQuantity = parseInt(quantity, 10);
+      if (!quantity || isNaN(numQuantity) || numQuantity <= 0) {
         return res.status(400).json({ error: "Por favor ingresa una cantidad válida (mayor a 0)." });
       }
+
+      if (numQuantity > 1000) {
+        return res.status(400).json({ error: "La cantidad no puede exceder las 1000 unidades." });
+      }
+
       if (!size || size.trim() === "") {
         return res.status(400).json({ error: "Debes seleccionar un tamaño de hoja." });
       }
@@ -72,6 +78,7 @@ const postReservation = async (req, res) => {
     // Validaciones para salas de reuniones
     if (serviceType === "room") {
       const now = new Date();
+      // Asegurarse que la hora de inicio/fin tenga zona horaria Z (UTC) si no la tiene
       const selectedStart = new Date(`${date}T${start_time}`);
       const selectedEnd = new Date(`${date}T${end_time}`);
 
@@ -80,6 +87,12 @@ const postReservation = async (req, res) => {
       }
       if (selectedEnd <= selectedStart) {
         return res.status(400).json({ error: "La hora de término debe ser posterior a la hora de inicio." });
+      }
+
+      const durationInMilliseconds = selectedEnd.getTime() - selectedStart.getTime();
+      const durationInMinutes = durationInMilliseconds / (1000 * 60);
+      if (durationInMinutes < 30) {
+        return res.status(400).json({ error: "La duración mínima de la reserva debe ser de 30 minutos." });
       }
 
       const available = await isSlotAvailable(service_id, date, start_time, end_time);

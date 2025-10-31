@@ -107,6 +107,10 @@ export default function ReserveServiceScreen({ route, navigation }) {
 
   // Cargar automáticamente si el servicio es tipo room
   useEffect(() => {
+    // Establecer la hora de fin inicial 30 minutos después de la hora de inicio
+    const initialEndTime = new Date(startTime.getTime() + 30 * 60000);
+    setEndTime(initialEndTime);
+    
     if (service.type === "room") {
       fetchBookedSlots(date);
     }
@@ -131,16 +135,24 @@ const handleReserve = async () => {
 
     // Validación cantidad para servicios distintos de sala
     if (service.type !== "room") {
-      if (!quantity || quantity.trim() === "" || isNaN(quantity) || parseInt(quantity) <= 0) {
+      const numQuantity = parseInt(quantity, 10);
+      if (!quantity || quantity.trim() === "" || isNaN(numQuantity) || numQuantity <= 0) {
         Alert.alert("Por favor ingresa una cantidad válida (mayor a 0).");
-        setLoading(false); // Detener carga
+        setLoading(false);
+        return;
+      }
+
+      // Validar cantidad máxima
+      if (numQuantity > 1000) {
+        Alert.alert("Error", "La cantidad no puede ser mayor a 1000.");
+        setLoading(false);
         return;
       }
 
       // Validar tamaño seleccionado
       if (!size || size.trim() === "") {
         Alert.alert("Debes seleccionar un tamaño de hoja.");
-        setLoading(false); // Detener carga
+        setLoading(false);
         return;
       }
 
@@ -191,6 +203,15 @@ const handleReserve = async () => {
         Alert.alert("La hora de término debe ser posterior a la hora de inicio.");
         setLoading(false);
         return;
+      }
+      
+      // validar duración minima 30 minutos
+      const durationInMilliseconds = selectedEnd.getTime() - selectedStart.getTime();
+      const durationInMinutes = durationInMilliseconds / (1000 * 60);
+      if (durationInMinutes < 30) {
+          Alert.alert("Error", "La duración mínima de la reserva debe ser de 30 minutos.");
+          setLoading(false);
+          return;
       }
 
       // Validar disponibilidad
@@ -268,7 +289,7 @@ const handleReserve = async () => {
             value={quantity}
             onChangeText={(text) => setQuantity(text.replace(/[^0-9]/g, ""))}
             style={styles.input}
-            maxLength={3}
+            maxLength={4}
           />
 
           <Text>Tamaño de hoja:</Text>
@@ -305,6 +326,7 @@ const handleReserve = async () => {
               value={date}
               mode="date"
               display={Platform.OS === "ios" ? "spinner" : "default"}
+              minimumDate={new Date()}
               onChange={(event, selected) => {
                 setShowDatePicker(false);
                 if (selected) setDate(selected);
@@ -324,7 +346,14 @@ const handleReserve = async () => {
               display={Platform.OS === "ios" ? "spinner" : "default"}
               onChange={(event, selected) => {
                 setShowStartPicker(false);
-                if (selected) setStartTime(selected);
+                if (selected) {
+                    setStartTime(selected);
+                    // Opcional: auto-ajustar fin si es menor que inicio + 30
+                    const minEndTime = new Date(selected.getTime() + 30 * 60000);
+                    if (endTime < minEndTime) {
+                        setEndTime(minEndTime);
+                    }
+                }
               }}
             />
           )}
@@ -339,9 +368,18 @@ const handleReserve = async () => {
               mode="time"
               is24Hour={true}
               display={Platform.OS === "ios" ? "spinner" : "default"}
+              minimumDate={new Date(startTime.getTime() + 30 * 60000)} // Mínimo 30 mins después de inicio
               onChange={(event, selected) => {
                 setShowEndPicker(false);
-                if (selected) setEndTime(selected);
+                if (selected) {
+                    const minEndTime = new Date(startTime.getTime() + 30 * 60000);
+                    if (selected < minEndTime) {
+                        Alert.alert("Hora inválida", "La duración mínima es de 30 minutos.", [{ text: "OK" }]);
+                        setEndTime(minEndTime); // Forzar al mínimo
+                    } else {
+                        setEndTime(selected);
+                    }
+                }
               }}
             />
           )}
