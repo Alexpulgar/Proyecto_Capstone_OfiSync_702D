@@ -351,7 +351,7 @@ const ProfileScreen = () => {
 
               {/* TARJETA 2: CREDENCIALES  */}
               {!isEditing && (
-                <View style={[styles.cardContainer, { marginTop: 20 }]}>
+                <View style={[styles.cardContainer]}>
                   <Text style={styles.title}>Credenciales</Text>
 
                   <View style={styles.fieldContainer}>
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingVertical: 30,
+        paddingVertical: 16,
         paddingHorizontal: 15,
     },
     cardContainer: {
@@ -551,7 +551,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: colors.primary,
+        color: colors.black,
         marginBottom: 30,
         textAlign: 'center',
     },
