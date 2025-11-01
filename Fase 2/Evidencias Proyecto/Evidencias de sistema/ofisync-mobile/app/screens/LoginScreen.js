@@ -96,6 +96,7 @@ export default function LoginScreen({ navigation }) {
             <TouchableOpacity
               style={styles.eyeIcon}
               onPress={togglePasswordVisibility}
+              testID="toggle-password-icon"
             >
               <Ionicons
                 name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
@@ -111,7 +112,8 @@ export default function LoginScreen({ navigation }) {
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color="#fff"
+              testID="loading-indicator" />
             ) : (
               <Text style={styles.buttonText}>Iniciar sesión</Text>
             )}

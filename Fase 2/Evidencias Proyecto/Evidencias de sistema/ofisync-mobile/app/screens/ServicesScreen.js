@@ -9,7 +9,13 @@ export default function ServicesScreen() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    API.get("/reservations/services").then((res) => setServices(res.data));
+    API.get("/reservations/services")
+    .then((res) => {
+      setServices(res.data);
+    })
+    .catch((err) => {
+      console.error("Error al cargar servicios:", err);
+    });
   }, []);
 
   return (

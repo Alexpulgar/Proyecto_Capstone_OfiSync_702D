@@ -150,7 +150,7 @@ describe('ProfileScreen', () => {
     const { getByText } = render(<ProfileScreen />);
     await waitFor(() => expect(getByText('Cerrar Sesión')).toBeTruthy());
 
-    // Mockeamos la implementación de Alert.alert para simular el "OK"
+    // Mockea la implementación de Alert.alert para simular el "OK"
     Alert.alert.mockImplementationOnce((title, msg, buttons) => {
       buttons[1].onPress(); // Simula presionar "Sí, Cerrar Sesión"
     });

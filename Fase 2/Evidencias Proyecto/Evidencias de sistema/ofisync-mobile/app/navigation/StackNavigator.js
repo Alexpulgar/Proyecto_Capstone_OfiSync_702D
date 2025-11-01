@@ -38,7 +38,10 @@ export default function StackNavigator() {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator 
+        size="large" 
+        color={colors.primary}
+        testID="loading-indicator" />
       </View>
     );
   }

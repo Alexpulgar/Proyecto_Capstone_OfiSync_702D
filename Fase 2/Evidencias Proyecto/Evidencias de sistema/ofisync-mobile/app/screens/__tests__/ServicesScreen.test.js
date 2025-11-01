@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { render, fireEvent, waitFor, act } from '@testing-library/react-native'; 
 import ServicesScreen from '../ServicesScreen';
 import API from '../../api/api';
 
@@ -21,17 +21,28 @@ const mockServices = [
 describe('ServicesScreen', () => {
 
   beforeEach(() => {
+    jest.useFakeTimers(); 
     jest.clearAllMocks();
     API.get.mockResolvedValue({ data: mockServices });
   });
 
+  afterEach(() => {
+    jest.useRealTimers(); 
+  });
+
   it('carga y muestra la lista de servicios', async () => {
-    const { findByText } = render(<ServicesScreen />);
+    const { getByText } = render(<ServicesScreen />);
     
-    expect(await findByText('Servicio A')).toBeTruthy();
-    expect(await findByText('Desc A')).toBeTruthy();
-    expect(await findByText('Servicio B')).toBeTruthy();
-    expect(await findByText('Desc B')).toBeTruthy();
+    await waitFor(() => {
+      expect(getByText('Servicio A')).toBeTruthy();
+      expect(getByText('Desc A')).toBeTruthy();
+      expect(getByText('Servicio B')).toBeTruthy();
+      expect(getByText('Desc B')).toBeTruthy();
+    });
+
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
     
     expect(API.get).toHaveBeenCalledWith('/reservations/services');
   });
@@ -40,20 +51,26 @@ describe('ServicesScreen', () => {
     const { findByText } = render(<ServicesScreen />);
     
     const serviceA = await findByText('Servicio A');
+    
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+
     fireEvent.press(serviceA);
     
     expect(mockNavigate).toHaveBeenCalledWith('Reserva', { service: mockServices[0] });
   });
 
-  it('no crashea si la API falla (aunque no maneja el error visualmente)', async () => {
+  it('no crashea si la API falla', async () => {
     API.get.mockRejectedValue(new Error('API Error'));
     const { queryByText } = render(<ServicesScreen />);
     
-    // Espera un momento para asegurar que la promesa se rechazó
-    await act(async () => {
-      await new Promise(resolve => setTimeout(resolve, 0));
+    await waitFor(() => {
+      expect(queryByText('Servicio A')).toBeNull();
     });
-
-    expect(queryByText('Servicio A')).toBeNull();
+    
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
   });
 });

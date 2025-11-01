@@ -1,24 +1,13 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginApi, logout, getToken, getUsuario } from '../usuarioService';
 
-// Mock de la API_URL (ajusta la ruta si es necesario)
-jest.mock('../usuarioService', () => {
-  const originalModule = jest.requireActual('../usuarioService');
-  return {
-    ...originalModule,
-    __esModule: true,
-    API_URL: "http://mock-api.com/api/usuarios",
-  };
-});
-
 // Mock de fetch
 global.fetch = jest.fn();
 
 describe('usuarioService', () => {
   
   beforeEach(() => {
-    fetch.mockClear();
-    AsyncStorage.clear();
+    jest.clearAllMocks();
   });
 
   describe('loginApi', () => {
@@ -36,7 +25,7 @@ describe('usuarioService', () => {
 
       const result = await loginApi(mockCreds);
 
-      expect(fetch).toHaveBeenCalledWith("http://mock-api.com/api/usuarios/login", {
+      expect(fetch).toHaveBeenCalledWith("http://192.168.100.5:4000/api/usuarios/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(mockCreds),
@@ -56,6 +45,7 @@ describe('usuarioService', () => {
       });
 
       await expect(loginApi(mockCreds)).rejects.toThrow('Credenciales inválidas');
+      
       expect(AsyncStorage.setItem).not.toHaveBeenCalled();
     });
   });
@@ -93,13 +83,16 @@ describe('usuarioService', () => {
     });
 
     it('debe hacer logout y retornar null si el JSON está corrupto', async () => {
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
       AsyncStorage.getItem.mockResolvedValue('{corrupt_json');
       const result = await getUsuario();
       
-      // Verifica que se llamó a logout (que a su vez llama a removeItem)
       expect(AsyncStorage.removeItem).toHaveBeenCalledWith('authToken');
       expect(AsyncStorage.removeItem).toHaveBeenCalledWith('usuario');
       expect(result).toBeNull();
+
+      consoleErrorSpy.mockRestore();
     });
   });
 });

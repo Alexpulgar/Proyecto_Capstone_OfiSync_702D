@@ -12,7 +12,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import * as DocumentPicker from "expo-document-picker";
 import API from "../api/api";
 import colors from "../theme/colors";
-import { Picker } from "@react-native-picker/picker";
+import { Picker } from '@react-native-picker/picker';
 import { getUsuario } from "../../services/usuarioService";
 
 export default function ReserveServiceScreen({ route, navigation }) {
