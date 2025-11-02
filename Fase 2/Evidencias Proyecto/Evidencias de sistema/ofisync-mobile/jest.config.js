@@ -1,6 +1,8 @@
 module.exports = {
   preset: 'jest-expo',
 
+  setupFilesAfterEnv: ['./jest.setup.js'],
+
   moduleNameMapper: {
     '^@expo/vector-icons$': '<rootDir>/node_modules/react-native-vector-icons/MaterialIcons.js',
   },

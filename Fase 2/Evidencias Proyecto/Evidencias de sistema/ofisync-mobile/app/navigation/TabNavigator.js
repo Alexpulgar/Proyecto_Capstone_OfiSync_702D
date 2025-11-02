@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ServicesScreen from "../screens/ServicesScreen";
 import MyReservationsScreen from "../screens/MyReservationsScreen";
 import GastosComunesScreen from "../screens/GastosComunesScreen"; 
+import ProfileScreen from "../screens/ProfileScreen";
 import colors from "../theme/colors";
 import { Ionicons } from "@expo/vector-icons";
 
@@ -22,7 +23,10 @@ export default function TabNavigator() {
           } else if (route.name === "Mis Reservas") {
             iconName = "calendar-outline";
           } else if (route.name === "Gastos Comunes") {
-            iconName = "stats-chart-outline";
+            iconName = "wallet-outline";
+          }
+            else if (route.name === "Perfil") {
+            iconName = "person-circle-outline";
           }
           
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -32,6 +36,7 @@ export default function TabNavigator() {
       <Tab.Screen name="Servicios" component={ServicesScreen} />
       <Tab.Screen name="Mis Reservas" component={MyReservationsScreen} />
       <Tab.Screen name="Gastos Comunes" component={GastosComunesScreen} />
+      <Tab.Screen name="Perfil" component={ProfileScreen} />
     </Tab.Navigator>
   );
 }
