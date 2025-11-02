@@ -92,17 +92,15 @@ export default function Reservas() {
     });
   };
 
-  // --- (FUNCIÓN MODIFICADA) RENDER FILE PREVIEW ---
   const renderFilePreview = (file_url) => {
-    if (!file_url) return null; // file_url es: /uploads/archivo%20...docx
+    if (!file_url) return null;
 
     const extension = file_url.split(".").pop().toLowerCase();
     
-    // 1. Obtenemos el nombre codificado (ej: ...Discurso%20...docx)
+    // 1. Obtenemos el nombre codificado
     const encodedFileName = file_url.split("/").pop();
     
     // 2. Decodificamos el nombre SOLO para mostrarlo y para el atributo 'download'
-    // (ej: ...Discurso ...docx)
     const fileName = decodeURIComponent(encodedFileName);
 
     let icon;
@@ -120,20 +118,18 @@ export default function Reservas() {
 
     return (
       <a 
-        href={fullUrl} // Apunta al proxy (ej: /download-proxy/uploads/...)
-        download={fileName} // Atributo 'download' con el nombre LIMPIO
+        href={fullUrl}
+        download={fileName}
         className="file-preview-link"
       >
         <div className="file-card-web">
           {icon}
-          {/* Mostramos el nombre limpio */}
           <span className="file-name-web">{fileName}</span>
         </div>
       </a>
     );
   };
 
-  // --- Renderizado del componente (sin cambios) ---
 
   if (loading) {
     return (

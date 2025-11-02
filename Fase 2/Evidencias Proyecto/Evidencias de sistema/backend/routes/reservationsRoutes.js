@@ -21,7 +21,6 @@ router.post("/", upload.single("file"), postReservation);
 
 router.get("/admin/all", getAllReservationsAdmin);
 
-// --- NUEVA RUTA: COMPLETAR RESERVA MANUALMENTE ---
 router.put("/:id/complete", completeReservationManual);
 
 router.put("/complete-past", async (req, res) => {

@@ -1,10 +1,9 @@
-/* Define los colores de estado basados en la app móvil */
 :root {
   --color-pendiente: #c9ab00ff;
   --color-completada: #28a745;
   --color-cancelada: #dc3545;
   --color-default: #ccc;
-  --color-primary-dark: #003366; /* Color de tu sidebar */
+  --color-primary-dark: #003366;
 }
 
 .reservas-list {
@@ -25,7 +24,7 @@
 }
 
 .reserva-card .card-header {
-  background-color: #f8f9fa; /* Un fondo suave */
+  background-color: #f8f9fa;
   border-bottom: 1px solid #e9ecef;
 }
 
@@ -41,7 +40,6 @@
   text-transform: capitalize;
 }
 
-/* Aplicar colores personalizados a los badges de Bootstrap */
 .badge.bg-warning {
   background-color: var(--color-pendiente) !important;
   color: #fff !important;
@@ -62,7 +60,6 @@
   padding: 0.75rem 1.25rem;
 }
 
-/* Estilos para el preview de archivo */
 .file-preview-link {
   text-decoration: none;
   color: inherit;
@@ -93,7 +90,6 @@
 .file-name-web {
   font-size: 0.9rem;
   font-weight: 500;
-  /* Truncar texto si es muy largo */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

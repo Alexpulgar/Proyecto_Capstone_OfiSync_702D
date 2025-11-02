@@ -1,6 +1,5 @@
 import 'react-native-gesture-handler/jestSetup';
 
-// Mock de AsyncStorage (ESTO ARREGLA EL ERROR PRINCIPAL)
 jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock')
 );
@@ -8,7 +7,6 @@ jest.mock('@react-native-async-storage/async-storage', () =>
 // Mock de react-native-chart-kit
 jest.mock('react-native-chart-kit', () => ({
   BarChart: (props) => {
-    // Renderiza un componente simple para que pueda ser encontrado por las pruebas
     const MockBarChart = require('react-native').View;
     return <MockBarChart {...props} />;
   },
@@ -32,7 +30,6 @@ jest.mock('@react-navigation/native', () => {
     useRoute: () => ({
       params: {},
     }),
-    // Simula useFocusEffect ejecutando el callback inmediatamente
     useFocusEffect: (callback) => {
       const React = require('react');
       React.useEffect(callback, []);
@@ -70,7 +67,6 @@ jest.mock('@react-native-picker/picker', () => ({
   Picker: (props) => {
     const { children, onValueChange, selectedValue } = props;
     const MockPicker = require('react-native').View;
-    // Puedes simular el onValueChange si es necesario para tus pruebas
     return (
       <MockPicker
         {...props}

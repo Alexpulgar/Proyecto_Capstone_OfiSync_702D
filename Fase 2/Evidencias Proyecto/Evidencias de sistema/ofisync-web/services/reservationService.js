@@ -1,6 +1,6 @@
 import { getToken } from './usuarioService';
 
-const API_URL = "http://localhost:4000/api/reservations"; // Ajusta si tu URL base es otra
+const API_URL = "http://localhost:4000/api/reservations";
 
 // Función auxiliar para manejar fetch con autenticación
 const fetchWithAuth = async (url, options = {}) => {
