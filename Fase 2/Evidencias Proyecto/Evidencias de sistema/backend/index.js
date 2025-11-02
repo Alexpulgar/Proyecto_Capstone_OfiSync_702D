@@ -18,16 +18,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// --- INICIO DE LA MODIFICACIÓN ---
-
-// 1. COMENTAMOS la línea que da problemas
-// app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-// 2. AÑADIMOS un manejador manual que busca el archivo con %20
 app.get('/uploads/*', (req, res, next) => {
   try {
-    // req.path decodifica, pero req.originalUrl mantiene los %20
-    // Necesitamos extraer el nombre del archivo de req.originalUrl
     
     // Extraemos la parte del path que viene después de /uploads/
     const fileName = req.originalUrl.split('/uploads/')[1];
@@ -36,12 +28,10 @@ app.get('/uploads/*', (req, res, next) => {
       return res.status(404).json({ error: "Archivo no especificado" });
     }
     
-    // Construimos el path al archivo en el disco
-    // path.join maneja los separadores de directorio correctamente
-    // fileName AÚN CONTIENE los %20
+    // Construimos la ruta completa al archivo
     const filePath = path.join(__dirname, "uploads", fileName);
 
-    // res.download usará ese path (con %20) para buscar el archivo
+    // Intentamos enviar el archivo
     res.download(filePath, (err) => {
       if (err) {
         if (!res.headersSent) {
@@ -53,10 +43,9 @@ app.get('/uploads/*', (req, res, next) => {
 
   } catch (error) {
     console.error("Error en el handler de descargas:", error);
-    next(error); // Pasa al manejador de errores 500
+    next(error);
   }
 });
-// --- FIN DE LA MODIFICACIÓN ---
 
 
 // Conexión de todas las rutas a la aplicación de Express
