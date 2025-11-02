@@ -7,6 +7,8 @@ const {
   cancelRes,
   getRoomReservationsByDate,
   postReservation,
+  getAllReservationsAdmin,
+  completeReservationManual,
 } = require("../controllers/reservationsController.js");
 
 const router = express.Router();
@@ -17,6 +19,11 @@ router.put("/:id/cancel", cancelRes);
 router.get("/room/:serviceId/:date", getRoomReservationsByDate);
 router.post("/", upload.single("file"), postReservation);
 
+router.get("/admin/all", getAllReservationsAdmin);
+
+// --- NUEVA RUTA: COMPLETAR RESERVA MANUALMENTE ---
+router.put("/:id/complete", completeReservationManual);
+
 router.put("/complete-past", async (req, res) => {
   try {
     const now = new Date();
@@ -26,7 +33,8 @@ router.put("/complete-past", async (req, res) => {
     const query = `
       UPDATE reservations
       SET status = 'completada'
-      WHERE status = 'pendiente'
+      WHERE service_id = 4 
+      AND status = 'pendiente'
       AND (
         (date < $1) OR
         (date = $1 AND end_time <= $2)

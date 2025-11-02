@@ -152,10 +152,76 @@ const getRoomReservationsByDate = async (req, res) => {
   }
 };
 
+const getAllReservationsAdmin = async (req, res) => {
+  try {
+    // Query con los joins correctos y el filtro (pendientes O de hoy)
+    const query = `
+      SELECT 
+        r.id, r.user_id, r.service_id, r.quantity, r.size, r.file_url,
+        r.date, r.start_time, r.end_time, r.status, 
+        s.valor_base, r.valor_total,
+        s.name AS service_name, 
+        s.type AS service_type,
+        u.nombre_usuario AS user_name,
+        o.codigo as numero_oficina
+      FROM reservations r
+      JOIN services s ON r.service_id = s.id
+      JOIN usuarios u ON r.user_id = u.id
+      LEFT JOIN persona p ON u.persona_id = p.id 
+      LEFT JOIN oficina o ON p.id = o.persona_id
+
+      -- --- Filtro Lógico Añadido ---
+      WHERE
+        r.status = 'pendiente' OR r.date = CURRENT_DATE
+      -- --- Fin del Filtro ---
+
+      ORDER BY 
+        CASE 
+          WHEN r.status = 'pendiente' THEN 1
+          WHEN r.status = 'completada' THEN 2
+          WHEN r.status = 'cancelada' THEN 3
+          ELSE 4
+        END,
+        r.date DESC, r.start_time DESC;
+    `;
+    const result = await pool.query(query);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error al obtener todas las reservas:", err);
+    res.status(500).json({ error: "Error al obtener todas las reservas" });
+  }
+};
+
+// --- NUEVA FUNCIÓN: COMPLETAR RESERVA MANUALMENTE ---
+const completeReservationManual = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = `
+      UPDATE reservations 
+      SET status = 'completada' 
+      WHERE id = $1 AND status = 'pendiente'
+      RETURNING *;
+    `;
+    const result = await pool.query(query, [id]);
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Reserva no encontrada o ya no está pendiente" });
+    }
+    
+    // Devolvemos la reserva actualizada
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error("Error al completar la reserva:", err);
+    res.status(500).json({ error: "Error al completar la reserva" });
+  }
+};
+
 module.exports = {
   getAllServices,
   postReservation,
   getUserRes,
   cancelRes,
   getRoomReservationsByDate,
+  getAllReservationsAdmin,
+  completeReservationManual,
 };

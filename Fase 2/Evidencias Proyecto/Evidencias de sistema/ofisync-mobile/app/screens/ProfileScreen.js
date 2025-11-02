@@ -512,7 +512,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
     },
     cardContainer: {
-        width: '95%',
+        width: '99%',
         maxWidth: 600,
         backgroundColor: colors.white,
         borderRadius: 12,
@@ -616,7 +616,7 @@ const styles = StyleSheet.create({
     },
     logoutButton: {
         backgroundColor: colors.danger,
-        width: '95%',
+        width: '99%',
         maxWidth: 600,
     },
     buttonText: {
