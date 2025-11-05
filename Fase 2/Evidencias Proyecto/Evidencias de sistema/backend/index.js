@@ -11,7 +11,8 @@ const edificioRoutes = require("./routes/edificioRoutes.js");
 const gastoComunRoutes = require("./routes/gastoComunRoutes");
 const reservationsRoutes = require("./routes/reservationsRoutes");
 const usuarioRoutes = require('./routes/usuarioRoutes');
-const insumoRoutes = require("./routes/insumoRoutes.js")
+const insumoRoutes = require("./routes/insumoRoutes.js");
+const bitacoraRoutes = require("./routes/bitacoraRoutes.js");
 const app = express();
 
 // Middlewares principales
@@ -57,6 +58,7 @@ app.use("/api/gasto-comun", gastoComunRoutes);
 app.use("/api/reservations", reservationsRoutes);
 app.use('/api/usuarios', usuarioRoutes);
 app.use("/api/insumos", insumoRoutes);
+app.use("/api/bitacora", bitacoraRoutes);
 
 // Manejador de errores para rutas no encontradas (404)
 app.use((req, res, next) => {
