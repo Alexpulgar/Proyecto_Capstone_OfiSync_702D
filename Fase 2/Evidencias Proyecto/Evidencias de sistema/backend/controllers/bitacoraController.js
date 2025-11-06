@@ -4,17 +4,25 @@ const pool = require("../models/db");
 const crearEntrada = async (req, res) => {
   try {
 
-    const { titulo, descripcion, tipo } = req.body;
+    const { titulo, descripcion, tipo, es_privado } = req.body;
+    // Obtener al autor
+    const { id: autorId, nombre_usuario: autorNombre } = req.user;
 
     const query = `
-      INSERT INTO bitacora (titulo, descripcion, tipo)
-      VALUES ($1, $2, $3)
+      INSERT INTO bitacora (
+      titulo, descripcion, tipo,
+      autor_id, autor_nombre, es_privado
+      )
+      VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING *
     `;
     const params = [
       titulo.trim(),
       descripcion.trim(),
       tipo || 'General',
+      autorId,
+      autorNombre,
+      es_privado || false,
     ];
     
     const result = await pool.query(query, params);
@@ -30,7 +38,7 @@ const crearEntrada = async (req, res) => {
 const obtenerEntradas = async (req, res) => {
   try {
     const query = `
-      SELECT id, titulo, descripcion, tipo, creado_en
+      SELECT id, titulo, descripcion, tipo, creado_en, autor_nombre, es_privado
       FROM bitacora
       ORDER BY creado_en DESC
     `;

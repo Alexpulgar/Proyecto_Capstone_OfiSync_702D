@@ -1,17 +1,31 @@
 const API_URL = "http://localhost:4000/api/bitacora";
 
+//import a la funcion existente en usuarioService
+import { getToken } from "./usuarioService";
+
 // Obtener todas las entradas
 export async function getEntradas() {
-    const res = await fetch(API_URL);
+    const token = getToken();
+    if(!token) throw new Error("Acceso denegado. No se encontro token.");
+
+    const res = await fetch(API_URL, {
+        headers: {
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
     if(!res.ok) throw new Error("Error al obtener las entradas de la bitacora");
     return await res.json();
 }
 
 // Crear nueva entrada
 export async function createEntrada(data) {
+    const token = getToken();
+    if(!token) throw new Error("Acceso denegado. No se encontro token.")
+
     const res = await fetch(API_URL, {
         method: "POST",
-        headers: {"Content-Type": "application/json"},
+        headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`},
         body: JSON.stringify(data),
     });
 

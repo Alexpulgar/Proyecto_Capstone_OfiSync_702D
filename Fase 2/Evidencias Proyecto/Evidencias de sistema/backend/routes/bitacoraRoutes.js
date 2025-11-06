@@ -6,6 +6,7 @@ const {
 } = require("../controllers/bitacoraController");
 
 const {validateBitacora} = require("../logic/bitacoraValidator");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 //creamos el middleware de validacion
 const middlewareValidar = (req, res, next) => {
@@ -18,8 +19,7 @@ const middlewareValidar = (req, res, next) => {
 };
 
 //aplicar el middleware SOLO A la ruta post
-router.post("/", middlewareValidar, crearEntrada);
-
-router.get("/", obtenerEntradas);
+router.post("/", authMiddleware, middlewareValidar, crearEntrada);
+router.get("/", authMiddleware, obtenerEntradas);
 
 module.exports = router;
