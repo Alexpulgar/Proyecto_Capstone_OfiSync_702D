@@ -311,8 +311,92 @@ const subirComprobante = async (req, res) => {
   }
 };
 
+// OBTENER COMPROBANTES PARA REVISIÓN
+const getVouchersEnRevision = async (req, res) => {
+  try {
+    // Agrupamos por comprobante, ya que un archivo puede cubrir varios meses
+    const query = `
+      SELECT 
+        dg.comprobante_url, 
+        o.codigo AS oficina_codigo,
+        p.nombre AS arrendatario_nombre,
+        -- Agregamos los IDs y Meses en un array JSON
+        JSON_AGG(DISTINCT dg.id) AS detalle_ids,
+        JSON_AGG(DISTINCT gc.mes) AS meses_cubiertos,
+        SUM(dg.monto) AS monto_total_comprobante
+      FROM detallegastocomun dg
+      JOIN oficina o ON dg.oficina_id = o.id
+      JOIN gastocomun gc ON dg.gastocomunid = gc.id
+      LEFT JOIN persona p ON o.persona_id = p.id
+      WHERE dg.estado_pago = 'en revision' AND dg.comprobante_url IS NOT NULL
+      GROUP BY dg.comprobante_url, o.codigo, p.nombre
+      ORDER BY o.codigo;
+    `;
+
+    const result = await pool.query(query);
+    res.status(200).json(result.rows);
+  } catch (err) {
+    console.error("Error al obtener comprobantes en revisión:", err);
+    res.status(500).json({ error: "Error interno al obtener comprobantes." });
+  }
+};
+
+// APROBAR O RECHAZAR COMPROBANTE
+const reviewVoucher = async (req, res) => {
+  try {
+    const { detalle_ids, accion } = req.body; // accion será 'aprobar' o 'rechazar'
+
+    if (
+      !detalle_ids ||
+      !Array.isArray(detalle_ids) ||
+      detalle_ids.length === 0
+    ) {
+      return res
+        .status(400)
+        .json({ error: "Faltan los IDs de los gastos a revisar." });
+    }
+
+    let query;
+    let params = [detalle_ids];
+
+    if (accion === "aprobar") {
+      // Si se aprueba, se marca como 'pagado'
+      query = `
+        UPDATE detallegastocomun
+        SET estado_pago = 'pagado'
+        WHERE id = ANY($1::int[]) AND estado_pago = 'en revision'
+        RETURNING *;
+      `;
+    } else if (accion === "rechazar") {
+      // Si se rechaza, vuelve a 'pendiente' y se quita el comprobante
+      query = `
+        UPDATE detallegastocomun
+        SET estado_pago = 'pendiente', comprobante_url = NULL
+        WHERE id = ANY($1::int[]) AND estado_pago = 'en revision'
+        RETURNING *;
+      `;
+    } else {
+      return res
+        .status(400)
+        .json({ error: "Acción no válida (debe ser 'aprobar' o 'rechazar')." });
+    }
+
+    const result = await pool.query(query, params);
+
+    res.status(200).json({
+      message: `Acción '${accion}' aplicada a ${result.rowCount} registros.`,
+      updated: result.rows,
+    });
+  } catch (err) {
+    console.error("Error al revisar el comprobante:", err);
+    res.status(500).json({ error: "Error interno al revisar el comprobante." });
+  }
+};
+
 module.exports = {
   calcularGastoComun,
   getGastosPorOficina,
   subirComprobante,
+  getVouchersEnRevision,
+  reviewVoucher,
 };

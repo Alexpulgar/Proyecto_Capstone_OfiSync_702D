@@ -1,91 +1,168 @@
 /* Contenedor principal, estilo consistente con el resto de la app */
 .gasto-comun-container {
-    background-color: #ffffff;
-    border-radius: 20px;
-    padding: 30px;
-    margin-top: 40px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    color: #333;
+  background-color: #ffffff;
+  border-radius: 20px;
+  padding: 30px;
+  margin-top: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: #333;
 }
 
 .gasto-comun-container h2 {
-    color: #184866;
-    margin-bottom: 25px;
-    text-align: center;
-    font-size: 1.8rem;
+  color: #184866;
+  margin-bottom: 25px;
+  text-align: center;
+  font-size: 1.8rem;
 }
 
 /* Usamos un grid para organizar el formulario en 2 columnas */
 .gasto-comun-form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px 30px; /* Espacio vertical y horizontal */
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px 30px; /* Espacio vertical y horizontal */
 }
 
 /* Grupo de etiqueta + campo */
 .form-group {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Clase para que un elemento ocupe las 2 columnas */
-.form-group.span-2, .total-display.span-2 {
-    grid-column: 1 / -1;
+.form-group.span-2,
+.total-display.span-2 {
+  grid-column: 1 / -1;
 }
 
 .form-group label {
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: #555;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #555;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    font-size: 1rem;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-size: 1rem;
 }
 
 .form-group textarea {
-    min-height: 80px;
-    resize: vertical;
+  min-height: 80px;
+  resize: vertical;
 }
 
 /* Estilo para mostrar el total calculado */
 .total-display {
-    background-color: #f3f7fa;
-    border-left: 5px solid #184866;
-    padding: 15px;
-    margin-top: 10px;
-    text-align: center;
+  background-color: #f3f7fa;
+  border-left: 5px solid #184866;
+  padding: 15px;
+  margin-top: 10px;
+  text-align: center;
 }
 
 .total-display h3 {
-    margin: 0;
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #184866;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #184866;
 }
 
 /* Estilo del botón, consistente con el resto de la app */
 .gasto-comun-form button {
-    width: 100%;
-    padding: 15px;
-    font-size: 1.1rem;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(45deg, #001aff, #00b7ff);
-    color: white;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: transform 0.2s, box-shadow 0.2s;
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(45deg, #001aff, #00b7ff);
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .gasto-comun-form button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.lista-vouchers-revision {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.voucher-card {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.voucher-card h4 {
+  margin-top: 0;
+  color: #333;
+}
+
+.voucher-card p {
+  font-size: 14px;
+  color: #555;
+  margin: 8px 0;
+}
+
+.voucher-link {
+  display: inline-block;
+  margin: 10px 0;
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.voucher-link:hover {
+  background-color: #0056b3;
+}
+
+.voucher-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.voucher-actions button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  width: 48%;
+}
+
+.btn-approve {
+  background-color: #28a745;
+}
+.btn-approve:hover {
+  background-color: #218838;
+}
+
+.btn-reject {
+  background-color: #dc3545;
+  .btn-reject:hover {
+    background-color: #c82333;
+  }
+}
+
+.voucher-actions button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
