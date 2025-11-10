@@ -37,3 +37,38 @@ export async function createEntrada(data) {
     }
     return result;
 }
+
+// Actualizar entradas
+export async function updateEntrada(id, data) {
+    const token =  getToken();
+    if(!token) throw new Error("Acceso denegado. No se encontro token.")
+    
+   const res = await fetch (`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: {"Content-Type": "application/json", "Authorization": `Bearer ${token}`},
+    body: JSON.stringify(data),
+   });
+   
+   const result = await res.json();
+   if(!res.ok) {
+    throw new Error(result.error || "Error al actualizar la entradas");
+   }
+   return result;
+}
+
+// Borrar entrada
+export async function deleteEntrada(id) {
+    const token = getToken();
+    if(!token) throw new Error("Acceso deneegado. No se encontro token.")
+
+    const res = await fetch (`${API_URL}/${id}`, {
+        method: "DELETE",
+        headers:{ "Authorization": `Bearer ${token}` },
+    });
+    
+    const result = await res.json();
+    if(!res.ok) {
+        throw new Error(result.error || "Error desconocido al borrar la entrada");
+    }
+    return result;
+}

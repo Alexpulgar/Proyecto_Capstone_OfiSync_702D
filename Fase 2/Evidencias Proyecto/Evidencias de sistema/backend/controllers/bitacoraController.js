@@ -50,7 +50,61 @@ const obtenerEntradas = async (req, res) => {
   }
 };
 
+//Actualizar
+const actualizarEntrada = async (req, res) => {
+  try {
+    const {id} = req.params;
+    const {titulo, descripcion, tipo, es_privado} = req.body;
+  
+    const query = `
+      UPDATE bitacora
+      SET 
+        titulo = $1, 
+        descripcion = $2, 
+        tipo = $3, 
+        es_privado = $4
+      WHERE id = $5
+      RETURNING *
+    `;
+
+    const params = [
+      titulo.trim(), descripcion.trim(), tipo || 'General',
+      es_privado || false, id
+    ];
+
+    const resul = await pool.query(query, params);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: " Entrada de bitacora no encontrada"});
+    }
+    res.status(200).json(result.rows[0]);
+  } catch (err) {
+    console.error("Error al actualizar entrada", err);
+    res.status(500).json({ error: "Error interno al actualizar entrada"});
+  }
+};
+
+//Borrar
+const borrarEntrada = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = "DELETE FROM bitacora WHERE id = $1 RETURNING *";
+    const result = await pool.query(query, [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: "Entrada de bitácora no encontrada." });
+    }
+    // Devolvemos un mensaje de éxito.
+    res.status(200).json({ message: "Entrada de bitácora eliminada" });
+
+  } catch (err) {
+    console.error("Error al borrar entrada:", err);
+    res.status(500).json({ error: "Error interno al borrar entrada" });
+  }
+};
+
 module.exports = {
   crearEntrada,
   obtenerEntradas,
+  actualizarEntrada,
+  borrarEntrada,
 };

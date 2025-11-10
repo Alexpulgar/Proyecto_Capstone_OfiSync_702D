@@ -144,6 +144,13 @@
   line-height: 1.5;
 }
 
+.entry-autor {
+  color: #888;
+  font-size: 0.85rem;
+  display: block;
+  text-align: right;
+  margin-top: 0.5rem;
+}
 .entry-fecha {
   color: #888;
   font-size: 0.85rem;

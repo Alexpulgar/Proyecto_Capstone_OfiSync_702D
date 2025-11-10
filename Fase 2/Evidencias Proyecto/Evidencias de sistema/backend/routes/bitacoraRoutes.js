@@ -2,11 +2,14 @@ const express = require("express");
 const router = express.Router();
 const {
     crearEntrada,
-    obtenerEntradas
+    obtenerEntradas,
+    actualizarEntrada,
+    borrarEntrada
 } = require("../controllers/bitacoraController");
 
 const {validateBitacora} = require("../logic/bitacoraValidator");
 const authMiddleware = require("../middlewares/authMiddleware");
+const checkRole = require("../middlewares/checkRoleMiddleware");
 
 //creamos el middleware de validacion
 const middlewareValidar = (req, res, next) => {
@@ -18,8 +21,15 @@ const middlewareValidar = (req, res, next) => {
     next();
 };
 
-//aplicar el middleware SOLO A la ruta post
-router.post("/", authMiddleware, middlewareValidar, crearEntrada);
-router.get("/", authMiddleware, obtenerEntradas);
+// Definir roles que puede editar o borrar
+const rolesAdmin = ['admin', 'conserje'];
+
+//Rutas publicas
+router.get("/", authMiddleware, checkRole(rolesAdmin), obtenerEntradas);
+router.post("/", authMiddleware, checkRole(rolesAdmin), middlewareValidar, crearEntrada);
+
+//Rutas protegidas por rol
+router.put("/", authMiddleware, checkRole(rolesAdmin),middlewareValidar, actualizarEntrada);
+router.delete("/:id", authMiddleware, checkRole(rolesAdmin), borrarEntrada);
 
 module.exports = router;
