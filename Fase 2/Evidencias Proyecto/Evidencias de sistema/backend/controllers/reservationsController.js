@@ -34,19 +34,15 @@ const getAllServices = async (req, res) => {
 
 const postReservation = async (req, res) => {
   try {
-    const {
-      user_id,
-      service_id,
-      quantity,
-      size,
-      date,
-      start_time,
-      end_time,
-    } = req.body;
+    const { user_id, service_id, quantity, size, date, start_time, end_time } =
+      req.body;
     const file = req.file;
 
     // Obtener el tipo de servicio desde la base de datos
-    const serviceResult = await pool.query("SELECT type FROM services WHERE id = $1", [service_id]);
+    const serviceResult = await pool.query(
+      "SELECT type FROM services WHERE id = $1",
+      [service_id]
+    );
     if (serviceResult.rows.length === 0) {
       return res.status(404).json({ error: "Servicio no encontrado" });
     }
@@ -56,22 +52,40 @@ const postReservation = async (req, res) => {
     if (serviceType !== "room") {
       const numQuantity = parseInt(quantity, 10);
       if (!quantity || isNaN(numQuantity) || numQuantity <= 0) {
-        return res.status(400).json({ error: "Por favor ingresa una cantidad válida (mayor a 0)." });
+        return res.status(400).json({
+          error: "Por favor ingresa una cantidad válida (mayor a 0).",
+        });
       }
 
       if (numQuantity > 1000) {
-        return res.status(400).json({ error: "La cantidad no puede exceder las 1000 unidades." });
+        return res
+          .status(400)
+          .json({ error: "La cantidad no puede exceder las 1000 unidades." });
       }
 
       if (!size || size.trim() === "") {
-        return res.status(400).json({ error: "Debes seleccionar un tamaño de hoja." });
+        return res
+          .status(400)
+          .json({ error: "Debes seleccionar un tamaño de hoja." });
       }
       if (!file) {
-        return res.status(400).json({ error: "Debes adjuntar un archivo antes de reservar." });
+        return res
+          .status(400)
+          .json({ error: "Debes adjuntar un archivo antes de reservar." });
       }
-      const allowedTypes = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "image/jpeg", "image/png", "image/gif"];
+      const allowedTypes = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+      ];
       if (!allowedTypes.includes(file.mimetype)) {
-        return res.status(400).json({ error: "Tipo de archivo no permitido. Solo PDF, DOC, DOCX o imágenes." });
+        return res.status(400).json({
+          error:
+            "Tipo de archivo no permitido. Solo PDF, DOC, DOCX o imágenes.",
+        });
       }
     }
 
@@ -83,25 +97,42 @@ const postReservation = async (req, res) => {
       const selectedEnd = new Date(`${date}T${end_time}`);
 
       if (selectedStart <= now) {
-        return res.status(400).json({ error: "No puedes reservar un horario que ya pasó." });
+        return res
+          .status(400)
+          .json({ error: "No puedes reservar un horario que ya pasó." });
       }
       if (selectedEnd <= selectedStart) {
-        return res.status(400).json({ error: "La hora de término debe ser posterior a la hora de inicio." });
+        return res.status(400).json({
+          error: "La hora de término debe ser posterior a la hora de inicio.",
+        });
       }
 
-      const durationInMilliseconds = selectedEnd.getTime() - selectedStart.getTime();
+      const durationInMilliseconds =
+        selectedEnd.getTime() - selectedStart.getTime();
       const durationInMinutes = durationInMilliseconds / (1000 * 60);
       if (durationInMinutes < 30) {
-        return res.status(400).json({ error: "La duración mínima de la reserva debe ser de 30 minutos." });
+        return res.status(400).json({
+          error: "La duración mínima de la reserva debe ser de 30 minutos.",
+        });
       }
 
-      const available = await isSlotAvailable(service_id, date, start_time, end_time);
+      const available = await isSlotAvailable(
+        service_id,
+        date,
+        start_time,
+        end_time
+      );
       if (!available) {
-        return res.status(409).json({ error: "El horario seleccionado ya está reservado." });
+        return res
+          .status(409)
+          .json({ error: "El horario seleccionado ya está reservado." });
       }
     }
 
-    const newReservation = await createReservation({ ...req.body, file_url: file ? `/uploads/${file.filename}` : null });
+    const newReservation = await createReservation({
+      ...req.body,
+      file_url: file ? `/uploads/${file.filename}` : null,
+    });
     res.status(201).json(newReservation);
   } catch (error) {
     console.error(error);
@@ -154,7 +185,6 @@ const getRoomReservationsByDate = async (req, res) => {
 
 const getAllReservationsAdmin = async (req, res) => {
   try {
-    // Query con los joins correctos y el filtro (pendientes O de hoy)
     const query = `
       SELECT 
         r.id, r.user_id, r.service_id, r.quantity, r.size, r.file_url,
@@ -170,10 +200,8 @@ const getAllReservationsAdmin = async (req, res) => {
       LEFT JOIN persona p ON u.persona_id = p.id 
       LEFT JOIN oficina o ON p.id = o.persona_id
 
-      -- --- Filtro Lógico Añadido ---
       WHERE
         r.status = 'pendiente' OR r.date = CURRENT_DATE
-      -- --- Fin del Filtro ---
 
       ORDER BY 
         CASE 
@@ -192,7 +220,7 @@ const getAllReservationsAdmin = async (req, res) => {
   }
 };
 
-// --- NUEVA FUNCIÓN: COMPLETAR RESERVA MANUALMENTE ---
+// COMPLETAR RESERVA MANUALMENTE
 const completeReservationManual = async (req, res) => {
   try {
     const { id } = req.params;
@@ -205,14 +233,46 @@ const completeReservationManual = async (req, res) => {
     const result = await pool.query(query, [id]);
 
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: "Reserva no encontrada o ya no está pendiente" });
+      return res
+        .status(404)
+        .json({ error: "Reserva no encontrada o ya no está pendiente" });
     }
-    
+
     // Devolvemos la reserva actualizada
     res.json(result.rows[0]);
   } catch (err) {
     console.error("Error al completar la reserva:", err);
     res.status(500).json({ error: "Error al completar la reserva" });
+  }
+};
+
+const completePastReservations = async (req, res) => {
+  try {
+    const now = new Date();
+    const today = now.toISOString().split("T")[0];
+    const currentTime = now.toTimeString().slice(0, 8);
+    const query = `
+      UPDATE reservations
+      SET status = 'completada'
+      WHERE service_id = 4 
+      AND status = 'pendiente'
+      AND (
+        (date < $1) OR
+        (date = $1 AND end_time <= $2)
+      )
+      RETURNING *;
+    `;
+
+    const values = [today, currentTime];
+    const result = await pool.query(query, values);
+
+    res.json({
+      message: `${result.rowCount} reservas completadas automáticamente`,
+      updated: result.rows,
+    });
+  } catch (err) {
+    console.error("Error actualizando reservas pasadas:", err);
+    res.status(500).json({ error: "Error actualizando reservas pasadas" });
   }
 };
 
@@ -224,4 +284,5 @@ module.exports = {
   getRoomReservationsByDate,
   getAllReservationsAdmin,
   completeReservationManual,
+  completePastReservations,
 };

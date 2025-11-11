@@ -14,7 +14,7 @@ async function createReservation(data) {
     file_url,
     date,
     start_time,
-    end_time
+    end_time,
   } = data;
 
   const serviceRes = await pool.query(
@@ -24,11 +24,12 @@ async function createReservation(data) {
   const valor_base = serviceRes.rows[0]?.valor_base || 0;
 
   const oficinaRes = await pool.query(
-    "SELECT id FROM oficina WHERE persona_id = $1",
+    `SELECT id FROM oficina 
+     WHERE persona_id = (SELECT persona_id FROM usuarios WHERE id = $1)`,
     [user_id]
   );
-  
-  const oficina_id = oficinaRes.rows[0]?.id || null; 
+
+  const oficina_id = oficinaRes.rows[0]?.id || null;
 
   let cantidadNum = 1;
   if (quantity) {
@@ -46,7 +47,18 @@ async function createReservation(data) {
     `INSERT INTO reservations 
       (user_id, service_id, quantity, size, file_url, date, start_time, end_time, status, valor_total, oficina_id)
       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,'pendiente',$9, $10) RETURNING *`,
-    [user_id, service_id, quantity || null, size, file_url, date, start_time, end_time, valor_total, oficina_id] // Añadir oficina_id
+    [
+      user_id,
+      service_id,
+      quantity || null,
+      size,
+      file_url,
+      date,
+      start_time,
+      end_time,
+      valor_total,
+      oficina_id,
+    ] // Añadir oficina_id
   );
 
   return { ...result.rows[0], valor_base, cantidadNum, valor_total };

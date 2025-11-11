@@ -9,6 +9,7 @@ const {
   postReservation,
   getAllReservationsAdmin,
   completeReservationManual,
+  completePastReservations,
 } = require("../controllers/reservationsController.js");
 
 const router = express.Router();
@@ -18,37 +19,8 @@ router.get("/user/:id", getUserRes);
 router.put("/:id/cancel", cancelRes);
 router.get("/room/:serviceId/:date", getRoomReservationsByDate);
 router.post("/", upload.single("file"), postReservation);
-
 router.get("/admin/all", getAllReservationsAdmin);
-
 router.put("/:id/complete", completeReservationManual);
-
-router.put("/complete-past", async (req, res) => {
-  try {
-    const now = new Date();
-    const today = now.toISOString().split("T")[0];
-    const currentTime = now.toTimeString().slice(0, 8);
-
-    const query = `
-      UPDATE reservations
-      SET status = 'completada'
-      WHERE service_id = 4 
-      AND status = 'pendiente'
-      AND (
-        (date < $1) OR
-        (date = $1 AND end_time <= $2)
-      )
-      RETURNING *;
-    `;
-
-    const values = [today, currentTime];
-    const result = await pool.query(query, values);
-
-    res.json({ message: `${result.rowCount} reservas completadas`, updated: result.rows });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Error actualizando reservas" });
-  }
-});
+router.put("/complete-past", completePastReservations);
 
 module.exports = router;
