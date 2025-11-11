@@ -72,7 +72,7 @@ const actualizarEntrada = async (req, res) => {
       es_privado || false, id
     ];
 
-    const resul = await pool.query(query, params);
+    const result = await pool.query(query, params);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: " Entrada de bitacora no encontrada"});
     }

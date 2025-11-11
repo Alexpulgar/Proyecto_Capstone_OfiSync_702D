@@ -158,3 +158,24 @@
   text-align: right;
   margin-top: 0.5rem;
 }
+
+.form-group.form-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  justify-content: flex-start;
+}
+
+.form-group.form-buttons button {
+  flex: 1;
+  max-width: 250px;
+  width: auto;
+}
+
+.form-group.form-buttons .btn-cancel {
+  background-color: #6c757d;
+}
+
+.form-group.form-buttons .btn-cancel:hover {
+  background-color: #5a6268;
+}

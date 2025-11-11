@@ -29,7 +29,7 @@ router.get("/", authMiddleware, checkRole(rolesAdmin), obtenerEntradas);
 router.post("/", authMiddleware, checkRole(rolesAdmin), middlewareValidar, crearEntrada);
 
 //Rutas protegidas por rol
-router.put("/", authMiddleware, checkRole(rolesAdmin),middlewareValidar, actualizarEntrada);
+router.put("/:id", authMiddleware, checkRole(rolesAdmin),middlewareValidar, actualizarEntrada);
 router.delete("/:id", authMiddleware, checkRole(rolesAdmin), borrarEntrada);
 
 module.exports = router;

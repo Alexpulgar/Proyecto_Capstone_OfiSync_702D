@@ -15,7 +15,6 @@ const formInicial = {
   titulo: "",
   descripcion: "",
   tipo: "General",
-  es_privado: false,
 };
 
 function Bitacora() {
@@ -86,8 +85,7 @@ function Bitacora() {
     setForm({
       titulo: entrada.titulo,
       descripcion: entrada.descripcion,
-      tipo: entrada.tipo,
-      es_privado: entrada.es_privado || false
+      tipo: entrada.tipo
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -139,11 +137,6 @@ function Bitacora() {
         <div className="form-group span-2">
           <label htmlFor="descripcion">Descripción:</label>
           <textarea id="descripcion" name="descripcion" value={form.descripcion} onChange={handleChange} rows={4} placeholder="Describa el evento o la novedad..."/>
-        </div>
-
-        <div className="form-group form-check">
-          <input id="es_privado" name="es_privado" type="checkbox" checked={form.es_privado} onChange={handleChange} />
-          <label htmlFor="es_privado">Marcar como nota privada (solo Admin/Conserje)</label>
         </div>
 
         <div className="form-group span-2 form-buttons">
