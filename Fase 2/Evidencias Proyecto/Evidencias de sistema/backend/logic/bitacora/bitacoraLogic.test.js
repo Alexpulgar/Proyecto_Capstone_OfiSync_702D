@@ -12,12 +12,12 @@ afterEach(() => {
 });
 
 describe('Logica de bitacora - borrarEntrada', () => {
-    it('Debe lanzar un error si la bitacora no se esncuentra', async () => {
+    it('Debe lanzar un error si la bitacora no se encuentra', async () => {
         pool.query.mockResolvedValue({ rows: [] });
 
         await expect(bitacoraLogic.borrarEntrada(999)) //999 = id de prueba
             .rejects
-            .toThrow('Entrada de bitacora no encontrada');
+            .toThrow('Entrada de bitácora no encontrada');
 
         // se intenta llamar a la bd una vez        
         expect(pool.query).toHaveBeenCalledTimes(1);
@@ -29,8 +29,8 @@ describe('Logica de bitacora - borrarEntrada', () => {
 
         const resultado = await bitacoraLogic.borrarEntrada(1);
 
-        expect(resultado).toEqual({message: 'Entrada de bitacora eliminada' });
-
+        expect(resultado).toEqual({message: 'Entrada de bitácora eliminada' });
+        
         expect(pool.query).toHaveBeenCalledTimes(1);
     });
 });

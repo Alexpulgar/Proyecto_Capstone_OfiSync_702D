@@ -4,10 +4,12 @@ const bitacoraSchema = Joi.object({
     titulo: Joi.string().trim().min(3).required().messages({
         'string.empty': 'El título es obligatorio',
         'string.min': 'El título debe tener al menos 3 caracteres',
+        'any.required': 'El título es obligatorio'
     }),
     descripcion: Joi.string().trim().min(5).required().messages({
-    'string.empty': 'La descripción es obligatoria',
-    'string.min': 'La descripción debe tener al menos 5 caracteres',
+        'string.empty': 'La descripción es obligatoria',
+        'string.min': 'La descripción debe tener al menos 5 caracteres',
+        'any.required': 'La descripción es obligatoria' 
   }),
   tipo:Joi.string().trim().optional().default('General'),
 });
