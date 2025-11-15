@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import {
   getAllReservationsAdmin,
   cancelReservationApi,
   completeReservationApi,
-} from '../../../services/reservationService'; 
-import { Alert, Spinner, Card, Button, Badge } from 'react-bootstrap';
-import { FaFilePdf, FaFileWord, FaFileImage, FaFileAlt } from 'react-icons/fa';
-import './Reservas.css';
+} from "../../../services/reservationService";
+import { Alert, Spinner, Card, Button, Badge } from "react-bootstrap";
+import { FaFilePdf, FaFileWord, FaFileImage, FaFileAlt } from "react-icons/fa";
+import "./Reservas.css";
 
 export default function Reservas() {
   const [reservations, setReservations] = useState([]);
@@ -41,7 +41,7 @@ export default function Reservas() {
     try {
       await cancelReservationApi(id);
       alert("Reserva cancelada");
-      fetchReservations(); 
+      fetchReservations();
     } catch (err) {
       console.error(err);
       alert(err.message || "Error al cancelar la reserva");
@@ -50,13 +50,17 @@ export default function Reservas() {
 
   // Manejador para Completar
   const handleComplete = async (id) => {
-    if (!window.confirm("¿Estás seguro de que deseas marcar esta reserva como completada?")) {
+    if (
+      !window.confirm(
+        "¿Estás seguro de que deseas marcar esta reserva como completada?"
+      )
+    ) {
       return;
     }
     try {
       await completeReservationApi(id);
       alert("Reserva completada");
-      fetchReservations(); 
+      fetchReservations();
     } catch (err) {
       console.error(err);
       alert(err.message || "Error al completar la reserva");
@@ -67,15 +71,19 @@ export default function Reservas() {
 
   const getStatusVariant = (status) => {
     switch (status) {
-      case "pendiente": return "warning";
-      case "completada": return "success";
-      case "cancelada": return "danger";
-      default: return "secondary";
+      case "pendiente":
+        return "warning";
+      case "completada":
+        return "success";
+      case "cancelada":
+        return "danger";
+      default:
+        return "secondary";
     }
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return 'N/A';
+    if (!dateStr) return "N/A";
     const date = new Date(dateStr);
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0");
@@ -84,7 +92,7 @@ export default function Reservas() {
   };
 
   const formatCurrency = (value) => {
-    if (value == null) return 'N/A';
+    if (value == null) return "N/A";
     return value.toLocaleString("es-CL", {
       style: "currency",
       currency: "CLP",
@@ -96,10 +104,10 @@ export default function Reservas() {
     if (!file_url) return null;
 
     const extension = file_url.split(".").pop().toLowerCase();
-    
+
     // 1. Obtenemos el nombre codificado
     const encodedFileName = file_url.split("/").pop();
-    
+
     // 2. Decodificamos el nombre SOLO para mostrarlo y para el atributo 'download'
     const fileName = decodeURIComponent(encodedFileName);
 
@@ -117,11 +125,7 @@ export default function Reservas() {
     const fullUrl = `http://localhost:4000${file_url}`;
 
     return (
-      <a 
-        href={fullUrl}
-        download={fileName}
-        className="file-preview-link"
-      >
+      <a href={fullUrl} download={fileName} className="file-preview-link">
         <div className="file-card-web">
           {icon}
           <span className="file-name-web">{fileName}</span>
@@ -129,7 +133,6 @@ export default function Reservas() {
       </a>
     );
   };
-
 
   if (loading) {
     return (
@@ -143,13 +146,15 @@ export default function Reservas() {
   }
 
   if (error && reservations.length === 0) {
-    return <Alert variant="danger" className="mt-3">{error}</Alert>;
+    return (
+      <Alert variant="danger" className="mt-3">
+        {error}
+      </Alert>
+    );
   }
 
   return (
     <div className="reservas-container">
-      <h2 className="mb-4">Gestión de Reservas</h2>
-      
       {reservations.length === 0 && !loading && (
         <Alert variant="info">No se encontraron reservas.</Alert>
       )}
@@ -158,10 +163,12 @@ export default function Reservas() {
         {reservations.map((item) => (
           <Card key={item.id} className="mb-3 shadow-sm reserva-card">
             <Card.Header className="d-flex justify-content-between align-items-center">
-              <Card.Title className="mb-0 h5">
-                {item.service_name}
-              </Card.Title>
-              <Badge pill bg={getStatusVariant(item.status)} className="status-badge">
+              <Card.Title className="mb-0 h5">{item.service_name}</Card.Title>
+              <Badge
+                pill
+                bg={getStatusVariant(item.status)}
+                className="status-badge"
+              >
                 {item.status}
               </Badge>
             </Card.Header>
@@ -169,42 +176,55 @@ export default function Reservas() {
               <Card.Text>
                 <strong>Usuario:</strong> {item.user_name} <br />
                 {item.numero_oficina && (
-                  <><strong>Oficina:</strong> {item.numero_oficina} <br /></>
+                  <>
+                    <strong>Oficina:</strong> {item.numero_oficina} <br />
+                  </>
                 )}
                 {item.date && (
-                  <><strong>Fecha:</strong> {formatDate(item.date)} <br /></>
+                  <>
+                    <strong>Fecha:</strong> {formatDate(item.date)} <br />
+                  </>
                 )}
                 {item.start_time && (
-                  <><strong>Horario:</strong> {item.start_time.slice(0, 5)} - {item.end_time.slice(0, 5)} <br /></>
+                  <>
+                    <strong>Horario:</strong> {item.start_time.slice(0, 5)} -{" "}
+                    {item.end_time.slice(0, 5)} <br />
+                  </>
                 )}
                 {item.quantity && (
-                  <><strong>Cantidad:</strong> {item.quantity} <br /></>
+                  <>
+                    <strong>Cantidad:</strong> {item.quantity} <br />
+                  </>
                 )}
                 {item.size && (
-                  <><strong>Tamaño:</strong> {item.size} <br /></>
+                  <>
+                    <strong>Tamaño:</strong> {item.size} <br />
+                  </>
                 )}
                 {item.valor_total != null && (
-                  <><strong>Valor Total:</strong> {formatCurrency(item.valor_total)} <br /></>
+                  <>
+                    <strong>Valor Total:</strong>{" "}
+                    {formatCurrency(item.valor_total)} <br />
+                  </>
                 )}
               </Card.Text>
-              
-              {renderFilePreview(item.file_url)}
 
+              {renderFilePreview(item.file_url)}
             </Card.Body>
-            {item.status === 'pendiente' && (
+            {item.status === "pendiente" && (
               <Card.Footer className="card-footer-actions">
-                {item.service_type !== 'room' && (
-                  <Button 
-                    variant="success" 
-                    size="sm" 
+                {item.service_type !== "room" && (
+                  <Button
+                    variant="success"
+                    size="sm"
                     onClick={() => handleComplete(item.id)}
                   >
                     Completar
                   </Button>
                 )}
-                
-                <Button 
-                  variant="danger" 
+
+                <Button
+                  variant="danger"
                   size="sm"
                   onClick={() => handleCancel(item.id)}
                 >
