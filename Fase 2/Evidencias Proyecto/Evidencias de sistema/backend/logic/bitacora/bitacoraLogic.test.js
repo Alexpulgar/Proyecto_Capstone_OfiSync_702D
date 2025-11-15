@@ -1,25 +1,10 @@
-/*
- * -----------------------------------------------------------------
- * Archivo Corregido: logic/bitacora/bitacoraLogic.test.js
- * -----------------------------------------------------------------
- *
- * NOTAS DE CORRECCIÓN:
- * 1.  El 'jest.mock' ahora simula 'db.js' (que exporta 'pool'
- * directamente).
- * 2.  La importación 'const pool = require(...)' ahora importa el mock.
- * 3.  Se corrigió la aserción en 'actualizarEntrada' para que
- * 'toHaveBeenCalledWith' use la query multilínea exacta
- * de 'bitacoraLogic.js', solucionando el fallo del test.
- */
 
 const bitacoraLogic = require('./bitacoraLogic');
 
-// 1. Simular 'db.js' que exporta 'pool' directamente
 jest.mock('../../models/db', () => ({
   query: jest.fn(),
 }));
 
-// 2. Importar el 'pool' (que ahora es nuestro mock)
 const pool = require('../../models/db');
 
 describe('Prueba Unitaria: bitacoraLogic', () => {
@@ -79,7 +64,6 @@ describe('Prueba Unitaria: bitacoraLogic', () => {
   });
 
   // --- PRUEBA ACTUALIZAR ---
-  // 3. Corregido para el fallo de aserción
   test('actualizarEntrada debe ejecutar una query de UPDATE', async () => {
     const mockDatos = {
       titulo: 'Actualizado',

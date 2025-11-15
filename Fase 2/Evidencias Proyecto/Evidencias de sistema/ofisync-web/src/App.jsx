@@ -7,6 +7,7 @@ import {
   useLocation,
 } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Toaster } from "sonner"; 
 
 // Componentes Reutilizables
 import Header from "./components/Header/Header";
@@ -158,8 +159,6 @@ function Layout() {
               </ProtectedRoute>
             }
           />
-          {/* Ruta Catch-all al final */}
-          {/* Si está logueado va a /inicio, si no, ProtectedRoute lo manda a /login */}
           <Route
             path="*"
             element={
@@ -192,10 +191,11 @@ function Layout() {
   );
 }
 
-// Componente App principal
+
 function App() {
   return (
     <Router>
+      <Toaster richColors position="top-right" /> 
       <Layout />
     </Router>
   );

@@ -1,4 +1,3 @@
-
 const request = require('supertest');
 const app = require('../../index'); // Importa la app real
 const pool = require('../../models/db'); // Importa el mock
@@ -34,7 +33,7 @@ describe('Pruebas de Integración para Endpoints de Insumo (con Mocks)', () => {
       expect(res.statusCode).toEqual(200);
       expect(res.body).toEqual(mockInsumos);
       expect(pool.query).toHaveBeenCalledWith(
-        'SELECT * FROM insumos ORDER BY nombre ASC'
+        'SELECT * FROM insumo ORDER BY nombre ASC' 
       );
     });
   });
@@ -137,7 +136,7 @@ describe('Pruebas de Integración para Endpoints de Insumo (con Mocks)', () => {
       expect(res.body.message).toEqual('Insumo eliminado');
       
       expect(pool.query).toHaveBeenCalledWith(
-        'DELETE FROM insumos WHERE id = $1 RETURNING *',
+        'DELETE FROM insumo WHERE id = $1 RETURNING *', 
         ['1'] 
       );
     });

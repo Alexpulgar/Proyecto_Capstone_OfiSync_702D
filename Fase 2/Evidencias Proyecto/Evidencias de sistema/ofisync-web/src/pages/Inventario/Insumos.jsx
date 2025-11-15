@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { getInsumos, createInsumo, updateInsumo, deleteInsumo } from "../../../services/insumoService";
 import "./Insumos.css";
+import { toast } from "sonner"; 
 
 function InventarioInsumos(){
     const [insumos, setInsumos] = useState([]);
@@ -9,8 +10,9 @@ function InventarioInsumos(){
         id: null,
         nombre:"",
         categoria:"",
-        stock:"", // Se mantiene como string para el input
-        stock_minimo:"", // Se mantiene como string para el input
+        stock:"", 
+        stock_minimo:"", 
+        estado: "" // <--- 1. AÑADIDO ESTADO AL FORM
     });
 
     useEffect(() => {
@@ -23,105 +25,110 @@ function InventarioInsumos(){
             setInsumos(data);
         }catch (err) {
             console.error("Error al cargar insumos:", err);
+            toast.error("Error al cargar los insumos.");
         }
     };
 
-    //Manejar cambios en el formulario
     const handleChange = (e) => {
         const {name, value} = e.target;
         setForm((prev) => ({ ...prev, [name]: value}));
     };
 
-    //guardar o actualizar
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        // --- Validaciones (igual que antes) ---
         if(!form.nombre.trim() || !form.categoria) {
-          console.error("El nombre y la categoria son obligatorios");
+          toast.error("El nombre y la categoría son obligatorios");
           return;
         }
-
-        // Convertir a números para validar
-        // Usamos parseInt para números enteros. Si necesitaras decimales, usa parseFloat.
         const stockNum = parseInt(form.stock, 10);
         const stockMinNum = parseInt(form.stock_minimo, 10);
-
-        // Comprobar que no estén vacíos (form.stock === "") y que sean números (isNaN)
         if (form.stock === "" || isNaN(stockNum)) {
-          console.error("El stock es obligatorio y tiene que ser un numero.");
+          toast.error("El stock es obligatorio y debe ser un número.");
           return; 
         }
         if (form.stock_minimo === "" || isNaN(stockMinNum)) {
-          console.error("El stock minimo es obligatorio y tiene que ser un numero.");
+          toast.error("El stock mínimo es obligatorio y debe ser un número.");
           return; 
         }
-
-        // Comprobar que no sean negativos
-        if (stockNum < 0) {
-          console.error("El stock actual no puede ser negativo");
+        if (stockNum < 0 || stockMinNum < 0) {
+          toast.error("El stock no puede ser negativo.");
           return;
         } 
-        if (stockMinNum < 0) {
-          console.error("El stock minimo no puede ser negativo");
-          return;
-        }
 
+        // --- CORRECCIÓN EN LA LÓGICA DE GUARDADO ---
         try {
-            // Creamos un objeto de datos limpios para enviar al backend
-            // Esto asegura que enviamos números, no los strings del formulario
-            const payload = {...form, stock: stockNum, stock_minimo: stockMinNum
+            // Creamos el payload base que requiere el backend
+            // (El error 400 demuestra que 'estado' es obligatorio SIEMPRE)
+            const payload = {
+                nombre: form.nombre,
+                categoria: form.categoria,
+                stock: stockNum,
+                stock_minimo: stockMinNum,
+                // Si editamos, usamos el estado del form. Si creamos, 'Activo' por defecto.
+                estado: editando ? form.estado : 'Activo' // <--- ESTA LÍNEA ES LA CLAVE
             };
 
             if(editando) {
-                // Enviamos los datos parseados
+                // El ID se pasa por URL, el payload NO debe llevar el ID.
                 await updateInsumo(form.id, payload);
-            }else {
-                // Enviamos los datos parseados
+                toast.success("Insumo actualizado correctamente.");
+            } else {
+                // El payload no lleva ID, el backend lo genera.
                 await createInsumo(payload);
+                toast.success("Insumo creado correctamente.");
             }
 
-            setForm({id:null, nombre:"",categoria:"", stock:"", stock_minimo:""});
+            // Reseteamos el form (incluyendo el estado)
+            setForm({id:null, nombre:"",categoria:"", stock:"", stock_minimo:"", estado: ""});
             setEditando(false);
             cargarInsumos();
         }catch (err) {
             console.error("Error al guardar insumo:", err);
+            // El toast ahora mostrará el error específico (ej. 400 o 500)
+            toast.error(`Error al guardar: ${err.message}`); 
         }
     };
 
-    //Eliminar
     const handleDelete = async (id) => {
         if (!window.confirm("¿Seguro que deseas eliminar este insumo?")) return;
+        
         try {
             await deleteInsumo(id);
+            toast.success("Insumo eliminado.");
             cargarInsumos();
         } catch (err) {
             console.error("Error al eliminar insumo:" ,err);
+            toast.error("Error al eliminar el insumo.");
         }
     };
 
-    //Editar
      const handleEdit = (insumo) => {
     setForm({
         id: insumo.id,
         nombre: insumo.nombre,
         categoria: insumo.categoria,
         stock: String(insumo.stock),
-        stock_minimo: String(insumo.stock_minimo)
+        stock_minimo: String(insumo.stock_minimo),
+        estado: insumo.estado // <--- 2. AÑADIDO (guarda el estado al editar)
     });
     setEditando(true);
     };
 
-    //Cancelar edicion 
      const handleCancel = () => {
-    setForm({ id: null, nombre: "", categoria: "", stock: "", stock_minimo: ""});
-    setEditando(false);
-  };
+        // <--- 3. AÑADIDO (limpia el estado al cancelar)
+        setForm({ id: null, nombre: "", categoria: "", stock: "", stock_minimo: "", estado: ""});
+        setEditando(false);
+    };
 
   return (
     <div className="insumos-container">
       <h2>Gestión de Insumos</h2>
 
       <form className="insumos-form" onSubmit={handleSubmit}>
+        {/* ... (inputs de nombre, categoria, stock, stock_minimo) ... */}
+        
         <div className="form-group">
           <label htmlFor="nombre">Nombre:</label>
           <input id="nombre" name="nombre" type="text" placeholder="Ej: Cloro 5L" value={form.nombre} onChange={handleChange}/>
@@ -139,7 +146,6 @@ function InventarioInsumos(){
 
         <div className="form-group">
           <label htmlFor="stock">Stock actual:</label>
-          {/* El input type="number" sigue aceptando strings vacíos, por eso validamos en el submit */}
           <input id="stock" name="stock" type="number" min="0" placeholder="0" value={form.stock} onChange={handleChange}/>
         </div>
 
@@ -147,6 +153,18 @@ function InventarioInsumos(){
           <label htmlFor="stock_minimo">Stock mínimo:</label>
           <input id="stock_minimo" name="stock_minimo" type="number" min ="0" placeholder="0" value={form.stock_minimo} onChange={handleChange}/>
         </div>
+
+        {/* --- CAMPO 'ESTADO' (Solo visible al editar) --- */}
+        {editando && (
+            <div className="form-group">
+                <label htmlFor="estado">Estado:</label>
+                <select id="estado" name="estado" value={form.estado} onChange={handleChange}>
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                </select>
+            </div>
+        )}
+
         
         <div className="form-group span-2">
           <button type="submit">{editando ? "Actualizar Insumo" : "Agregar Insumo"}</button>
@@ -179,7 +197,9 @@ function InventarioInsumos(){
                   <td>{i.categoria}</td>
                   <td>{i.stock}</td>
                   <td>{i.stock_minimo}</td>
-                  <td className={i.estado === "activo" ? "estado-activo" : "estado-inactivo"}>{i.estado}</td>
+                  <td className={i.estado && i.estado.toLowerCase() === "activo" ? "estado-activo" : "estado-inactivo"}>
+                    {i.estado}
+                  </td>
                   <td>
                     <button className="btn-edit" onClick={() => handleEdit(i)}>Editar</button>
                     <button className="btn-delete" onClick={() => handleDelete(i.id)}>Eliminar</button>

@@ -11,7 +11,7 @@ let server;
 
 // Iniciamos y cerramos un servidor para nuestras pruebas
 beforeAll((done) => {
-    server = app.listen(4005, done); // Puerto para piso
+    server = app.listen(4006, done); // Puerto para piso
 });
 
 afterAll((done) => {
