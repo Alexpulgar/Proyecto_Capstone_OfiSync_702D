@@ -1,176 +1,218 @@
-/* --- ESTILOS PARA EL CONTENEDOR DE BÚSQUEDA --- */
-
 .busqueda-container {
-    background-color: white;
-    border-radius: 20px;
-    padding: 30px;
-    margin-bottom: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    color: #333;
+  background-color: white;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  color: #333;
 }
 
 .busqueda-container h2 {
-    color: #184866;
-    margin-top: 0;
-    margin-bottom: 25px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    font-size: 1.6rem;
+  color: #184866;
+  margin-top: 0;
+  margin-bottom: 25px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 1.6rem;
 }
 
-/* Usamos Grid para el formulario, se adapta automáticamente */
 .busqueda-form {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px 25px; /* Espacio vertical y horizontal */
-    align-items: end; /* Alinea los elementos al final (útil para los botones) */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px 25px;
+  align-items: end;
 }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .form-group label {
-    margin-bottom: 8px;
-    font-weight: 500;
-    font-size: 0.9rem;
-    color: #555;
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #555;
 }
 
 .form-group input,
 .form-group select {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    font-size: 1rem;
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  font-size: 1rem;
 }
 
 .form-group input:focus,
 .form-group select:focus {
-    outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
 }
 
-/* Contenedor para los botones */
 .button-group {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .busqueda-form button {
-    flex-grow: 1; /* Para que ambos botones ocupen el mismo espacio */
-    padding: 12px;
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+  flex-grow: 1;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .busqueda-form button[type="submit"] {
-    background: linear-gradient(45deg, #001aff, #00b7ff);
-    color: white;
+  background: linear-gradient(45deg, #001aff, #00b7ff);
+  color: white;
 }
 
 .busqueda-form button[type="button"] {
-    background-color: #e9ecef;
-    color: #333;
-    border: 1px solid #ccc;
+  background-color: #e9ecef;
+  color: #333;
+  border: 1px solid #ccc;
 }
 
 .busqueda-form button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* --- ESTILOS PARA LA TABLA DE RESULTADOS Y REGISTROS --- */
-
 .lista-container {
-    display: flex;
-    gap: 30px;
-    margin-top: 20px;
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
 }
 
 .tabla-oficinas {
-    flex-grow: 1; /* La tabla ocupa el espacio disponible */
-    background-color: white;
-    border-radius: 20px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  flex-grow: 1;
+  background-color: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .tabla-oficinas h2 {
-    color: #184866;
-    margin-top: 0;
-    margin-bottom: 10px;
+  color: #184866;
+  margin-top: 0;
+  margin-bottom: 10px;
 }
 
 .tabla-info {
-    color: #666;
-    margin-bottom: 20px;
-    font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
 }
 
 .acciones-laterales {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    flex-shrink: 0; /* Evita que se encoja */
-    width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex-shrink: 0;
+  width: 200px;
 }
 
 .accion-btn {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    text-align: center;
-    background-color: white;
-    border-radius: 10px;
-    text-decoration: none;
-    color: #333;
-    font-weight: 500;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    transition: transform 0.2s, box-shadow 0.2s;
+  display: block;
+  width: 100%;
+  padding: 15px;
+  text-align: center;
+  background-color: white;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .accion-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
-    color: #007bff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+  color: #007bff;
 }
 
-/* Estilo general de la tabla */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
 }
 
-table th, table td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #e9ecef;
+table th,
+table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
 }
 
 table th {
-    background-color: #f8f9fa;
-    color: #343a40;
-    font-weight: 600;
-    font-size: 0.9rem;
-    text-transform: uppercase;
+  background-color: #f8f9fa;
+  color: #343a40;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
 }
 
 table tbody tr:hover {
-    background-color: #f1f3f5;
+  background-color: #f1f3f5;
 }
 
 table td[colspan] {
-    text-align: center;
-    padding: 40px;
-    color: #888;
+  text-align: center;
+  padding: 40px;
+  color: #888;
+}
+
+@media (max-width: 768px) {
+  .lista-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .acciones-laterales {
+    width: 100%;
+    flex-direction: row;
+    gap: 10px;
+  }
+
+  .accion-btn {
+    flex-grow: 1;
+  }
+
+  .tabla-oficinas {
+    width: 100%;
+    overflow-x: auto;
+    padding: 20px;
+  }
+
+  .tabla-oficinas table {
+    min-width: 700px;
+  }
+
+  .busqueda-container {
+    padding: 20px;
+  }
+
+  .busqueda-form {
+    gap: 15px;
+  }
+
+  .button-group {
+    flex-direction: column;
+    grid-column: 1 / -1;
+  }
+
+  .tabla-resultados-wrapper {
+    overflow-x: auto;
+  }
+
+  .tabla-resultados-wrapper table {
+    min-width: 700px;
+  }
 }

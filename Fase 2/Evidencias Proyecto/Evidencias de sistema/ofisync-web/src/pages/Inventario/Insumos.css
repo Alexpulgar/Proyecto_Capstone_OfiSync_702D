@@ -138,3 +138,29 @@
 .btn-delete:hover {
   background-color: #cc0000;
 }
+
+@media (max-width: 768px) {
+  .insumos-container {
+    padding: 20px;
+    margin-top: 20px;
+  }
+
+  .insumos-form {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .insumos-table-container {
+    overflow-x: auto;
+  }
+
+  .insumos-table {
+    min-width: 600px;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+}
