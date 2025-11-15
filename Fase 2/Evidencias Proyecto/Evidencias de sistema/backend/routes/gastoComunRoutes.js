@@ -5,6 +5,7 @@ const {
   subirComprobante,
   getVouchersEnRevision,
   reviewVoucher,
+  getGastoStatus,
 } = require("../controllers/gastoComunController");
 const router = express.Router();
 const upload = require("../middlewares/upload");
@@ -22,5 +23,7 @@ router.post(
 router.get("/revision", getVouchersEnRevision);
 
 router.put("/review", reviewVoucher);
+
+router.get("/status", authMiddleware, getGastoStatus);
 
 module.exports = router;

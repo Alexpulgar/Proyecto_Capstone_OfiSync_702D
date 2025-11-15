@@ -393,10 +393,63 @@ const reviewVoucher = async (req, res) => {
   }
 };
 
+const getGastoStatus = async (req, res) => {
+  console.log("--- [DEBUG] Iniciando /gasto-comun/status ---");
+  try {
+    const authenticatedUserId = req.user.id;
+    console.log("[DEBUG] 1. ID de usuario autenticado:", authenticatedUserId);
+
+    const oficinaQuery = `
+      SELECT o.id AS oficina_id
+      FROM usuarios u
+      JOIN persona p ON u.persona_id = p.id
+      LEFT JOIN oficina o ON p.id = o.persona_id
+      WHERE u.id = $1;
+    `;
+    const oficinaResult = await pool.query(oficinaQuery, [authenticatedUserId]);
+
+    if (!oficinaResult.rows.length || !oficinaResult.rows[0].oficina_id) {
+      console.log(
+        "[DEBUG] 2. Resultado de Oficina: No se encontró oficina para el usuario.",
+        oficinaResult.rows
+      );
+      return res.json({ hasPending: false });
+    }
+
+    const userOfficeId = oficinaResult.rows[0].oficina_id;
+    console.log("[DEBUG] 2. ID de oficina encontrado:", userOfficeId);
+
+    const gastoQuery = `
+      SELECT id
+      FROM detallegastocomun 
+      WHERE oficina_id = $1 AND estado_pago = 'pendiente'
+      LIMIT 1;
+    `;
+    const gastoResult = await pool.query(gastoQuery, [userOfficeId]);
+
+    if (gastoResult.rows.length > 0) {
+      console.log(
+        "[DEBUG] 3. Resultado de Gastos: ¡Deuda encontrada!",
+        gastoResult.rows[0]
+      );
+      return res.json({ hasPending: true });
+    } else {
+      console.log(
+        "[DEBUG] 3. Resultado de Gastos: No se encontraron deudas pendientes."
+      );
+      return res.json({ hasPending: false });
+    }
+  } catch (error) {
+    console.error("Error al verificar estado de gastos:", error);
+    res.status(500).json({ error: "Error al verificar estado de gastos" });
+  }
+};
+
 module.exports = {
   calcularGastoComun,
   getGastosPorOficina,
   subirComprobante,
   getVouchersEnRevision,
   reviewVoucher,
+  getGastoStatus,
 };

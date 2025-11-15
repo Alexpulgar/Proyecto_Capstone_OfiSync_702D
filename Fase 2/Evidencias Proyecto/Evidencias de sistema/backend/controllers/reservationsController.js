@@ -38,6 +38,32 @@ const postReservation = async (req, res) => {
       req.body;
     const file = req.file;
 
+    const oficinaQuery = `
+      SELECT o.id AS oficina_id
+      FROM usuarios u
+      JOIN persona p ON u.persona_id = p.id
+      LEFT JOIN oficina o ON p.id = o.persona_id
+      WHERE u.id = $1;
+    `;
+    const oficinaResult = await pool.query(oficinaQuery, [user_id]);
+
+    if (oficinaResult.rows.length > 0 && oficinaResult.rows[0].oficina_id) {
+      const userOfficeId = oficinaResult.rows[0].oficina_id;
+
+      const gastoQuery = `
+        SELECT id
+        FROM detallegastocomun 
+        WHERE oficina_id = $1 AND estado_pago = 'pendiente';
+      `;
+      const gastoResult = await pool.query(gastoQuery, [userOfficeId]);
+
+      if (gastoResult.rows.length > 0) {
+        return res.status(403).json({
+          error: "No puede realizar reservas. Tiene gastos comunes pendientes.",
+        });
+      }
+    }
+
     // Obtener el tipo de servicio desde la base de datos
     const serviceResult = await pool.query(
       "SELECT type FROM services WHERE id = $1",
@@ -92,7 +118,6 @@ const postReservation = async (req, res) => {
     // Validaciones para salas de reuniones
     if (serviceType === "room") {
       const now = new Date();
-      // Asegurarse que la hora de inicio/fin tenga zona horaria Z (UTC) si no la tiene
       const selectedStart = new Date(`${date}T${start_time}`);
       const selectedEnd = new Date(`${date}T${end_time}`);
 
