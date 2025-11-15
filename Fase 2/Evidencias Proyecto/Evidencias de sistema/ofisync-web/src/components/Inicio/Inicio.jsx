@@ -157,7 +157,7 @@ const Inicio = () => {
                 className="stat-icon"
               />
               <div className="stat-info">
-                <h2>Reservas Hoy</h2>
+                <h2>Reservas Pendientes</h2>
                 <p className="stat-number">{stats.reservationsToday}</p>
               </div>
             </div>
