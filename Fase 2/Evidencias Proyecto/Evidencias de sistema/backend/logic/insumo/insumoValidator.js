@@ -1,4 +1,3 @@
-
 const Joi = require('joi');
 
 const insumoSchema = Joi.object({
@@ -16,19 +15,14 @@ const insumoSchema = Joi.object({
   stock: Joi.number().integer().min(0).required().messages({
     'number.base': 'El stock debe ser un número.',
     'number.integer': 'El stock debe ser un número entero.',
-    'number.min': 'El stock no puede ser negativo.',
+    'number.min': 'El stock no puede ser negativo.', 
     'any.required': 'El stock es obligatorio.',
   }),
   stock_minimo: Joi.number().integer().min(0).required().messages({
     'number.base': 'El stock mínimo debe ser un número.',
     'number.integer': 'El stock mínimo debe ser un número entero.',
-    'number.min': 'El stock mínimo no puede ser negativo.',
+    'number.min': 'El stock mínimo no puede ser negativo.', 
     'any.required': 'El stock mínimo es obligatorio.',
-  }),
-  estado: Joi.string().trim().required().messages({
-    'string.base': 'El estado debe ser un texto.',
-    'string.empty': 'El estado es obligatorio.',
-    'any.required': 'El estado es obligatorio.',
   }),
 });
 

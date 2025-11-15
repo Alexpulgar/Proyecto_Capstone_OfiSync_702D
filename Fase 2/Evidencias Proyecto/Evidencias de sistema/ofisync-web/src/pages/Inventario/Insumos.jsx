@@ -12,7 +12,6 @@ function InventarioInsumos(){
         categoria:"",
         stock:"", 
         stock_minimo:"", 
-        estado: "" // <--- 1. AÑADIDO ESTADO AL FORM
     });
 
     useEffect(() => {
@@ -37,7 +36,6 @@ function InventarioInsumos(){
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // --- Validaciones (igual que antes) ---
         if(!form.nombre.trim() || !form.categoria) {
           toast.error("El nombre y la categoría son obligatorios");
           return;
@@ -53,40 +51,31 @@ function InventarioInsumos(){
           return; 
         }
         if (stockNum < 0 || stockMinNum < 0) {
-          toast.error("El stock no puede ser negativo.");
+          toast.error("El stock y el stock mínimo no pueden ser negativos.");
           return;
         } 
 
-        // --- CORRECCIÓN EN LA LÓGICA DE GUARDADO ---
         try {
-            // Creamos el payload base que requiere el backend
-            // (El error 400 demuestra que 'estado' es obligatorio SIEMPRE)
             const payload = {
                 nombre: form.nombre,
                 categoria: form.categoria,
                 stock: stockNum,
                 stock_minimo: stockMinNum,
-                // Si editamos, usamos el estado del form. Si creamos, 'Activo' por defecto.
-                estado: editando ? form.estado : 'Activo' // <--- ESTA LÍNEA ES LA CLAVE
             };
 
             if(editando) {
-                // El ID se pasa por URL, el payload NO debe llevar el ID.
                 await updateInsumo(form.id, payload);
                 toast.success("Insumo actualizado correctamente.");
             } else {
-                // El payload no lleva ID, el backend lo genera.
                 await createInsumo(payload);
                 toast.success("Insumo creado correctamente.");
             }
 
-            // Reseteamos el form (incluyendo el estado)
-            setForm({id:null, nombre:"",categoria:"", stock:"", stock_minimo:"", estado: ""});
+            setForm({id:null, nombre:"",categoria:"", stock:"", stock_minimo:""});
             setEditando(false);
             cargarInsumos();
         }catch (err) {
             console.error("Error al guardar insumo:", err);
-            // El toast ahora mostrará el error específico (ej. 400 o 500)
             toast.error(`Error al guardar: ${err.message}`); 
         }
     };
@@ -111,14 +100,12 @@ function InventarioInsumos(){
         categoria: insumo.categoria,
         stock: String(insumo.stock),
         stock_minimo: String(insumo.stock_minimo),
-        estado: insumo.estado // <--- 2. AÑADIDO (guarda el estado al editar)
     });
     setEditando(true);
     };
 
      const handleCancel = () => {
-        // <--- 3. AÑADIDO (limpia el estado al cancelar)
-        setForm({ id: null, nombre: "", categoria: "", stock: "", stock_minimo: "", estado: ""});
+        setForm({ id: null, nombre: "", categoria: "", stock: "", stock_minimo: ""});
         setEditando(false);
     };
 
@@ -127,7 +114,6 @@ function InventarioInsumos(){
       <h2>Gestión de Insumos</h2>
 
       <form className="insumos-form" onSubmit={handleSubmit}>
-        {/* ... (inputs de nombre, categoria, stock, stock_minimo) ... */}
         
         <div className="form-group">
           <label htmlFor="nombre">Nombre:</label>
@@ -153,18 +139,6 @@ function InventarioInsumos(){
           <label htmlFor="stock_minimo">Stock mínimo:</label>
           <input id="stock_minimo" name="stock_minimo" type="number" min ="0" placeholder="0" value={form.stock_minimo} onChange={handleChange}/>
         </div>
-
-        {/* --- CAMPO 'ESTADO' (Solo visible al editar) --- */}
-        {editando && (
-            <div className="form-group">
-                <label htmlFor="estado">Estado:</label>
-                <select id="estado" name="estado" value={form.estado} onChange={handleChange}>
-                    <option value="Activo">Activo</option>
-                    <option value="Inactivo">Inactivo</option>
-                </select>
-            </div>
-        )}
-
         
         <div className="form-group span-2">
           <button type="submit">{editando ? "Actualizar Insumo" : "Agregar Insumo"}</button>
@@ -186,7 +160,7 @@ function InventarioInsumos(){
                 <th>Categoría</th>
                 <th>Stock</th>
                 <th>Stock mínimo</th>
-                <th>Estado</th>
+                <th>Estado (Automático)</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -197,7 +171,7 @@ function InventarioInsumos(){
                   <td>{i.categoria}</td>
                   <td>{i.stock}</td>
                   <td>{i.stock_minimo}</td>
-                  <td className={i.estado && i.estado.toLowerCase() === "activo" ? "estado-activo" : "estado-inactivo"}>
+                  <td className={i.estado === "activo" ? "estado-activo" : "estado-inactivo"}>
                     {i.estado}
                   </td>
                   <td>

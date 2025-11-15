@@ -1,4 +1,3 @@
-
 const pool = require('../../models/db');
 
 const obtenerTodos = async () => {
@@ -8,7 +7,8 @@ const obtenerTodos = async () => {
   return result.rows;
 };
 
-obtenerPorId = async (id) => {
+// (Agregué 'const' que faltaba)
+const obtenerPorId = async (id) => {
   const result = await pool.query('SELECT * FROM insumo WHERE id = $1', [id]); 
   if (result.rows.length === 0) {
     throw new Error('Insumo no encontrado');
@@ -17,7 +17,12 @@ obtenerPorId = async (id) => {
 };
 
 const crear = async (datos) => {
-  const { nombre, categoria, stock, stock_minimo, estado } = datos;
+  // 1. Ya no recibimos 'estado'
+  const { nombre, categoria, stock, stock_minimo } = datos;
+  
+  // 2. Calculamos el estado (en minúsculas)
+  const estadoCalculado = stock <= 0 ? 'inactivo' : 'activo';
+
   const query = `
     INSERT INTO insumo (nombre, categoria, stock, stock_minimo, estado)
     VALUES ($1, $2, $3, $4, $5)
@@ -28,20 +33,24 @@ const crear = async (datos) => {
     categoria,
     stock,
     stock_minimo,
-    estado,
+    estadoCalculado, // 3. Usamos el estado calculado
   ];
   const result = await pool.query(query, params);
   return result.rows[0];
 };
 
 const actualizar = async (id, datos) => {
-  const { nombre, categoria, stock, stock_minimo, estado } = datos;
+  // 1. Ya no recibimos 'estado'
+  const { nombre, categoria, stock, stock_minimo } = datos;
 
   // Primero, verifica si existe
   const check = await pool.query('SELECT * FROM insumo WHERE id = $1', [id]); 
   if (check.rows.length === 0) {
     throw new Error('Insumo no encontrado');
   }
+
+  // 2. Calculamos el estado (en minúsculas)
+  const estadoCalculado = stock <= 0 ? 'inactivo' : 'activo';
 
   const query = `
     UPDATE insumo
@@ -54,7 +63,7 @@ const actualizar = async (id, datos) => {
     categoria,
     stock,
     stock_minimo,
-    estado,
+    estadoCalculado, 
     id,
   ];
   const result = await pool.query(query, params);
