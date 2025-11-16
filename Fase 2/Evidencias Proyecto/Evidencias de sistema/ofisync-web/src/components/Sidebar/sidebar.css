@@ -4,15 +4,11 @@
   left: 0;
   width: 200px;
   height: calc(100% - 120px);
-  background: linear-gradient(
-    180deg,
-    #001aff,
-    #005fcc
-  ); /* Gradiente más sutil */
+  background: linear-gradient(180deg, #001aff, #005fcc);
   padding: 20px 15px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Empuja el logout hacia abajo */
+  justify-content: space-between;
   font-family: "Oswald", sans-serif;
 }
 
@@ -31,7 +27,7 @@
 .logout-button {
   display: flex;
   align-items: center;
-  gap: 15px; /* Espacio entre icono y texto */
+  gap: 15px;
   padding: 12px 15px;
   border-radius: 8px;
   color: white;
@@ -39,13 +35,13 @@
   font-weight: 400;
   transition: background-color 0.3s ease, color 0.3s ease;
 
-  background: none; /* Quita el fondo por defecto del botón */
-  border: none; /* Quita el borde por defecto del botón */
-  width: 100%; /* Asegura que ocupe todo el ancho */
-  text-align: left; /* Alinea el texto a la izquierda */
-  cursor: pointer; /* Mantiene el cursor de puntero */
-  font-family: "Oswald", sans-serif; /* Asegura la misma fuente */
-  font-size: inherit; /* Usa el tamaño de fuente del sidebar */
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-family: "Oswald", sans-serif;
+  font-size: inherit;
 }
 
 .logout-icon {
@@ -53,13 +49,11 @@
   height: 20px;
 }
 
-/* Efecto al pasar el mouse */
 .sidebar li a:hover,
 .logout-button:hover {
   background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Estilo para el enlace de la página activa */
 .sidebar li a.active {
   background-color: rgba(255, 255, 255, 0.9);
   color: #001aff;
@@ -71,7 +65,6 @@
   height: 20px;
 }
 
-/* El icono del enlace activo también cambia de color */
 .sidebar li a.active .nav-icon {
   filter: invert(10%) sepia(100%) saturate(7401%) hue-rotate(235deg)
     brightness(96%) contrast(108%);

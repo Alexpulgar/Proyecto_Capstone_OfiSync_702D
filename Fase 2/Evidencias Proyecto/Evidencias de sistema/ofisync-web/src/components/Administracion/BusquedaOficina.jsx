@@ -71,7 +71,6 @@ function BusquedaOficina({
         </div>
       </form>
 
-      {/* La tabla de resultados se muestra aquí mismo */}
       <div className="tabla-resultados-wrapper">
         <table>
           <thead>

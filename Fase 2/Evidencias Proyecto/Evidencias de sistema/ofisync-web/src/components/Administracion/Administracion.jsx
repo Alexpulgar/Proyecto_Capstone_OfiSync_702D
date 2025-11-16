@@ -14,23 +14,20 @@ function Administracion() {
     arrendatario: "",
   });
 
-  // 🔹 Cargar todas las oficinas al montar
   useEffect(() => {
     getOficinas()
       .then(setOficinas)
       .catch((err) => console.error("Error al cargar oficinas:", err));
   }, []);
 
-  // 🔹 Manejo de cambios en los filtros
-  const handleChange = (e) => setFiltro({ ...filtro, [e.target.name]: e.target.value });
+  const handleChange = (e) =>
+    setFiltro({ ...filtro, [e.target.name]: e.target.value });
 
-  // 🔹 Limpiar filtros
   const handleClear = () => {
     setFiltro({ codigo: "", piso: "", estado: "", arrendatario: "" });
     setOficinasFiltradas([]);
   };
 
-  // 🔹 Buscar oficinas usando service
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {

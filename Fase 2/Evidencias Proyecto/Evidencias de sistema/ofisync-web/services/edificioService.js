@@ -14,14 +14,12 @@ export async function agregarEdificioApi(edificio) {
   return res.json();
 }
 
-// (La necesitas para rellenar el formulario)
 export async function getEdificioByIdApi(id) {
   const res = await fetch(`${API_URL}/${id}`);
   if (!res.ok) throw new Error("Error al obtener datos del edificio");
   return res.json();
 }
 
-// (La necesitas para guardar)
 export async function actualizarEdificioApi(id, edificioData) {
   const res = await fetch(`${API_URL}/${id}`, {
     method: "PUT",

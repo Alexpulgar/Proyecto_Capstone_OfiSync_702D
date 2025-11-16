@@ -1,9 +1,7 @@
-// jest.config.cjs
 module.exports = {
-  testEnvironment: 'jest-environment-jsdom',
-  // La ruta ahora es más simple
-  setupFilesAfterEnv: ['<rootDir>/setupTests.js'], // <-- LÍNEA CORREGIDA
+  testEnvironment: "jest-environment-jsdom",
+  setupFilesAfterEnv: ["<rootDir>/setupTests.js"],
   moduleNameMapper: {
-    '\\.css$': '<rootDir>/__mocks__/styleMock.cjs',
-  }
+    "\\.css$": "<rootDir>/__mocks__/styleMock.cjs",
+  },
 };

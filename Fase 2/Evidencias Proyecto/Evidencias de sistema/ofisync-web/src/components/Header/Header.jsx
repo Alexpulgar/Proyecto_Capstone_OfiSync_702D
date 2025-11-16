@@ -1,16 +1,13 @@
-// src/components/Header.jsx
 import React from "react";
-import { getUsuario, logout } from '../../../services/usuarioService'; 
-import "./Header.css"; // Aquí pondremos el estilo
-
+import { getUsuario } from "../../../services/usuarioService";
+import "./Header.css";
 
 function Header() {
-  const currentUser = getUsuario(); 
+  const currentUser = getUsuario();
 
   if (!currentUser) {
-    return null; 
+    return null;
   }
-  
 
   return (
     <header className="header">
@@ -19,7 +16,9 @@ function Header() {
         <h2>Ofisync</h2>
       </div>
       <div className="perfil">
-        <h2>{currentUser.nombre_usuario} ({currentUser.rol})</h2>
+        <h2>
+          {currentUser.nombre_usuario} ({currentUser.rol})
+        </h2>
         <img src="/img/usuario.png" alt="" />
       </div>
     </header>
