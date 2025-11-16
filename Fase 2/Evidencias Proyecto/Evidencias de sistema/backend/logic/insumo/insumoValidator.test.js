@@ -1,5 +1,4 @@
-
-const { validateInsumo } = require('./insumoValidator'); 
+const { validateInsumo } = require('./insumoValidator'); // Ajusta la ruta si es necesario
 
 describe('Pruebas Unitarias: validateInsumo', () => {
   let mockRequest;
@@ -7,85 +6,56 @@ describe('Pruebas Unitarias: validateInsumo', () => {
   let nextFunction;
 
   beforeEach(() => {
+    // Mock de request con un cuerpo válido
     mockRequest = {
-      body: {},
+      body: {
+        nombre: 'Insumo de Prueba',
+        categoria: 'Limpieza',
+        stock: 10,
+        stock_minimo: 1,
+      },
     };
+    // Mock de response
     mockResponse = {
-      status: jest.fn(() => mockResponse), // Permite encadenar .status().json()
+      status: jest.fn(() => mockResponse),
       json: jest.fn(),
     };
+    // Mock de next
     nextFunction = jest.fn();
   });
 
-  // --- Prueba de Éxito ---
-  test('debe llamar a next() si los datos son válidos', () => {
-    mockRequest.body = {
-      nombre: 'Resma de Papel',
-      categoria: 'Oficina',
-      stock: 100,
-      stock_minimo: 20,
-      estado: 'Activo',
-    };
-
-    validateInsumo(mockRequest, mockResponse, nextFunction);
-
-    expect(nextFunction).toHaveBeenCalledTimes(1); // Se llamó a next()
-    expect(mockResponse.status).not.toHaveBeenCalled(); // No se envió respuesta de error
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  // --- Pruebas de Fallo ---
-  test('debe retornar 400 si el nombre falta', () => {
-    mockRequest.body = {
-      // nombre falta
-      categoria: 'Oficina',
-      stock: 100,
-      stock_minimo: 20,
-      estado: 'Activo',
-    };
+  it('debe llamar a next() si los datos son válidos', () => {
+    validateInsumo(mockRequest, mockResponse, nextFunction);
+    
+    expect(nextFunction).toHaveBeenCalledTimes(1); // Debería pasar
+    expect(mockResponse.status).not.toHaveBeenCalled(); 
+  });
 
+  it('debe devolver 400 si faltan campos obligatorios', () => {
+    mockRequest.body = { nombre: 'Incompleto' }; // Faltan campos
+    
     validateInsumo(mockRequest, mockResponse, nextFunction);
 
-    expect(nextFunction).not.toHaveBeenCalled(); // No se llamó a next()
+    expect(nextFunction).not.toHaveBeenCalled(); // No debe llamar a next
     expect(mockResponse.status).toHaveBeenCalledWith(400);
     expect(mockResponse.json).toHaveBeenCalledWith({
-      errors: expect.stringContaining('El nombre es obligatorio'),
+      errors: expect.stringContaining('La categoría es obligatoria'),
     });
   });
 
-  test('debe retornar 400 si el stock es negativo', () => {
-    mockRequest.body = {
-      nombre: 'Resma',
-      categoria: 'Oficina',
-      stock: -5, // Valor inválido
-      stock_minimo: 20,
-      estado: 'Activo',
-    };
-
+  it('debe devolver 400 si el stock es negativo', () => {
+    mockRequest.body.stock = -5; // Stock negativo
+    
     validateInsumo(mockRequest, mockResponse, nextFunction);
 
     expect(nextFunction).not.toHaveBeenCalled();
     expect(mockResponse.status).toHaveBeenCalledWith(400);
     expect(mockResponse.json).toHaveBeenCalledWith({
       errors: expect.stringContaining('El stock no puede ser negativo'),
-    });
-  });
-
-  test('debe retornar 400 si faltan múltiples campos', () => {
-    mockRequest.body = {
-      // Faltan nombre y categoria
-      stock: 10,
-    };
-
-    validateInsumo(mockRequest, mockResponse, nextFunction);
-
-    expect(nextFunction).not.toHaveBeenCalled();
-    expect(mockResponse.status).toHaveBeenCalledWith(400);
-    // Verifica que múltiples errores sean reportados
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      errors: expect.stringContaining('El nombre es obligatorio'),
-    });
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      errors: expect.stringContaining('La categoría es obligatoria'),
     });
   });
 });

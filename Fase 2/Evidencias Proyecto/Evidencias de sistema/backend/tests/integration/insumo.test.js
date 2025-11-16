@@ -46,9 +46,9 @@ describe('Pruebas de Integración para Endpoints de Insumo (con Mocks)', () => {
         categoria: 'Impresión',
         stock: 10,
         stock_minimo: 2,
-        estado: 'Activo',
       };
-      const insumoCreado = { id: 1, ...nuevoInsumo };
+      // El estado 'activo' se calcula en el backend, pero el mock debe devolverlo
+      const insumoCreado = { id: 1, ...nuevoInsumo, estado: 'activo' };
 
       pool.query.mockResolvedValueOnce({ rows: [insumoCreado] });
 
@@ -84,9 +84,8 @@ describe('Pruebas de Integración para Endpoints de Insumo (con Mocks)', () => {
         categoria: 'Impresión',
         stock: 20,
         stock_minimo: 5,
-        estado: 'Activo',
       };
-      const insumoActualizado = { id: 1, ...datosActualizados };
+      const insumoActualizado = { id: 1, ...datosActualizados, estado: 'activo' };
 
       // 1. Check de existencia
       pool.query.mockResolvedValueOnce({
@@ -110,7 +109,6 @@ describe('Pruebas de Integración para Endpoints de Insumo (con Mocks)', () => {
         categoria: 'Impresión',
         stock: 20,
         stock_minimo: 5,
-        estado: 'Activo',
       };
 
       pool.query.mockResolvedValueOnce({ rows: [] });
