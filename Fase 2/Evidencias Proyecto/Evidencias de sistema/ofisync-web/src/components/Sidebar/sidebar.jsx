@@ -54,7 +54,7 @@ const allLinks = [
   },
 ];
 
-function Sidebar() {
+function Sidebar({ isSidebarOpen, toggleSidebar }) {
   const currentUser = getUsuario();
   const navigate = useNavigate();
 
@@ -72,34 +72,49 @@ function Sidebar() {
   );
 
   return (
-    <aside className="sidebar">
-      <nav>
-        <ul>
-          {filteredLinks.map((link) => (
-            <li key={link.path}>
-              <NavLink
-                to={link.path}
-                className={({ isActive }) => (isActive ? "active" : "")}
-              >
-                <img src={link.icon} alt="" className="nav-icon" />
-                {link.label}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-      </nav>
+    <>
+      {isSidebarOpen && (
+        <div className="sidebar-overlay" onClick={toggleSidebar}></div>
+      )}
 
-      <div className="logout-section">
-        <button onClick={handleLogout} className="logout-button">
-          <img
-            src="img/icons/logout.svg"
-            alt="Icono de cerrar sesión"
-            className="logout-icon"
-          />
-          Cerrar Sesión
+      <aside className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+        <button
+          className="close-sidebar-btn"
+          onClick={toggleSidebar}
+          aria-label="Cerrar menú"
+        >
+          &times;
         </button>
-      </div>
-    </aside>
+
+        <nav>
+          <ul>
+            {filteredLinks.map((link) => (
+              <li key={link.path}>
+                <NavLink
+                  to={link.path}
+                  className={({ isActive }) => (isActive ? "active" : "")}
+                  onClick={toggleSidebar}
+                >
+                  <img src={link.icon} alt="" className="nav-icon" />
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="logout-section">
+          <button onClick={handleLogout} className="logout-button">
+            <img
+              src="img/icons/logout.svg"
+              alt="Icono de cerrar sesión"
+              className="logout-icon"
+            />
+            Cerrar Sesión
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
 export default Sidebar;

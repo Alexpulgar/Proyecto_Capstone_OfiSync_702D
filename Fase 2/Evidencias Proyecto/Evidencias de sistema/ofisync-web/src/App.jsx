@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -8,12 +8,10 @@ import {
 } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-// Componentes Reutilizables
 import Header from "./components/Header/Header";
 import Sidebar from "./components/Sidebar/sidebar";
 import ProtectedRoute from "./components/Auth/ProtectedRoute";
 
-// Componentes de Página
 import Inicio from "./components/Inicio/Inicio";
 import Administracion from "./components/Administracion/Administracion";
 import GastoComun from "./components/GastoComun/GastoComun";
@@ -27,40 +25,45 @@ import Bitacora from "./components/Bitacora/Bitacora";
 import InventarioInsumos from "./pages/Inventario/Insumos";
 import RevisarPagos from "./components/GastoComun/RevisarPagos";
 
-// Componente auxiliar para manejar Layout y Auth
 function Layout() {
   const location = useLocation();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // Decide si mostrar Header/Sidebar (en cualquier ruta EXCEPTO /login)
   const showHeaderSidebar = location.pathname !== "/login";
 
-  const mainStyle = showHeaderSidebar
-    ? {
-        marginTop: "120px",
-        marginLeft: "200px",
-        padding: "20px",
-        backgroundColor: "#d6d6d6ff",
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 769) {
+        setIsSidebarOpen(false);
       }
-    : {
-        padding: "0",
-        margin: "0",
-        backgroundColor: "#d6d6d6ff",
-        minHeight: "100vh",
-      };
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
+  const mainClassName = showHeaderSidebar
+    ? "main-content"
+    : "main-content-login";
 
   return (
     <>
-      {showHeaderSidebar && <Header />}
-      {showHeaderSidebar && <Sidebar />}
+      {showHeaderSidebar && <Header toggleSidebar={toggleSidebar} />}
+      {showHeaderSidebar && (
+        <Sidebar isSidebarOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      )}
 
-      <main style={mainStyle}>
+      <main className={mainClassName}>
         <Routes>
-          {/* Ruta PÚBLICA de Login */}
           <Route path="/login" element={<Login />} />
 
-          {/* --- RUTAS PROTEGIDAS --- */}
-
-          {/* Inicio: Accesible para ambos roles logueados */}
           <Route
             path="/inicio"
             element={
@@ -70,7 +73,6 @@ function Layout() {
             }
           />
 
-          {/* Administración: Solo Admin */}
           <Route
             path="/administracion"
             element={
@@ -80,7 +82,6 @@ function Layout() {
             }
           />
 
-          {/* Agregar: Solo Admin */}
           <Route
             path="/agregar"
             element={
@@ -90,7 +91,6 @@ function Layout() {
             }
           />
 
-          {/* Actualizar: Solo Admin */}
           <Route
             path="/actualizar"
             element={
@@ -100,7 +100,6 @@ function Layout() {
             }
           />
 
-          {/* Borrar: Solo Admin */}
           <Route
             path="/borrar"
             element={
@@ -110,7 +109,6 @@ function Layout() {
             }
           />
 
-          {/* Gasto Común: Solo Admin */}
           <Route
             path="/gastoComun"
             element={
@@ -120,7 +118,6 @@ function Layout() {
             }
           />
 
-          {/* Revisar Pagos: Solo Admin */}
           <Route
             path="/revisar-pagos"
             element={
@@ -130,7 +127,6 @@ function Layout() {
             }
           />
 
-          {/* Reservas: Admin y Conserje */}
           <Route
             path="/reservas"
             element={
@@ -140,7 +136,6 @@ function Layout() {
             }
           />
 
-          {/* Cuentas: Solo Admin */}
           <Route
             path="/cuentas"
             element={
@@ -158,8 +153,6 @@ function Layout() {
               </ProtectedRoute>
             }
           />
-          {/* Ruta Catch-all al final */}
-          {/* Si está logueado va a /inicio, si no, ProtectedRoute lo manda a /login */}
           <Route
             path="*"
             element={
@@ -192,7 +185,6 @@ function Layout() {
   );
 }
 
-// Componente App principal
 function App() {
   return (
     <Router>

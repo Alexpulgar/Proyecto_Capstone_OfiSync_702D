@@ -2,7 +2,7 @@ import React from "react";
 import { getUsuario } from "../../../services/usuarioService";
 import "./Header.css";
 
-function Header() {
+function Header({ toggleSidebar }) {
   const currentUser = getUsuario();
 
   if (!currentUser) {
@@ -11,6 +11,14 @@ function Header() {
 
   return (
     <header className="header">
+      <button
+        className="hamburger-menu"
+        onClick={toggleSidebar}
+        aria-label="Abrir menú"
+      >
+        &#9776;
+      </button>
+
       <div className="logo">
         <img src="/img/LogoOfisync.png" alt="" />
         <h2>Ofisync</h2>
