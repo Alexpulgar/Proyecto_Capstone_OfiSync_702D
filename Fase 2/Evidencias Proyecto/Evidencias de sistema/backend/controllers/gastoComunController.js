@@ -1,4 +1,4 @@
-const pool = require("../models/db.js"); // conexión a la BD
+const pool = require("../models/db.js");
 
 /**
  * Función para parsear el string de mes (ej: "Mayo 2025")
@@ -49,7 +49,6 @@ const parseMesString = (mesString) => {
   return { month, year };
 };
 
-// Calcular y registrar el gasto común
 const calcularGastoComun = async (req, res) => {
   try {
     const {
@@ -63,7 +62,6 @@ const calcularGastoComun = async (req, res) => {
       otros,
     } = req.body;
 
-    // --- (Validaciones existentes... sin cambios) ---
     if (!edificio_id || !mes || !total) {
       return res.status(400).json({ error: "Faltan datos obligatorios." });
     }
@@ -73,15 +71,12 @@ const calcularGastoComun = async (req, res) => {
       });
     }
 
-    // --- NUEVO: Parsear el mes y año para la consulta de reservas ---
     const parsedDate = parseMesString(mes);
     if (parsedDate.error) {
       return res.status(400).json({ error: parsedDate.error });
     }
     const { month: mes_numero, year: anio } = parsedDate;
-    // --- FIN NUEVO ---
 
-    // --- (Verificación de gasto existente... sin cambios) ---
     const checkExist = await pool.query(
       `SELECT id FROM gastoComun WHERE edificio_id = $1 AND mes = $2`,
       [edificio_id, mes]
@@ -93,7 +88,6 @@ const calcularGastoComun = async (req, res) => {
       });
     }
 
-    // --- (Creación del registro gastoComun... sin cambios) ---
     const result = await pool.query(
       `INSERT INTO gastoComun (edificio_id, mes, total, descripcion, luz, agua, mantencion, otros)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
@@ -101,7 +95,6 @@ const calcularGastoComun = async (req, res) => {
     );
     const gastoComunId = result.rows[0].id;
 
-    // --- (Cálculo del área total... sin cambios) ---
     const areaTotalRes = await pool.query(
       `SELECT SUM(o.area) AS total_area
        FROM oficina o
@@ -117,10 +110,8 @@ const calcularGastoComun = async (req, res) => {
       });
     }
 
-    // --- (Cálculo de gasto por m²... sin cambios) ---
     const gastoPorM2 = total / totalArea;
 
-    // --- (Obtener oficinas ocupadas... sin cambios) ---
     const oficinasRes = await pool.query(
       `SELECT o.id, o.area
       FROM oficina o
@@ -135,7 +126,6 @@ const calcularGastoComun = async (req, res) => {
       });
     }
 
-    // Obtener los totales de reservas para todas esas oficinas en ese mes
     const occupiedOfficeIds = oficinasRes.rows.map((o) => o.id);
 
     const reservasQuery = `
@@ -154,14 +144,10 @@ const calcularGastoComun = async (req, res) => {
       occupiedOfficeIds,
     ]);
 
-    // Convertir el resultado en un Mapa para búsqueda rápida
     const reservasMap = new Map();
     for (const row of reservasResult.rows) {
       reservasMap.set(row.oficina_id, parseFloat(row.total_reservas));
     }
-    // --- FIN NUEVO ---
-
-    // --- MODIFICADO: Loop para insertar detalle ---
     for (const oficina of oficinasRes.rows) {
       // 1. Gasto base por m²
       const monto_base = parseFloat(oficina.area) * gastoPorM2;
@@ -175,13 +161,12 @@ const calcularGastoComun = async (req, res) => {
       await pool.query(
         `INSERT INTO detalleGastoComun (gastoComunId, oficina_id, monto)
         VALUES ($1, $2, $3)`,
-        [gastoComunId, oficina.id, monto_final] // <--- Se usa el monto_final
+        [gastoComunId, oficina.id, monto_final]
       );
     }
-    // --- FIN MODIFICADO ---
 
     res.status(201).json({
-      mensaje: " Gasto común calculado correctamente (reservas incluidas).", // Mensaje actualizado
+      mensaje: " Gasto común calculado correctamente (reservas incluidas).",
       gastoComunId,
       gasto_por_m2: gastoPorM2.toFixed(2),
     });
@@ -394,10 +379,8 @@ const reviewVoucher = async (req, res) => {
 };
 
 const getGastoStatus = async (req, res) => {
-  console.log("--- [DEBUG] Iniciando /gasto-comun/status ---");
   try {
     const authenticatedUserId = req.user.id;
-    console.log("[DEBUG] 1. ID de usuario autenticado:", authenticatedUserId);
 
     const oficinaQuery = `
       SELECT o.id AS oficina_id
@@ -409,15 +392,10 @@ const getGastoStatus = async (req, res) => {
     const oficinaResult = await pool.query(oficinaQuery, [authenticatedUserId]);
 
     if (!oficinaResult.rows.length || !oficinaResult.rows[0].oficina_id) {
-      console.log(
-        "[DEBUG] 2. Resultado de Oficina: No se encontró oficina para el usuario.",
-        oficinaResult.rows
-      );
       return res.json({ hasPending: false });
     }
 
     const userOfficeId = oficinaResult.rows[0].oficina_id;
-    console.log("[DEBUG] 2. ID de oficina encontrado:", userOfficeId);
 
     const gastoQuery = `
       SELECT id
@@ -428,15 +406,8 @@ const getGastoStatus = async (req, res) => {
     const gastoResult = await pool.query(gastoQuery, [userOfficeId]);
 
     if (gastoResult.rows.length > 0) {
-      console.log(
-        "[DEBUG] 3. Resultado de Gastos: ¡Deuda encontrada!",
-        gastoResult.rows[0]
-      );
       return res.json({ hasPending: true });
     } else {
-      console.log(
-        "[DEBUG] 3. Resultado de Gastos: No se encontraron deudas pendientes."
-      );
       return res.json({ hasPending: false });
     }
   } catch (error) {

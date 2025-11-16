@@ -9,9 +9,12 @@ const pool = new Pool({
   port: process.env.PG_PORT,
 });
 
-pool
-  .connect()
-  .then(() => console.log("Conectado a PostgreSQL"))
-  .catch((err) => console.error("Error de conexión", err));
+pool.query("SELECT NOW()", (err, res) => {
+  if (err) {
+    console.error("Error de conexión", err);
+  } else {
+    console.log("Conectado a PostgreSQL");
+  }
+});
 
 module.exports = pool;
