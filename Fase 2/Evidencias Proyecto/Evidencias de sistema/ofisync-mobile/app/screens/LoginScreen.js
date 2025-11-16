@@ -13,7 +13,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
 import colors from "../theme/colors";
 import { loginApi } from "../../services/usuarioService";
 
@@ -26,11 +26,11 @@ export default function LoginScreen({ navigation }) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleUsernameChange = (text) => {
-    setUsername(text.replace(/\s/g, ''));
+    setUsername(text.replace(/\s/g, ""));
   };
 
   const handlePasswordChange = (text) => {
-    setPassword(text.replace(/\s/g, ''));
+    setPassword(text.replace(/\s/g, ""));
   };
 
   const togglePasswordVisibility = () => {
@@ -49,10 +49,21 @@ export default function LoginScreen({ navigation }) {
         nombre_usuario: username,
         contrasena: password,
       };
-      await loginApi(credenciales);
-      navigation.replace("MainTabs");
+
+      const { usuario } = await loginApi(credenciales);
+      if (usuario && usuario.rol === "usuario") {
+        navigation.replace("MainTabs");
+      } else {
+        Alert.alert(
+          "Acceso Denegado",
+          "Solo los residentes pueden acceder a la app móvil."
+        );
+      }
     } catch (error) {
-      const errorMessage = error.response?.data?.error || error.message || "Error desconocido durante el login";
+      const errorMessage =
+        error.response?.data?.error ||
+        error.message ||
+        "Error desconocido durante el login";
       Alert.alert("Error de Login", errorMessage);
     } finally {
       setLoading(false);
@@ -112,8 +123,7 @@ export default function LoginScreen({ navigation }) {
             disabled={loading}
           >
             {loading ? (
-              <ActivityIndicator color="#fff"
-              testID="loading-indicator" />
+              <ActivityIndicator color="#fff" testID="loading-indicator" />
             ) : (
               <Text style={styles.buttonText}>Iniciar sesión</Text>
             )}
@@ -163,8 +173,8 @@ const styles = StyleSheet.create({
   },
   passwordContainer: {
     width: "100%",
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
@@ -174,16 +184,16 @@ const styles = StyleSheet.create({
   },
   passwordInput: {
     flex: 1,
-    height: '100%',
+    height: "100%",
     paddingHorizontal: 15,
     fontSize: 16,
     borderWidth: 0,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   eyeIcon: {
     padding: 10,
-    height: '100%',
-    justifyContent: 'center',
+    height: "100%",
+    justifyContent: "center",
   },
   button: {
     width: "100%",
@@ -193,7 +203,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
     height: 50,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   buttonText: {
     color: "#fff",
