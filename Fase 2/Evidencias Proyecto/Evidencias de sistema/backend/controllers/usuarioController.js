@@ -26,12 +26,10 @@ const registrarUsuario = async (req, res) => {
         .json({ error: "La contraseña debe tener al menos 6 caracteres." });
     }
     if (rol === "usuario" && !persona_id) {
-      return res
-        .status(400)
-        .json({
-          error:
-            "Debe seleccionar una persona para asignar a la cuenta de rol 'Usuario'.",
-        });
+      return res.status(400).json({
+        error:
+          "Debe seleccionar una persona para asignar a la cuenta de rol 'Usuario'.",
+      });
     }
     const checkUser = await pool.query(
       "SELECT * FROM usuarios WHERE LOWER(nombre_usuario) = LOWER($1)",
@@ -48,11 +46,9 @@ const registrarUsuario = async (req, res) => {
         [persona_id]
       );
       if (checkPersona.rows.length > 0) {
-        return res
-          .status(400)
-          .json({
-            error: "Esta persona ya tiene una cuenta de usuario asignada.",
-          });
+        return res.status(400).json({
+          error: "Esta persona ya tiene una cuenta de usuario asignada.",
+        });
       }
     }
     const contrasenaHash = await bcrypt.hash(contrasena, saltRounds);
@@ -137,12 +133,9 @@ const solicitarCodigoReseteo = async (req, res) => {
   const { id: userId, persona_id: personaId } = req.user;
 
   if (!personaId) {
-    return res
-      .status(400)
-      .json({
-        error:
-          "Esta cuenta de usuario no está asociada a una persona y correo.",
-      });
+    return res.status(400).json({
+      error: "Esta cuenta de usuario no está asociada a una persona y correo.",
+    });
   }
 
   try {
@@ -153,11 +146,9 @@ const solicitarCodigoReseteo = async (req, res) => {
     const email = personaQuery.rows[0]?.correo;
 
     if (!email) {
-      return res
-        .status(400)
-        .json({
-          error: "No se encontró un correo electrónico asociado a esta cuenta.",
-        });
+      return res.status(400).json({
+        error: "No se encontró un correo electrónico asociado a esta cuenta.",
+      });
     }
 
     const code = crypto.randomInt(100000, 999999).toString();

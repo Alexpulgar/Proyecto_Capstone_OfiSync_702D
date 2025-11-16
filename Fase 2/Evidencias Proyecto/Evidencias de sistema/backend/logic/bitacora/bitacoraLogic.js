@@ -1,4 +1,4 @@
-const { pool } = require('../../models/db');
+const pool = require("../../models/db");
 
 const crearEntrada = async (datos) => {
   const { titulo, descripcion, tipo, autorId, autorNombre } = datos;
@@ -14,7 +14,7 @@ const crearEntrada = async (datos) => {
   const params = [
     titulo.trim(),
     descripcion.trim(),
-    tipo || 'General',
+    tipo || "General",
     autorId,
     autorNombre,
   ];
@@ -43,17 +43,12 @@ const actualizarEntrada = async (id, datos) => {
     RETURNING *
   `;
 
-  const params = [
-    titulo.trim(), 
-    descripcion.trim(), 
-    tipo || 'General',
-    id 
-  ];
+  const params = [titulo.trim(), descripcion.trim(), tipo || "General", id];
 
   const result = await pool.query(query, params);
-  
+
   if (result.rows.length === 0) {
-    throw new Error('Entrada de bitacora no encontrada');
+    throw new Error("Entrada de bitacora no encontrada");
   }
   return result.rows[0];
 };
@@ -63,7 +58,7 @@ const borrarEntrada = async (id) => {
   const result = await pool.query(query, [id]);
 
   if (result.rows.length === 0) {
-    throw new Error('Entrada de bitácora no encontrada');
+    throw new Error("Entrada de bitácora no encontrada");
   }
   return { message: "Entrada de bitácora eliminada" };
 };

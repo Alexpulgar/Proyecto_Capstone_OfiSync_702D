@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { getEntradas, createEntrada, updateEntrada, deleteEntrada } from "../../../services/bitacoraService";
-import { getUsuario } from "../../../services/usuarioService"; 
-import "./Bitacora.css"; 
+import {
+  getEntradas,
+  createEntrada,
+  updateEntrada,
+  deleteEntrada,
+} from "../../../services/bitacoraService";
+import { getUsuario } from "../../../services/usuarioService";
+import "./Bitacora.css";
 
 const formatFecha = (isoString) => {
   const date = new Date(isoString);
-  return date.toLocaleString('es-CL', {
-    day: '2-digit', month: '2-digit', year: 'numeric',
-    hour: '2-digit', minute: '2-digit',
+  return date.toLocaleString("es-CL", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   });
 };
 
@@ -22,12 +30,12 @@ function Bitacora() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [form, setForm] = useState(formInicial);
-  
-  const [editingId, setEditingId] = useState(null); 
-  const [userRole, setUserRole] = useState(null);  
+
+  const [editingId, setEditingId] = useState(null);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
-    const usuario = getUsuario(); 
+    const usuario = getUsuario();
     if (usuario && usuario.rol) {
       setUserRole(usuario.rol);
     }
@@ -52,7 +60,7 @@ function Bitacora() {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value 
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -71,9 +79,9 @@ function Bitacora() {
       } else {
         await createEntrada(form);
       }
-      setForm(formInicial); 
-      setEditingId(null); 
-      cargarEntradas();     
+      setForm(formInicial);
+      setEditingId(null);
+      cargarEntradas();
     } catch (err) {
       console.error("Error al guardar entrada:", err);
       setError(err.message);
@@ -85,11 +93,11 @@ function Bitacora() {
     setForm({
       titulo: entrada.titulo,
       descripcion: entrada.descripcion,
-      tipo: entrada.tipo
+      tipo: entrada.tipo,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
-  
+
   const handleCancelEdit = () => {
     setEditingId(null);
     setForm(formInicial);
@@ -101,7 +109,7 @@ function Bitacora() {
       try {
         setError(null);
         await deleteEntrada(id);
-        cargarEntradas(); 
+        cargarEntradas();
       } catch (err) {
         console.error("Error al borrar entrada:", err);
         setError(err.message);
@@ -109,23 +117,33 @@ function Bitacora() {
     }
   };
 
-  const canManage = userRole === 'admin' || userRole === 'conserje';
+  const canManage = userRole === "admin" || userRole === "conserje";
 
   return (
     <div className="bitacora-container">
-      <h2>Bitácora del Edificio</h2>
-
       <form className="bitacora-form" onSubmit={handleSubmit}>
         <h3>{editingId ? "Editando Entrada" : "Nueva Entrada"}</h3>
         {error && <p className="error-msg">{error}</p>}
-        
+
         <div className="form-group">
           <label htmlFor="titulo">Título:</label>
-          <input id="titulo" name="titulo" type="text" value={form.titulo} onChange={handleChange} placeholder="Ej: Falla ascensor 1" />
+          <input
+            id="titulo"
+            name="titulo"
+            type="text"
+            value={form.titulo}
+            onChange={handleChange}
+            placeholder="Ej: Falla ascensor 1"
+          />
         </div>
         <div className="form-group">
           <label htmlFor="tipo">Tipo:</label>
-          <select id="tipo" name="tipo" value={form.tipo} onChange={handleChange}>
+          <select
+            id="tipo"
+            name="tipo"
+            value={form.tipo}
+            onChange={handleChange}
+          >
             <option value="General">General</option>
             <option value="Acceso">Control de Acceso</option>
             <option value="Incidente">Incidente</option>
@@ -136,14 +154,29 @@ function Bitacora() {
 
         <div className="form-group span-2">
           <label htmlFor="descripcion">Descripción:</label>
-          <textarea id="descripcion" name="descripcion" value={form.descripcion} onChange={handleChange} rows={4} placeholder="Describa el evento o la novedad..."/>
+          <textarea
+            id="descripcion"
+            name="descripcion"
+            value={form.descripcion}
+            onChange={handleChange}
+            rows={4}
+            placeholder="Describa el evento o la novedad..."
+          />
         </div>
 
         <div className="form-group span-2 form-buttons">
-          <button type="submit">{editingId ? "Actualizar Entrada" : "Agregar a Bitácora"}</button>
+          <button type="submit">
+            {editingId ? "Actualizar Entrada" : "Agregar a Bitácora"}
+          </button>
 
           {editingId && (
-            <button type="button" className="btn-cancel" onClick={handleCancelEdit}>Cancelar Edición</button>
+            <button
+              type="button"
+              className="btn-cancel"
+              onClick={handleCancelEdit}
+            >
+              Cancelar Edición
+            </button>
           )}
         </div>
       </form>
@@ -156,23 +189,48 @@ function Bitacora() {
         ) : (
           <div className="bitacora-list">
             {entradas.map((entry) => (
-              <div key={entry.id} className={`bitacora-entry ${entry.es_privado ? 'privado' : ''}`}>
+              <div
+                key={entry.id}
+                className={`bitacora-entry ${
+                  entry.es_privado ? "privado" : ""
+                }`}
+              >
                 <div className="entry-header">
                   <h4>{entry.titulo}</h4>
-                  <span className={`entry-tipo tipo-${entry.tipo.toLowerCase()}`}>{entry.tipo}</span>
+                  <span
+                    className={`entry-tipo tipo-${entry.tipo.toLowerCase()}`}
+                  >
+                    {entry.tipo}
+                  </span>
                 </div>
 
-                {entry.es_privado && <small className="entry-privado"> NOTA PRIVADA</small>}
-                
+                {entry.es_privado && (
+                  <small className="entry-privado"> NOTA PRIVADA</small>
+                )}
+
                 <p className="entry-desc">{entry.descripcion}</p>
                 {/* (Esto ya lo tenías bien) */}
-                <small className="entry-autor">Por: <strong>{entry.autor_nombre}</strong></small>
-                <small className="entry-fecha">{formatFecha(entry.creado_en)}</small>
+                <small className="entry-autor">
+                  Por: <strong>{entry.autor_nombre}</strong>
+                </small>
+                <small className="entry-fecha">
+                  {formatFecha(entry.creado_en)}
+                </small>
 
                 {canManage && (
                   <div className="entry-actions">
-                    <button className="btn-edit" onClick={() => handleEdit(entry)}>Editar</button>
-                    <button className="btn-delete" onClick={() => handleDelete(entry.id)}>Borrar</button>
+                    <button
+                      className="btn-edit"
+                      onClick={() => handleEdit(entry)}
+                    >
+                      Editar
+                    </button>
+                    <button
+                      className="btn-delete"
+                      onClick={() => handleDelete(entry.id)}
+                    >
+                      Borrar
+                    </button>
                   </div>
                 )}
               </div>
