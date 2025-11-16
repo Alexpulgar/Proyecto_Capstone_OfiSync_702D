@@ -13,6 +13,7 @@ const reservationsRoutes = require("./routes/reservationsRoutes");
 const usuarioRoutes = require("./routes/usuarioRoutes");
 const insumoRoutes = require("./routes/insumoRoutes.js");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const bitacoraRoutes = require("./routes/bitacoraRoutes.js");
 const app = express();
 
 // Middlewares principales
@@ -56,6 +57,7 @@ app.use("/api/reservations", reservationsRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/insumos", insumoRoutes);
 app.use("/dashboard", dashboardRoutes);
+app.use("/api/bitacora", bitacoraRoutes);
 
 // Manejador de errores para rutas no encontradas (404)
 app.use((req, res, next) => {
