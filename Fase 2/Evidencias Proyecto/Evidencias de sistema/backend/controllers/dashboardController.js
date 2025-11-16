@@ -18,6 +18,9 @@ const getDashboardStats = async (req, res) => {
     // 6. Contar vouchers en revisión
     const vouchersQuery =
       "SELECT COUNT(*) FROM detallegastocomun WHERE estado_pago = 'en revision'";
+    // 7. Contar incidencias registradas
+    const incidentsQuery =
+      "SELECT COUNT(*) FROM bitacora WHERE tipo = 'Incidente' AND creado_en::date = CURRENT_DATE";
 
     const [
       userResult,
@@ -26,6 +29,7 @@ const getDashboardStats = async (req, res) => {
       reservationsResult,
       expensesResult,
       vouchersResult,
+      incidentsResult,
     ] = await Promise.all([
       pool.query(userQuery),
       pool.query(occupiedOfficeQuery),
@@ -33,6 +37,7 @@ const getDashboardStats = async (req, res) => {
       pool.query(reservationsQuery),
       pool.query(expensesQuery),
       pool.query(vouchersQuery),
+      pool.query(incidentsQuery),
     ]);
 
     res.json({
@@ -42,6 +47,7 @@ const getDashboardStats = async (req, res) => {
       reservationsToday: reservationsResult.rows[0].count || 0,
       pendingExpenses: expensesResult.rows[0].count || 0,
       pendingVouchers: vouchersResult.rows[0].count || 0,
+      incidentsToday: incidentsResult.rows[0].count || 0,
     });
   } catch (error) {
     console.error("Error al obtener estadísticas del dashboard:", error);

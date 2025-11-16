@@ -179,6 +179,7 @@ table td[colspan] {
     width: 100%;
     flex-direction: row;
     gap: 10px;
+    order: 1;
   }
 
   .accion-btn {
@@ -189,6 +190,7 @@ table td[colspan] {
     width: 100%;
     overflow-x: auto;
     padding: 20px;
+    order: 2;
   }
 
   .tabla-oficinas table {

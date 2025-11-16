@@ -186,7 +186,7 @@ const Inicio = () => {
               </div>
             </div>
 
-            <div className="stat-card disabled">
+            <div className="stat-card">
               <img
                 src="/img/icons/info.svg"
                 alt="Incidencias"
@@ -194,7 +194,7 @@ const Inicio = () => {
               />
               <div className="stat-info">
                 <h2>Incidencias</h2>
-                <p className="stat-number">0</p>
+                <p className="stat-number">{stats.incidentsToday}</p>
               </div>
             </div>
           </div>
