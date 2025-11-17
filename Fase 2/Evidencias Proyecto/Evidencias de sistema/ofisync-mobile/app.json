@@ -20,10 +20,16 @@
         "foregroundImage": "./assets/LogoOfisync.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.alexpulgar.ofisyncmobile"
     },
     "web": {
       "favicon": "./assets/LogoOfisync.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "583fc85f-8389-4eb6-bd89-fe724d87e74e"
+      }
     }
   }
 }

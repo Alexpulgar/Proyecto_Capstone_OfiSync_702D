@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:18.1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: ofisync
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+      - ./database:/docker-entrypoint-initdb.d
+
+  backend:
+    build: ./backend
+    ports:
+      - "4000:4000"
+    environment:
+      - PG_HOST=db
+      - PG_USER=postgres
+      - PG_PASSWORD=1234
+      - PG_DATABASE=ofisync
+      - PG_PORT=5432
+      - PORT=4000
+    depends_on:
+      - db
+
+  frontend:
+    build: ./ofisync-web
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:4000/api
+    depends_on:
+      - backend
+    volumes:
+      - ./ofisync-web:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:
