@@ -49,6 +49,7 @@ function Login() {
   return (
     <div className="login-container">
       <div className="login-box">
+        <img src="/img/LogoOfisync.png" width={200} />
         <h2>Iniciar Sesión</h2>
         <form onSubmit={handleSubmit}>
           <div className="login-form-group">
