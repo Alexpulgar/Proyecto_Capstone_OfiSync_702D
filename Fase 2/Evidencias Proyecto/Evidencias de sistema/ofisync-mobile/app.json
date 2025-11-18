@@ -26,11 +26,6 @@
     "web": {
       "favicon": "./assets/LogoOfisync.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "583fc85f-8389-4eb6-bd89-fe724d87e74e"
-      }
-    },
     "plugins": [
       [
         "expo-build-properties",
@@ -40,6 +35,11 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "65200cb0-e79f-4f87-8f2c-ace1310975f0"
+      }
+    }
   }
 }
