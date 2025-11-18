@@ -1,6 +1,6 @@
 import axios from "axios";
 import { getToken } from "../../services/usuarioService";
-const API_URL = "http://192.168.100.5:4000/api";
+const API_URL = "http://10.7.200.141:4000/api";
 
 const API = axios.create({
   baseURL: API_URL,
