@@ -1,4 +1,4 @@
-const API_URL = "https://44.201.96.82:4000/api/insumos";
+const API_URL = "http://44.201.96.82:4000/api/insumos";
 
 // Obtener todos los insumos
 export async function getInsumos(params = {}) {

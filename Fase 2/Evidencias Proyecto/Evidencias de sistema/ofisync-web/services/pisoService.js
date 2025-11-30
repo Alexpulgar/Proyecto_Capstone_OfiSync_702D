@@ -1,4 +1,4 @@
-const API_URL = "https://44.201.96.82:4000/api/pisos";
+const API_URL = "http://44.201.96.82:4000/api/pisos";
 
 // Obtener todos los pisos
 export async function getPisos() {

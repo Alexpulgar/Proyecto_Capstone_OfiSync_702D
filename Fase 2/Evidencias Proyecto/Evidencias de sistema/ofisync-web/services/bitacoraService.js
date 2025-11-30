@@ -1,4 +1,4 @@
-const API_URL = "https://44.201.96.82:4000/api/bitacora";
+const API_URL = "http://44.201.96.82:4000/api/bitacora";
 
 //import a la funcion existente en usuarioService
 import { getToken } from "./usuarioService";

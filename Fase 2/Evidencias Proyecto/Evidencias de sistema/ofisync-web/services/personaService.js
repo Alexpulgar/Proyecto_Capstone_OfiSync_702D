@@ -1,4 +1,4 @@
-const API_URL = "https://44.201.96.82:4000/api/personas";
+const API_URL = "http://44.201.96.82:4000/api/personas";
 
 // Obtener todas las personas
 export async function getPersonas() {

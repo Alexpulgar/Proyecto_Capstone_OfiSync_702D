@@ -1,6 +1,6 @@
 import { getToken } from "./usuarioService";
 
-const API_URL = "https://44.201.96.82:4000/api/reservations";
+const API_URL = "http://44.201.96.82:4000/api/reservations";
 
 // Función auxiliar para manejar fetch con autenticación
 const fetchWithAuth = async (url, options = {}) => {

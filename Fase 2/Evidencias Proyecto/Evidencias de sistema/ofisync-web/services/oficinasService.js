@@ -1,4 +1,4 @@
-const API_URL = "https://44.201.96.82:4000/api/oficinas";
+const API_URL = "http://44.201.96.82:4000/api/oficinas";
 
 //Trae todas las oficinas
 export async function getOficinas() {
