@@ -1,7 +1,7 @@
-const API_URL = "http://44.201.96.82:4000/api/usuarios";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_URL = `${BASE_URL}/usuarios`;
 
 export async function registrarUsuarioApi(datosUsuario) {
-  // datosUsuario debe ser un objeto: { nombre_usuario, contrasena, rol? }
   const res = await fetch(`${API_URL}/registrar`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -10,16 +10,14 @@ export async function registrarUsuarioApi(datosUsuario) {
 
   const data = await res.json();
 
-  // Si la respuesta no fue OK (ej: 400 por usuario duplicado), lanza el error del backend
   if (!res.ok) {
     throw new Error(data.error || "Error desconocido al registrar usuario");
   }
 
-  return data; // Devuelve el objeto del usuario creado (sin contraseña)
+  return data;
 }
 
 export async function loginApi(credenciales) {
-  // credenciales = { nombre_usuario, contrasena }
   const res = await fetch(`${API_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -32,13 +30,12 @@ export async function loginApi(credenciales) {
     throw new Error(data.error || "Error desconocido durante el login");
   }
 
-  // Si el login fue exitoso, guarda el token y los datos del usuario
   if (data.token) {
-    localStorage.setItem("authToken", data.token); // Guarda el token
-    localStorage.setItem("usuario", JSON.stringify(data.usuario)); // Guarda info del usuario
+    localStorage.setItem("authToken", data.token);
+    localStorage.setItem("usuario", JSON.stringify(data.usuario));
   }
 
-  return data; // Devuelve { message, token, usuario }
+  return data;
 }
 
 export function logout() {
@@ -52,12 +49,10 @@ export function getToken() {
 
 export function getUsuario() {
   const usuario = localStorage.getItem("usuario");
-  // Devuelve el objeto del usuario parseado, o null si no existe/no es válido
   try {
     return usuario ? JSON.parse(usuario) : null;
   } catch (e) {
     console.error("Error al parsear datos de usuario desde localStorage", e);
-    // Limpia datos corruptos si los hubiera
     localStorage.removeItem("usuario");
     localStorage.removeItem("authToken");
     return null;

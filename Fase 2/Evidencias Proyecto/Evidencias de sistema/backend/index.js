@@ -56,7 +56,7 @@ app.use("/api/gasto-comun", gastoComunRoutes);
 app.use("/api/reservations", reservationsRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/insumos", insumoRoutes);
-app.use("/dashboard", dashboardRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/bitacora", bitacoraRoutes);
 
 // Manejador de errores para rutas no encontradas (404)

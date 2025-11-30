@@ -1,6 +1,6 @@
-const API_URL = "http://44.201.96.82:4000/api/insumos";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_URL = `${BASE_URL}/insumos`;
 
-// Obtener todos los insumos
 export async function getInsumos(params = {}) {
   const query = new URLSearchParams(params).toString();
   const res = await fetch(`${API_URL}${query ? `?${query}` : ""}`);
@@ -8,7 +8,6 @@ export async function getInsumos(params = {}) {
   return await res.json();
 }
 
-//Crear un nuevo insumo
 export async function createInsumo(data) {
   const res = await fetch(API_URL, {
     method: "POST",
@@ -19,7 +18,6 @@ export async function createInsumo(data) {
   return await res.json();
 }
 
-//Actualizar insumo existente
 export async function updateInsumo(id, data) {
   const res = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
@@ -30,7 +28,6 @@ export async function updateInsumo(id, data) {
   return await res.json();
 }
 
-//Eliminar insumo
 export async function deleteInsumo(id) {
   const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
   if (!res.ok) throw new Error("Error al eliminar el insumo");

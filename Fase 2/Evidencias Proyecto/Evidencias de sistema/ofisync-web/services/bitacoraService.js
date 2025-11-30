@@ -1,9 +1,8 @@
-const API_URL = "http://44.201.96.82:4000/api/bitacora";
-
-//import a la funcion existente en usuarioService
 import { getToken } from "./usuarioService";
 
-// Obtener todas las entradas
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_URL = `${BASE_URL}/bitacora`;
+
 export async function getEntradas() {
   const token = getToken();
   if (!token) throw new Error("Acceso denegado. No se encontro token.");
@@ -18,7 +17,6 @@ export async function getEntradas() {
   return await res.json();
 }
 
-// Crear nueva entrada
 export async function createEntrada(data) {
   const token = getToken();
   if (!token) throw new Error("Acceso denegado. No se encontro token.");
@@ -35,13 +33,11 @@ export async function createEntrada(data) {
   const result = await res.json();
 
   if (!res.ok) {
-    //Lanza el error que viene del backend (ej: "el titulo es obligatorio")
     throw new Error(result.error || "Error desconocido al crear la entrada");
   }
   return result;
 }
 
-// Actualizar entradas
 export async function updateEntrada(id, data) {
   const token = getToken();
   if (!token) throw new Error("Acceso denegado. No se encontro token.");
@@ -62,19 +58,19 @@ export async function updateEntrada(id, data) {
   return result;
 }
 
-// Borrar entrada
 export async function deleteEntrada(id) {
   const token = getToken();
   if (!token) throw new Error("Acceso deneegado. No se encontro token.");
 
   const res = await fetch(`${API_URL}/${id}`, {
     method: "DELETE",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
-  const result = await res.json();
   if (!res.ok) {
-    throw new Error(result.error || "Error desconocido al borrar la entrada");
+    throw new Error("Error al eliminar la entrada");
   }
-  return result;
+  return true;
 }

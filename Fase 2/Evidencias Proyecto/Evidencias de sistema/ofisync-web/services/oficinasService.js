@@ -1,12 +1,11 @@
-const API_URL = "http://44.201.96.82:4000/api/oficinas";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_URL = `${BASE_URL}/oficinas`;
 
-//Trae todas las oficinas
 export async function getOficinas() {
   const res = await fetch(API_URL);
   return res.json();
 }
 
-// Buscar oficinas segun filtros
 export async function buscarOficinas(filtro) {
   const queryParms = new URLSearchParams();
   if (filtro.codigo) queryParms.append("codigo", filtro.codigo);
@@ -19,7 +18,6 @@ export async function buscarOficinas(filtro) {
   return res.json();
 }
 
-// Agregar oficina
 export async function agregarOficinaApi(oficina) {
   const res = await fetch(`${API_URL}/agregar`, {
     method: "POST",
@@ -29,7 +27,6 @@ export async function agregarOficinaApi(oficina) {
   return res.json();
 }
 
-// Obtener oficinas por ID de piso
 export async function getOficinasByPiso(pisoId) {
   const res = await fetch(`${API_URL}/piso/${pisoId}`);
   if (!res.ok) {
@@ -39,7 +36,6 @@ export async function getOficinasByPiso(pisoId) {
   return res.json();
 }
 
-// Obtener los detalles de UNA oficina por ID
 export async function getOficinaById(id) {
   const res = await fetch(`${API_URL}/${id}`);
   if (!res.ok) {
@@ -51,7 +47,6 @@ export async function getOficinaById(id) {
   return res.json();
 }
 
-// Actualizar una oficina
 export async function actualizarOficinaApi(id, oficinaData) {
   const res = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
@@ -59,14 +54,13 @@ export async function actualizarOficinaApi(id, oficinaData) {
     body: JSON.stringify(oficinaData),
   });
 
-  const data = await res.json(); // Lee la respuesta (sea error o éxito)
+  const data = await res.json();
 
   if (!res.ok) {
-    // Si la API devuelve un error (ej. 400, 404, 500), lanza un error
     throw new Error(data.error || "Error al actualizar la oficina");
   }
 
-  return data; // Devuelve la oficina actualizada (o mensaje de éxito)
+  return data;
 }
 
 export async function eliminarOficinaApi(id) {
@@ -74,12 +68,11 @@ export async function eliminarOficinaApi(id) {
     method: "DELETE",
   });
 
-  const data = await res.json(); // Lee la respuesta (sea error o éxito)
+  const data = await res.json();
 
   if (!res.ok) {
-    // Captura el error (ej: "No se puede eliminar...")
     throw new Error(data.error || "Error al eliminar la oficina");
   }
 
-  return data; // Devuelve el mensaje de éxito
+  return data;
 }

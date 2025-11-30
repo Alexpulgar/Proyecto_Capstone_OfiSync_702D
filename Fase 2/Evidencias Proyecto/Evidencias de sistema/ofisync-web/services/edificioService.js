@@ -1,4 +1,5 @@
-const API_URL = "http://44.201.96.82:4000/api/edificios";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_URL = `${BASE_URL}/edificios`;
 
 export async function getEdificios() {
   const res = await fetch(API_URL);
@@ -38,12 +39,11 @@ export async function eliminarEdificioApi(id) {
     method: "DELETE",
   });
 
-  const data = await res.json(); // Lee la respuesta (sea error o éxito)
+  const data = await res.json();
 
   if (!res.ok) {
-    // Captura el error (ej: "No se puede eliminar...")
     throw new Error(data.error || "Error al eliminar el edificio");
   }
 
-  return data; // Devuelve el mensaje de éxito
+  return data;
 }

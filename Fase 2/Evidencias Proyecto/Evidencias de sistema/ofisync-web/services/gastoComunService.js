@@ -1,31 +1,30 @@
-const API_URL = "http://44.201.96.82:4000/api/gasto-comun";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_URL = `${BASE_URL}/gasto-comun`;
 
 const getToken = () => {
-  return localStorage.getItem("token");
+  return localStorage.getItem("authToken");
 };
 
 export async function calcularGastoComunApi(payload) {
-  const token = getToken(); // <-- Obtenemos el token
+  const token = getToken();
 
   try {
     const res = await fetch(`${API_URL}/calcular`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // <-- Añadimos el token
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(payload),
     });
 
     const data = await res.json();
     if (!res.ok) {
-      // Si el servidor responde con un error (ej. 400, 500), lo lanzamos
       throw new Error(data.error || "Error al calcular el gasto");
     }
     return data;
   } catch (error) {
     console.error("Error al calcular gasto común:", error);
-    // Devolvemos el error para que el componente pueda manejarlo
     return { error: error.message || "Error de conexión con el servidor" };
   }
 }
@@ -72,7 +71,7 @@ export const reviewVoucher = async (detalle_ids, accion) => {
     }
     return data;
   } catch (error) {
-    console.error("Error al revisar el comprobante:", error.message);
+    console.error("Error al revisar comprobante:", error.message);
     throw error;
   }
 };

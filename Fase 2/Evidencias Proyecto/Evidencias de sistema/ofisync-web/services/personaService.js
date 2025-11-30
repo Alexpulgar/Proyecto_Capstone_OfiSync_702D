@@ -1,11 +1,11 @@
-const API_URL = "http://44.201.96.82:4000/api/personas";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_URL = `${BASE_URL}/personas`;
 
-// Obtener todas las personas
 export async function getPersonas() {
   const res = await fetch(API_URL);
   return res.json();
 }
-// Agregar persona
+
 export async function agregarPersonaApi(persona) {
   const res = await fetch(`${API_URL}/agregar`, {
     method: "POST",
@@ -16,7 +16,7 @@ export async function agregarPersonaApi(persona) {
 }
 
 export async function getPersonaByRutApi(rut) {
-  const res = await fetch(`${API_URL}/rut/${rut}`); // Llama a la nueva ruta GET
+  const res = await fetch(`${API_URL}/rut/${rut}`);
 
   if (!res.ok) {
     const errorData = await res.json();
@@ -27,7 +27,6 @@ export async function getPersonaByRutApi(rut) {
 
 export async function actualizarPersonaApi(id, data) {
   const res = await fetch(`${API_URL}/${id}`, {
-    // Llama a la nueva ruta PUT
     method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
@@ -45,12 +44,11 @@ export async function eliminarPersonaApi(id) {
     method: "DELETE",
   });
 
-  const data = await res.json(); // Lee la respuesta (sea error o éxito)
+  const data = await res.json();
 
   if (!res.ok) {
-    // Captura el error (ej: "No se puede eliminar...")
-    throw new Error(data.error || "Error al eliminar la arrendatario");
+    throw new Error(data.error || "Error al eliminar la persona");
   }
 
-  return data; // Devuelve el mensaje de éxito
+  return data;
 }

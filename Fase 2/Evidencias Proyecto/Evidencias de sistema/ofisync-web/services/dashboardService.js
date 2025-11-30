@@ -1,9 +1,10 @@
 import axios from "axios";
 
-const API_URL = "http://44.201.96.82:4000/api/dashboard";
+const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+const API_URL = `${BASE_URL}/dashboard`;
 
 const getAuthConfig = () => {
-  const token = localStorage.getItem("authToken"); // Usamos "authToken"
+  const token = localStorage.getItem("authToken");
   if (!token) {
     throw new Error("No hay token de autenticación");
   }
