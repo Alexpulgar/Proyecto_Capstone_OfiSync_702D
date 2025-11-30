@@ -11,6 +11,7 @@ const getAuthConfig = () => {
   return {
     headers: {
       Authorization: `Bearer ${token}`,
+      "ngrok-skip-browser-warning": "true",
     },
   };
 };

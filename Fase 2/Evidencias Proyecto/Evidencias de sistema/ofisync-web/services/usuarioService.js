@@ -4,7 +4,10 @@ const API_URL = `${BASE_URL}/usuarios`;
 export async function registrarUsuarioApi(datosUsuario) {
   const res = await fetch(`${API_URL}/registrar`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
+    },
     body: JSON.stringify(datosUsuario),
   });
 
@@ -20,7 +23,10 @@ export async function registrarUsuarioApi(datosUsuario) {
 export async function loginApi(credenciales) {
   const res = await fetch(`${API_URL}/login`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
+    },
     body: JSON.stringify(credenciales),
   });
 

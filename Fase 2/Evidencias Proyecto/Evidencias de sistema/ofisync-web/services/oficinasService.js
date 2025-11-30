@@ -2,7 +2,9 @@ const BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
 const API_URL = `${BASE_URL}/oficinas`;
 
 export async function getOficinas() {
-  const res = await fetch(API_URL);
+  const res = await fetch(API_URL, {
+    headers: { "ngrok-skip-browser-warning": "true" },
+  });
   return res.json();
 }
 
@@ -14,21 +16,28 @@ export async function buscarOficinas(filtro) {
   if (filtro.arrendatario)
     queryParms.append("arrendatario", filtro.arrendatario);
 
-  const res = await fetch(`${API_URL}/buscar?${queryParms.toString()}`);
+  const res = await fetch(`${API_URL}/buscar?${queryParms.toString()}`, {
+    headers: { "ngrok-skip-browser-warning": "true" },
+  });
   return res.json();
 }
 
 export async function agregarOficinaApi(oficina) {
   const res = await fetch(`${API_URL}/agregar`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
+    },
     body: JSON.stringify(oficina),
   });
   return res.json();
 }
 
 export async function getOficinasByPiso(pisoId) {
-  const res = await fetch(`${API_URL}/piso/${pisoId}`);
+  const res = await fetch(`${API_URL}/piso/${pisoId}`, {
+    headers: { "ngrok-skip-browser-warning": "true" },
+  });
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(errorData.error || "Error al buscar oficinas por piso");
@@ -37,7 +46,9 @@ export async function getOficinasByPiso(pisoId) {
 }
 
 export async function getOficinaById(id) {
-  const res = await fetch(`${API_URL}/${id}`);
+  const res = await fetch(`${API_URL}/${id}`, {
+    headers: { "ngrok-skip-browser-warning": "true" },
+  });
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(
@@ -50,7 +61,10 @@ export async function getOficinaById(id) {
 export async function actualizarOficinaApi(id, oficinaData) {
   const res = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
+    },
     body: JSON.stringify(oficinaData),
   });
 
@@ -66,6 +80,7 @@ export async function actualizarOficinaApi(id, oficinaData) {
 export async function eliminarOficinaApi(id) {
   const res = await fetch(`${API_URL}/${id}`, {
     method: "DELETE",
+    headers: { "ngrok-skip-browser-warning": "true" },
   });
 
   const data = await res.json();

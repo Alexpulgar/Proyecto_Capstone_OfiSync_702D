@@ -10,6 +10,7 @@ export async function getEntradas() {
   const res = await fetch(API_URL, {
     headers: {
       Authorization: `Bearer ${token}`,
+      "ngrok-skip-browser-warning": "true",
     },
   });
 
@@ -26,6 +27,7 @@ export async function createEntrada(data) {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
+      "ngrok-skip-browser-warning": "true",
     },
     body: JSON.stringify(data),
   });
@@ -47,6 +49,7 @@ export async function updateEntrada(id, data) {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
+      "ngrok-skip-browser-warning": "true",
     },
     body: JSON.stringify(data),
   });
@@ -66,6 +69,7 @@ export async function deleteEntrada(id) {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
+      "ngrok-skip-browser-warning": "true",
     },
   });
 

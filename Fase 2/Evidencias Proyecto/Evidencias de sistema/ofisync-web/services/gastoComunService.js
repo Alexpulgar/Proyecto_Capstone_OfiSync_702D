@@ -14,6 +14,7 @@ export async function calcularGastoComunApi(payload) {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
       },
       body: JSON.stringify(payload),
     });
@@ -38,6 +39,7 @@ export const getVouchersEnRevision = async () => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
       },
     });
 
@@ -61,6 +63,7 @@ export const reviewVoucher = async (detalle_ids, accion) => {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        "ngrok-skip-browser-warning": "true",
       },
       body: JSON.stringify({ detalle_ids, accion }),
     });

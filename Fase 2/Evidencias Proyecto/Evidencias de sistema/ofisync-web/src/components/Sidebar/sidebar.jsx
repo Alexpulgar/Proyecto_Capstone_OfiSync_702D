@@ -106,7 +106,7 @@ function Sidebar({ isSidebarOpen, toggleSidebar }) {
         <div className="logout-section">
           <button onClick={handleLogout} className="logout-button">
             <img
-              src="img/icons/logout.svg"
+              src="/img/icons/logout.svg"
               alt="Icono de cerrar sesión"
               className="logout-icon"
             />

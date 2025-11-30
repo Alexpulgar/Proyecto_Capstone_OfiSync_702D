@@ -3,7 +3,9 @@ const API_URL = `${BASE_URL}/insumos`;
 
 export async function getInsumos(params = {}) {
   const query = new URLSearchParams(params).toString();
-  const res = await fetch(`${API_URL}${query ? `?${query}` : ""}`);
+  const res = await fetch(`${API_URL}${query ? `?${query}` : ""}`, {
+    headers: { "ngrok-skip-browser-warning": "true" },
+  });
   if (!res.ok) throw new Error("Error al obtener los insumos");
   return await res.json();
 }
@@ -11,7 +13,10 @@ export async function getInsumos(params = {}) {
 export async function createInsumo(data) {
   const res = await fetch(API_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
+    },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Error al crear el insumo");
@@ -21,7 +26,10 @@ export async function createInsumo(data) {
 export async function updateInsumo(id, data) {
   const res = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "ngrok-skip-browser-warning": "true",
+    },
     body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Error al actualizar el insumo");
@@ -29,7 +37,10 @@ export async function updateInsumo(id, data) {
 }
 
 export async function deleteInsumo(id) {
-  const res = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+  const res = await fetch(`${API_URL}/${id}`, {
+    method: "DELETE",
+    headers: { "ngrok-skip-browser-warning": "true" },
+  });
   if (!res.ok) throw new Error("Error al eliminar el insumo");
   return await res.json();
 }
