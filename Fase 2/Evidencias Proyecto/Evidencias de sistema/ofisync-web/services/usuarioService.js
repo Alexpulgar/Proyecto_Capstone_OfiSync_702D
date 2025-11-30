@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:4000/api/usuarios";
+const API_URL = "https://44.201.96.82:4000/api/usuarios";
 
 export async function registrarUsuarioApi(datosUsuario) {
   // datosUsuario debe ser un objeto: { nombre_usuario, contrasena, rol? }

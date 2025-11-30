@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:4000/api/gasto-comun";
+const API_URL = "https://44.201.96.82:4000/api/gasto-comun";
 
 const getToken = () => {
   return localStorage.getItem("token");

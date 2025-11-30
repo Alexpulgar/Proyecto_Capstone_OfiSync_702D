@@ -1,18 +1,18 @@
-import { getToken } from './usuarioService';
+import { getToken } from "./usuarioService";
 
-const API_URL = "http://localhost:4000/api/reservations";
+const API_URL = "https://44.201.96.82:4000/api/reservations";
 
 // Función auxiliar para manejar fetch con autenticación
 const fetchWithAuth = async (url, options = {}) => {
   const token = getToken();
-  
+
   const headers = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     ...options.headers,
   };
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers["Authorization"] = `Bearer ${token}`;
   }
 
   const response = await fetch(url, { ...options, headers });
@@ -23,8 +23,8 @@ const fetchWithAuth = async (url, options = {}) => {
   }
 
   // Si el método no es DELETE o no devuelve contenido, parsea JSON
-  if (options.method === 'DELETE' || response.status === 204) {
-    return; 
+  if (options.method === "DELETE" || response.status === 204) {
+    return;
   }
   return response.json();
 };
@@ -42,7 +42,7 @@ export const getAllReservationsAdmin = () => {
  */
 export const cancelReservationApi = (id) => {
   return fetchWithAuth(`${API_URL}/${id}/cancel`, {
-    method: 'PUT',
+    method: "PUT",
   });
 };
 
@@ -52,6 +52,6 @@ export const cancelReservationApi = (id) => {
  */
 export const completeReservationApi = (id) => {
   return fetchWithAuth(`${API_URL}/${id}/complete`, {
-    method: 'PUT',
+    method: "PUT",
   });
 };

@@ -31,12 +31,23 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=http://localhost:4000/api
+      - VITE_API_URL=https://desire-holophytic-regretfully.ngrok-free.dev/api
     depends_on:
       - backend
     volumes:
       - ./ofisync-web:/app
       - /app/node_modules
+
+  ngrok-backend:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    environment:
+      - NGROK_AUTHTOKEN=36CdiLbNbZisspzXghBKoxz9f7l_5amhucn3cwoUxmnUunbCT
+    command: http --domain=desire-holophytic-regretfully.ngrok-free.dev backend:4000
+    ports:
+      - "4040:4040"
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:

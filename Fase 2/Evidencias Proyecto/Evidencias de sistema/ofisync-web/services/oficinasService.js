@@ -1,32 +1,32 @@
-const API_URL = "http://localhost:4000/api/oficinas";
+const API_URL = "https://44.201.96.82:4000/api/oficinas";
 
 //Trae todas las oficinas
 export async function getOficinas() {
-    const res = await fetch(API_URL);
-    return res.json();
-    
+  const res = await fetch(API_URL);
+  return res.json();
 }
 
 // Buscar oficinas segun filtros
 export async function buscarOficinas(filtro) {
-    const queryParms = new URLSearchParams();
-    if(filtro.codigo) queryParms.append("codigo",filtro.codigo);
-    if(filtro.piso) queryParms.append("piso", filtro.piso);
-    if(filtro.estado) queryParms.append("estado", filtro.estado);
-    if(filtro.arrendatario) queryParms.append("arrendatario", filtro.arrendatario);
-    
-    const res = await fetch(`${API_URL}/buscar?${queryParms.toString()}`);
-    return res.json();
+  const queryParms = new URLSearchParams();
+  if (filtro.codigo) queryParms.append("codigo", filtro.codigo);
+  if (filtro.piso) queryParms.append("piso", filtro.piso);
+  if (filtro.estado) queryParms.append("estado", filtro.estado);
+  if (filtro.arrendatario)
+    queryParms.append("arrendatario", filtro.arrendatario);
+
+  const res = await fetch(`${API_URL}/buscar?${queryParms.toString()}`);
+  return res.json();
 }
 
-// Agregar oficina 
+// Agregar oficina
 export async function agregarOficinaApi(oficina) {
-    const res = await fetch(`${API_URL}/agregar`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(oficina)
-    });
-    return res.json();
+  const res = await fetch(`${API_URL}/agregar`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(oficina),
+  });
+  return res.json();
 }
 
 // Obtener oficinas por ID de piso
@@ -44,7 +44,9 @@ export async function getOficinaById(id) {
   const res = await fetch(`${API_URL}/${id}`);
   if (!res.ok) {
     const errorData = await res.json();
-    throw new Error(errorData.error || "Error al obtener detalles de la oficina");
+    throw new Error(
+      errorData.error || "Error al obtener detalles de la oficina"
+    );
   }
   return res.json();
 }
@@ -54,32 +56,30 @@ export async function actualizarOficinaApi(id, oficinaData) {
   const res = await fetch(`${API_URL}/${id}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(oficinaData)
+    body: JSON.stringify(oficinaData),
   });
-  
+
   const data = await res.json(); // Lee la respuesta (sea error o éxito)
-  
+
   if (!res.ok) {
     // Si la API devuelve un error (ej. 400, 404, 500), lanza un error
     throw new Error(data.error || "Error al actualizar la oficina");
   }
-  
+
   return data; // Devuelve la oficina actualizada (o mensaje de éxito)
 }
 
 export async function eliminarOficinaApi(id) {
   const res = await fetch(`${API_URL}/${id}`, {
-    method: "DELETE"
+    method: "DELETE",
   });
-  
+
   const data = await res.json(); // Lee la respuesta (sea error o éxito)
-  
+
   if (!res.ok) {
     // Captura el error (ej: "No se puede eliminar...")
     throw new Error(data.error || "Error al eliminar la oficina");
   }
-  
+
   return data; // Devuelve el mensaje de éxito
 }
-
-

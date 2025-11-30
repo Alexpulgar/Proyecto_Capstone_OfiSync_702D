@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:4000/dashboard";
+const API_URL = "https://44.201.96.82:4000/api/dashboard";
 
 const getAuthConfig = () => {
   const token = localStorage.getItem("authToken"); // Usamos "authToken"

@@ -1,9 +1,9 @@
-const API_URL = "http://localhost:4000/api/pisos";
+const API_URL = "https://44.201.96.82:4000/api/pisos";
 
 // Obtener todos los pisos
 export async function getPisos() {
-    const res = await fetch(API_URL);
-    return res.json();
+  const res = await fetch(API_URL);
+  return res.json();
 }
 
 export async function getPisosPorEdificio(edificioId) {
@@ -26,15 +26,15 @@ export async function eliminarPisosApi(datos) {
   const res = await fetch(`${API_URL}/borrar-por-cantidad`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(datos)
+    body: JSON.stringify(datos),
   });
-  
+
   const data = await res.json(); // Lee la respuesta (sea error o éxito)
-  
+
   if (!res.ok) {
     // Captura el error (ej: "No se puede eliminar...")
     throw new Error(data.error || "Error al eliminar los pisos");
   }
-  
+
   return data; // Devuelve el mensaje de éxito
 }
