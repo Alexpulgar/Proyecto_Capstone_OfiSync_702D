@@ -11,22 +11,16 @@ import { getToken } from "../../services/usuarioService";
 const Stack = createNativeStackNavigator();
 
 export default function StackNavigator() {
-
   const [isLoading, setIsLoading] = useState(true);
-  const [initialRoute, setInitialRoute] = useState('Login');
+  const [initialRoute, setInitialRoute] = useState(null);
 
   useEffect(() => {
     const checkToken = async () => {
       try {
         const token = await getToken();
-        if (token) {
-          setInitialRoute('MainTabs');
-        } else {
-          setInitialRoute('Login');
-        }
-      } catch (error) {
-        console.error("Error validando token:", error);
-        setInitialRoute('Login');
+        setInitialRoute(token ? "MainTabs" : "Login");
+      } catch {
+        setInitialRoute("Login");
       } finally {
         setIsLoading(false);
       }
@@ -35,13 +29,10 @@ export default function StackNavigator() {
     checkToken();
   }, []);
 
-  if (isLoading) {
+  if (isLoading || !initialRoute) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator 
-        size="large" 
-        color={colors.primary}
-        testID="loading-indicator" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -79,8 +70,8 @@ export default function StackNavigator() {
 const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
 });
