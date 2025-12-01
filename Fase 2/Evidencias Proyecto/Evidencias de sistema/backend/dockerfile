@@ -1,13 +1,31 @@
 FROM node:22-alpine
 
+# Definir zona horaria
+ENV TZ=America/Santiago
+
+# Instalar tzdata y configurar la zona horaria
+RUN apk add --no-cache tzdata \
+    && cp /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone
+
+# Definir el directorio de trabajo
 WORKDIR /app
 
+# Copiar package.json y package-lock.json
 COPY package*.json ./
 
-RUN npm install
+# Instalar dependencias
+RUN npm install --production
 
+# Copiar el resto de la app
 COPY . .
 
+# Exponer puerto
 EXPOSE 4000
 
+# Variable de entorno para Node
+ENV NODE_ENV=production
+ENV TZ=America/Santiago
+
+# Ejecutar app
 CMD ["npm", "start"]
