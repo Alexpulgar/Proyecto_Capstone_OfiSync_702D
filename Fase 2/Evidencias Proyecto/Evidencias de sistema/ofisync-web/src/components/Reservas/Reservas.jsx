@@ -122,7 +122,7 @@ export default function Reservas() {
       icon = <FaFileAlt size={28} className="file-icon other" />;
     }
 
-    const fullUrl = `http://localhost:4000${file_url}`;
+    const fullUrl = `https://api.ofisync.xyz:4000${file_url}`;
 
     return (
       <a href={fullUrl} download={fileName} className="file-preview-link">
