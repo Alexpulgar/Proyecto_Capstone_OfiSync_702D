@@ -3,7 +3,6 @@ const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
 
-// Importación de rutas
 const oficinaRoutes = require("./routes/oficinaRoutes");
 const pisoRoutes = require("./routes/pisoRoutes");
 const personaRoutes = require("./routes/personaRoutes");
@@ -19,27 +18,7 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-app.get("/uploads/*", (req, res, next) => {
-  try {
-    const fileName = req.originalUrl.split("/uploads/")[1];
-    if (!fileName) {
-      return res.status(404).json({ error: "Archivo no especificado" });
-    }
-    const filePath = path.join(__dirname, "uploads", fileName);
-    res.download(filePath, (err) => {
-      if (err) {
-        if (!res.headersSent) {
-          console.error("Error al descargar:", filePath, err.message);
-          res.status(404).json({ error: "Archivo no disponible." });
-        }
-      }
-    });
-  } catch (error) {
-    console.error("Error en handler de descargas:", error);
-    next(error);
-  }
-});
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.use("/api/oficinas", oficinaRoutes);
 app.use("/api/pisos", pisoRoutes);
@@ -49,9 +28,7 @@ app.use("/api/gasto-comun", gastoComunRoutes);
 app.use("/api/reservations", reservationsRoutes);
 app.use("/api/usuarios", usuarioRoutes);
 app.use("/api/insumos", insumoRoutes);
-
 app.use("/api/dashboard", dashboardRoutes);
-
 app.use("/api/bitacora", bitacoraRoutes);
 
 app.get("/", (req, res) => {
