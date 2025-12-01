@@ -104,11 +104,7 @@ export default function Reservas() {
     if (!file_url) return null;
 
     const extension = file_url.split(".").pop().toLowerCase();
-
-    // 1. Obtenemos el nombre codificado
     const encodedFileName = file_url.split("/").pop();
-
-    // 2. Decodificamos el nombre SOLO para mostrarlo y para el atributo 'download'
     const fileName = decodeURIComponent(encodedFileName);
 
     let icon;
@@ -125,7 +121,12 @@ export default function Reservas() {
     const fullUrl = `https://api.ofisync.xyz:4000${file_url}`;
 
     return (
-      <a href={fullUrl} download={fileName} className="file-preview-link">
+      <a
+        href={fullUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="file-preview-link"
+      >
         <div className="file-card-web">
           {icon}
           <span className="file-name-web">{fileName}</span>
