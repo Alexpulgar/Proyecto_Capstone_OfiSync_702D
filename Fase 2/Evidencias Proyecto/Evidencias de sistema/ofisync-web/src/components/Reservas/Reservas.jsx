@@ -13,7 +13,6 @@ export default function Reservas() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Cargar reservas
   const fetchReservations = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -28,12 +27,10 @@ export default function Reservas() {
     }
   }, []);
 
-  // Cargar al montar el componente
   useEffect(() => {
     fetchReservations();
   }, [fetchReservations]);
 
-  // Manejador para Cancelar
   const handleCancel = async (id) => {
     if (!window.confirm("¿Estás seguro de que deseas cancelar esta reserva?")) {
       return;
@@ -48,7 +45,6 @@ export default function Reservas() {
     }
   };
 
-  // Manejador para Completar
   const handleComplete = async (id) => {
     if (
       !window.confirm(
@@ -66,8 +62,6 @@ export default function Reservas() {
       alert(err.message || "Error al completar la reserva");
     }
   };
-
-  // --- Helpers de formato ---
 
   const getStatusVariant = (status) => {
     switch (status) {
@@ -118,7 +112,9 @@ export default function Reservas() {
       icon = <FaFileAlt size={28} className="file-icon other" />;
     }
 
-    const fullUrl = `https://api.ofisync.xyz:4000${file_url}`;
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:4000/api";
+    const baseUrl = apiUrl.endsWith("/api") ? apiUrl.slice(0, -4) : apiUrl;
+    const fullUrl = `${baseUrl}${file_url}`;
 
     return (
       <a
