@@ -63,6 +63,30 @@ export default function Reservas() {
     }
   };
 
+  const handleDownloadFile = async (e, fileUrl, fileName) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(fileUrl);
+      if (!response.ok) throw new Error("No se pudo obtener el archivo");
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+
+      // Limpieza
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("Error en descarga:", err);
+      alert("Error al descargar el archivo. Verifique su conexión.");
+    }
+  };
+
   const getStatusVariant = (status) => {
     switch (status) {
       case "pendiente":
@@ -119,9 +143,9 @@ export default function Reservas() {
     return (
       <a
         href={fullUrl}
-        target="_blank"
-        rel="noopener noreferrer"
+        onClick={(e) => handleDownloadFile(e, fullUrl, fileName)}
         className="file-preview-link"
+        style={{ cursor: "pointer", textDecoration: "none" }}
       >
         <div className="file-card-web">
           {icon}
