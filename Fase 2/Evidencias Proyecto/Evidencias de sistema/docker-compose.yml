@@ -25,13 +25,15 @@ services:
       - TZ=America/Santiago
     depends_on:
       - db
+    volumes:
+      - ./backend/uploads:/app/uploads
 
   frontend:
     build: ./ofisync-web
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=https://desire-holophytic-regretfully.ngrok-free.dev/api
+      - VITE_API_URL=https://api.ofisync.xyz/api
     depends_on:
       - backend
     volumes:
